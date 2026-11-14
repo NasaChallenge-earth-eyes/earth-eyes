@@ -2,6 +2,7 @@
 Catalogue agronomique des cultures de référence pour la région de Meknès / Saïss.
 Les rendements, prix et coûts sont des hypothèses de modélisation paramétrables
 fondées sur les données ONICL, FAOSTAT et les pratiques régionales observées.
+Intègre la modélisation de l'enracinement et de la protection anti-érosion (NASA SRTM).
 """
 
 CROP_CATALOG = {
@@ -16,6 +17,8 @@ CROP_CATALOG = {
         "water_need_m3_ha": 4200.0,
         "drought_sensitivity": 1.15,  # Ky FAO : forte pénalité si stress au remplissage
         "nitrogen_fixation_kg_ha": 0.0,
+        "root_type": "fasciculé_superficiel",
+        "erosion_protection_score": 1.00,  # Référence : sol souvent nu avant tallage
         "soil_benefit_fr": "Culture de rente traditionnelle, exigeante en eau et azote.",
         "soil_benefit_darija": "Zre3 3adi kay-khdem l-ma bzaf o kay-khwi l-ard men l-azot."
     },
@@ -30,6 +33,8 @@ CROP_CATALOG = {
         "water_need_m3_ha": 2400.0,
         "drought_sensitivity": 0.70,  # Résistant au déficit hydrique
         "nitrogen_fixation_kg_ha": 35.0,
+        "root_type": "pivotant_moyen",
+        "erosion_protection_score": 1.12,  # Bonne couverture printanière
         "soil_benefit_fr": "Fixation naturelle d'azote (+35 kg N/ha) et rupture du cycle des maladies du blé.",
         "soil_benefit_darija": "L-7emmez kay-sber l-jeffa o kay-3emmer l-ard b l-azot bla engrais."
     },
@@ -44,6 +49,8 @@ CROP_CATALOG = {
         "water_need_m3_ha": 2800.0,
         "drought_sensitivity": 0.80,  # Évite les canicules tardives de mai
         "nitrogen_fixation_kg_ha": 0.0,
+        "root_type": "fasciculé_dense",
+        "erosion_protection_score": 1.08,
         "soil_benefit_fr": "Maturation précoce avant les pics de Chergui printaniers. Paille très valorisée en élevage.",
         "soil_benefit_darija": "Ch3ir kay-wjed bekri qbel ma tji l-7arara dyal Chergui f chher 5."
     },
@@ -58,6 +65,8 @@ CROP_CATALOG = {
         "water_need_m3_ha": 3200.0,
         "drought_sensitivity": 0.85,
         "nitrogen_fixation_kg_ha": 45.0,
+        "root_type": "pivotant_dense",
+        "erosion_protection_score": 1.20,  # Couvert végétal dense limitant l'érosion en pente
         "soil_benefit_fr": "Restructuration des sols argileux lourds et enrichissement massif en azote organique.",
         "soil_benefit_darija": "L-foul kay-fte7 l-ard li fiha l-ghiss o kay-ne99iha men l-mrad."
     },
@@ -72,7 +81,9 @@ CROP_CATALOG = {
         "water_need_m3_ha": 2900.0,
         "drought_sensitivity": 0.85,
         "nitrogen_fixation_kg_ha": 0.0,
-        "soil_benefit_fr": "Enracinement pivotant profond qui valorise l'eau résiduelle du sous-sol.",
-        "soil_benefit_darija": "Nwwar ch-chems 3ndo 3rouq twal kay-jebdo l-ma men l-ghreq."
+        "root_type": "pivotant_profond",
+        "erosion_protection_score": 1.25,  # Pivot puissant (1.5-2m) : ancrage maximal du sol sur pente
+        "soil_benefit_fr": "Enracinement pivotant profond (ancre le sol en pente et valorise l'eau profonde).",
+        "soil_benefit_darija": "Nwwar ch-chems 3ndo 3rouq twal kay-jebdo l-ma men l-ghreq o tay-cheddo l-hadra."
     }
 }

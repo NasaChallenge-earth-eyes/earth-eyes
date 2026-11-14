@@ -1,11 +1,12 @@
 """
 Moteur de décision agronomique de rotation des cultures (NASA Space Apps 2026).
 Simule 40 saisons historiques (1984-2025) via NASA POWER, calcule les distributions
-de marge (P10, P50, P90), le taux de victoire face au blé (Win Rate) et la productivité de l'eau.
+de marge (P10, P50, P90), le taux de victoire face au blé (Win Rate), la productivité de l'eau
+et l'adaptation topographique anti-érosion (NASA SRTM 30m).
 """
 
 import numpy as np
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 from .nasa_climate_client import NASAClimateClient
 from .crop_catalog import CROP_CATALOG
@@ -14,20 +15,27 @@ from .water_productivity import (
     calculate_water_saved_vs_baseline,
     calculate_nitrogen_monetary_bonus
 )
+from .terrain_slope import get_srtm_terrain_profile
 
 def recommend_crop_rotation(
     lat: float = 33.89,
     lon: float = -5.55,
     previous_crop: str = "blé",
     risk_profile: str = "équilibré",
-    detected_disease: str = "none"
+    detected_disease: str = "none",
+    slope_pct: Optional[float] = None
 ) -> Dict[str, Any]:
     """
     Fonction principale de recommandation de rotation culturale sous stress climatique.
+    Intègre les données climatiques NASA POWER, l'humidité et la topographie NASA SRTM.
     Renvoie le dictionnaire JSON standard conforme à AGENTS_SYNC.md.
     """
     client = NASAClimateClient(lat, lon)
     climate_analysis = client.analyze_two_eras()
+
+    # Analyse topographique NASA SRTM (Élévation et pente de la parcelle)
+    terrain_profile = get_srtm_terrain_profile(lat, lon, user_slope_pct=slope_pct)
+    actual_slope = terrain_profile["slope_percent"]
 
     # Extraction des séries pluviométriques de printemps par année (Mars-Mai)
     params = client.data.get("properties", {}).get("parameter", {})
@@ -66,7 +74,14 @@ def recommend_crop_rotation(
         wins_vs_wheat = 0
         total_recent_years = 0
 
-        # On simule sur chaque année (avec focus sur les 22 dernières années 2004-2025 pour le Win Rate récent)
+        # Facteur d'adaptation topographique NASA SRTM :
+        # Si le terrain est en pente (>3%), les cultures à enracinement profond ou dense
+        # valorisent mieux le ruissellement et évitent l'érosion du capital sol
+        erosion_prot = crop.get("erosion_protection_score", 1.0)
+        slope_adjustment = 1.0
+        if actual_slope >= 3.0:
+            slope_adjustment = 1.0 + (actual_slope / 100.0) * (erosion_prot - 1.0)
+
         for y_str, rain in spring_rains_by_year.items():
             water_stress = max(0.0, 1.0 - (rain / normal_spring_rain))
             realized_yield = crop["base_yield_q_ha"] * max(0.25, 1.0 - (crop["drought_sensitivity"] * water_stress))
@@ -74,7 +89,7 @@ def recommend_crop_rotation(
 
             # Bonus rotation azote si légumineuse
             nitrogen_bonus_mad = calculate_nitrogen_monetary_bonus(crop["nitrogen_fixation_kg_ha"])
-            effective_margin = margin + (nitrogen_bonus_mad * 0.5)  # 50% valorisé dès la saison en cours
+            effective_margin = (margin + (nitrogen_bonus_mad * 0.5)) * slope_adjustment
 
             # Malus sanitaire si la maladie détectée en Step 1 affecte la culture
             if "septoria" in detected_disease.lower() and crop["family"] == "céréale":
@@ -110,6 +125,7 @@ def recommend_crop_rotation(
             "win_rate_vs_wheat_percent": win_rate,
             "water_saved_m3_ha": int(water_saved),
             "nitrogen_bonus_kg_ha": int(crop["nitrogen_fixation_kg_ha"]),
+            "root_type": crop.get("root_type", "moyen"),
             "soil_health_impact": crop["soil_benefit_fr"],
             "darija_summary": crop["soil_benefit_darija"]
         })
@@ -139,6 +155,13 @@ def recommend_crop_rotation(
             "recent_period": climate_analysis["era2_period"],
             "temp_increase_celsius": climate_analysis["temp_increase_celsius"],
             "spring_rain_decrease_percent": climate_analysis["spring_rain_decrease_percent"]
+        },
+        "terrain_srtm": {
+            "elevation_m": terrain_profile["elevation_m"],
+            "slope_percent": terrain_profile["slope_percent"],
+            "erosion_risk": terrain_profile["erosion_risk_fr"],
+            "anti_erosion_advice_fr": terrain_profile["anti_erosion_advice_fr"],
+            "anti_erosion_advice_darija": terrain_profile["anti_erosion_advice_darija"]
         },
         "previous_crop": previous_crop,
         "risk_profile": risk_profile,
