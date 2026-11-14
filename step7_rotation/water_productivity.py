@@ -1,19 +1,28 @@
 """
-Calcul de la productivité économique de l'eau (FAO Water Productivity)
-et des économies hydriques à l'échelle de la parcelle pour le Saïss.
+Calcul de la productivité physique de l'eau (FAO Water Productivity)
+et des économies hydriques à l'échelle de la parcelle pour le Saïss (Meknès).
+Normes FAO-33, FAO-56 et INRA Maroc.
 """
 
-# Prix estimé de l'azote minéral économisé (Urée 46% au Maroc : env. 4.5 MAD / kg N pur)
+# Prix indicatif de référence de l'azote minéral économisé (Urée 46% au Maroc : env. 4.5 MAD / kg N pur)
 NITROGEN_VALUE_PER_KG_MAD = 4.50
 
-def calculate_water_productivity(margin_mad_ha: float, water_need_m3_ha: float) -> float:
+def calculate_water_productivity_kg_m3(yield_kg_ha: float, water_need_m3_ha: float) -> float:
     """
-    Calcule la productivité de l'eau en Dirhams par mètre cube d'irrigation :
-    Productivité = Marge Nette (MAD/ha) / Eau consommée (m³/ha)
+    Calcule la productivité physique de l'eau selon la norme FAO (FAO-33) :
+    Productivité = Rendement récolté (kg/ha) / Eau consommée (m³/ha) -> kg de récolte par m³ d'eau.
     """
     if water_need_m3_ha <= 0:
         return 0.0
-    return round(margin_mad_ha / water_need_m3_ha, 2)
+    return round(yield_kg_ha / water_need_m3_ha, 2)
+
+def calculate_water_productivity(margin_or_yield: float, water_need_m3_ha: float) -> float:
+    """
+    Compatibilité ascendante : calcule l'efficience par mètre cube d'eau.
+    """
+    if water_need_m3_ha <= 0:
+        return 0.0
+    return round(margin_or_yield / water_need_m3_ha, 2)
 
 def calculate_water_saved_vs_baseline(crop_water_m3: float, baseline_water_m3: float = 4200.0) -> float:
     """

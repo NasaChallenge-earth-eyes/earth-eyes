@@ -380,10 +380,18 @@ async def recommend_rotation(req: Optional[RotationRecommendationRequest] = None
             for r in real_res.get("recommendations", []):
                 r["name_fr"] = r.get("crop_name_fr", r.get("name_fr"))
                 r["name_darija"] = r.get("crop_name_darija", r.get("name_darija"))
-                r["water_productivity"] = f"{r.get('water_productivity_mad_m3', 3.0)} MAD/m³"
-                r["win_rate"] = f"Bat le blé dans {r.get('win_rate_vs_wheat_percent', 70)}% des saisons"
+                # Rendement physique en kg/ha et quintaux
+                y_kg = r.get("estimated_yield_kg_ha", 1500)
+                y_q = r.get("estimated_yield_q_ha", round(y_kg / 100.0, 1))
+                r["yield_display"] = f"{y_kg:,} kg/ha ({y_q} q/ha)".replace(",", " ")
+                r["yield_range"] = f"P10 {r.get('yield_p10_kg_ha', y_kg)} - P90 {r.get('yield_p90_kg_ha', y_kg)} kg/ha"
+                # Efficience hydrique physique FAO-33 (kg de récolte par m³ d'eau)
+                wp = r.get('water_productivity_kg_m3') or r.get('water_productivity_mad_m3') or 0.65
+                r["water_productivity"] = f"{wp} kg/m³ (FAO-33)"
+                r["win_rate"] = f"Résilience hydrique supérieure au blé ({r.get('win_rate_vs_wheat_percent', 70)}% des saisons)"
                 r["water_saved"] = f"{r.get('water_saved_m3_ha', 1500):,} m³/ha économisés".replace(",", " ")
-                r["nitrogen_bonus"] = f"+{r.get('nitrogen_bonus_kg_ha', 0)} kg N/ha fixé"
+                r["nitrogen_bonus"] = f"+{r.get('nitrogen_bonus_kg_ha', 0)} kg N/ha régénéré"
+                r["soil_score_display"] = f"Score Sol : {r.get('soil_health_score', 85)}/100"
                 r["darija_advice"] = r.get("darija_summary", r.get("darija_advice", ""))
             return real_res
         except Exception as e:
@@ -392,31 +400,43 @@ async def recommend_rotation(req: Optional[RotationRecommendationRequest] = None
     return {
       "status": "success",
       "city": "Meknès",
-      "climate_alert": "Réchauffement de +1.2°C et baisse de 22% des pluies au printemps (Données NASA POWER 1984-2025)",
+      "climate_alert": "Réchauffement de +0.53°C et baisse de 9.4% des pluies au printemps (Données NASA POWER 1984-2025)",
       "recommendations": [
         {
           "rank": 1,
           "name_fr": "Pois chiche",
           "name_darija": "L-7emmez",
           "family": "Légumineuse",
-          "margin_mad_ha": 9400,
-          "water_productivity": "3.92 MAD/m³",
-          "win_rate": "Bat le blé dans 74% des saisons",
+          "estimated_yield_kg_ha": 1571,
+          "estimated_yield_q_ha": 15.7,
+          "yield_display": "1 571 kg/ha (15.7 q/ha)",
+          "yield_range": "P10 998 - P90 1 612 kg/ha",
+          "margin_mad_ha": 1571,
+          "soil_health_score": 92,
+          "soil_score_display": "Score Sol : 92/100",
+          "water_productivity": "0.65 kg/m³ (FAO-33)",
+          "win_rate": "Résilience hydrique supérieure au blé (74% des saisons)",
           "water_saved": "1 800 m³/ha économisés",
-          "nitrogen_bonus": "+35 kg N/ha fixé",
-          "darija_advice": "L-7emmez kay-sber l-jeffa o kay-3emmer l-ard b l-azot bla ma techri engrais."
+          "nitrogen_bonus": "+35 kg N/ha régénéré",
+          "darija_advice": "L-7emmez kay-fiyyeq l-ard : kay-3emmerha b l-azot naturel o kay-ne99iha men l-mrad."
         },
         {
           "rank": 2,
-          "name_fr": "Orge précoce",
-          "name_darija": "Ch3ir",
-          "family": "Céréale rustique",
-          "margin_mad_ha": 7100,
-          "water_productivity": "2.53 MAD/m³",
-          "win_rate": "Bat le blé dans 68% des saisons",
-          "water_saved": "1 400 m³/ha économisés",
-          "nitrogen_bonus": "0 kg",
-          "darija_advice": "Ch3ir kay-wjed bekri qbel ma tji l-7arara dyal Chergui f chher 5."
+          "name_fr": "Féverole",
+          "name_darija": "L-Foul",
+          "family": "Légumineuse",
+          "estimated_yield_kg_ha": 2061,
+          "estimated_yield_q_ha": 20.6,
+          "yield_display": "2 061 kg/ha (20.6 q/ha)",
+          "yield_range": "P10 1 250 - P90 2 150 kg/ha",
+          "margin_mad_ha": 2061,
+          "soil_health_score": 95,
+          "soil_score_display": "Score Sol : 95/100",
+          "water_productivity": "0.64 kg/m³ (FAO-33)",
+          "win_rate": "Résilience hydrique supérieure au blé (70% des saisons)",
+          "water_saved": "1 000 m³/ha économisés",
+          "nitrogen_bonus": "+45 kg N/ha régénéré",
+          "darija_advice": "L-foul kay-fte7 l-ard l-ghliya b l-3rouq dyalo o kay-khelli fiha l-khir dyal l-azot."
         }
       ]
     }

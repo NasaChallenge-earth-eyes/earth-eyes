@@ -2,6 +2,12 @@ import os
 import json
 from typing import Optional
 
+from .rag_agronomy import (
+    retrieve_agronomic_knowledge,
+    format_rag_context_for_prompt,
+    generate_grounded_agronomic_advice
+)
+
 try:
     import google.generativeai as genai
 except Exception as exc:
@@ -18,21 +24,29 @@ if api_key and genai is not None:
 
 def ask_agronomist(question: str, context: dict) -> str:
     """
-    Pose une question agricole à Gemini en lui fournissant tout le contexte
-    agronomique et géophysique de la parcelle (rendement estimé, maladies, sol, NDVI).
+    Pose une question agricole à l'agronome virtuel en s'appuyant sur le RAG agronomique
+    (INRA Maroc, FAO, ICARDA) et Gemini (si disponible).
     """
-    if not os.environ.get("GEMINI_API_KEY"):
-        return (
-            "Désolé, la clé d'API GEMINI_API_KEY n'est pas configurée dans l'environnement. "
-            "Veuillez configurer la clé pour recevoir des conseils personnalisés de l'agronome virtuel en darija."
-        )
+    crop_name = context.get('crop_type', 'blé')
+    rag_chunks = retrieve_agronomic_knowledge(question, target_crop=crop_name, top_k=2)
+    rag_context_text = format_rag_context_for_prompt(rag_chunks)
+
+    if not os.environ.get("GEMINI_API_KEY") or genai is None:
+        advice_res = generate_grounded_agronomic_advice(question, context, lang="ar")
+        return advice_res["response"]
 
     prompt = f"""
-    Tu es un conseiller agronome marocain expérimenté. Tu t'adresses à un agriculteur local.
-    Ton rôle est d'analyser les données de sa parcelle agricole et de répondre à sa question de manière très claire, pragmatique et rassurante en utilisant la Darija marocaine (en alphabet latin/arabe selon le format usuel ou en lettres latines simples et lisibles : "arabizi").
+    Tu es un conseiller agronome marocain expérimenté de l'INRA et de l'ONCA. Tu t'adresses à un agriculteur local du Saïss / Meknès.
+    Ton rôle est d'analyser les données physiques de sa parcelle et de lui prodiguer des conseils scientifiques rigoureux
+    fondés sur les connaissances agronomiques officielles ci-dessous.
+    Réponds en Darija marocaine (en alphabet latin "arabizi" ou en français si l'agriculteur pose sa question en français).
 
-    Voici les données physiques et les diagnostics de la parcelle :
-    - Culture : {context.get('crop_type', 'Non spécifiée')}
+    === CONNAISSANCES AGRONOMIQUES OFFICIELLES (RAG INRA MAROC / FAO / ICARDA) ===
+    {rag_context_text}
+    =============================================================================
+
+    Données physiques et diagnostics de la parcelle :
+    - Culture actuelle / précédente : {context.get('crop_type', 'Non spécifiée')}
     - Rendement estimé (WOFOST) : {context.get('yield_estimate')} kg/ha
     - Maladie détectée : {context.get('disease', 'aucune maladie détectée')}
     - Indice NDVI (Santé végétative par satellite) : {context.get('ndvi', 'Non disponible')}
@@ -43,24 +57,19 @@ def ask_agronomist(question: str, context: dict) -> str:
 
     Question de l'agriculteur : "{question}"
 
-    Instructions de réponse :
-    1. Réponds en Darija marocaine (lettres latines simples, style SMS/conversationnel propre).
-    2. Utilise les données fournies pour justifier ton conseil (ex: si le pH est bas ou s'il y a du mildiou, dis-lui quoi faire spécifiquement pour sa culture).
-    3. Reste court, concret, avec des actions applicables sur le terrain.
+    Consignes impératives :
+    1. Réponds en Darija marocaine claire et bienveillante (style conversationnel d'agronome de terrain).
+    2. Cite explicitement la source scientifique (ex: "7asab ab7at INRA Maroc..." ou "Directive FAO-33...").
+    3. Explique les bénéfices physiques (fixation d'azote kg/ha, économie d'eau m³/ha, santé durable du sol).
     """
-    
-    if genai is None:
-        return (
-            "Désolé, l'API Gemini n'est pas disponible dans cet environnement. "
-            "Le flux de conseil agronomique passe en mode dégradé."
-        )
 
     try:
         model = genai.GenerativeModel('gemini-flash-latest')
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
-        return f"Erreur lors de la génération de la réponse de l'agronome : {str(e)}"
+        advice_res = generate_grounded_agronomic_advice(question, context, lang="ar")
+        return advice_res["response"]
 
 
 def ask_agronomist_interactive(question: str, history: list, current_form: dict, context: Optional[dict] = None) -> dict:
@@ -167,24 +176,22 @@ def ask_agronomist_interactive(question: str, history: list, current_form: dict,
             'extracted_data': extracted
         }
 
-    if not os.environ.get("GEMINI_API_KEY"):
-        return build_response(
-            "Désolé, la clé d'API GEMINI_API_KEY n'est pas configurée dans l'environnement.",
-            {}
-        )
-
-    crop_type = normalize_crop(current_form.get('crop_type'))
-    sowing_date = current_form.get('sowing_date')
-    location = current_form.get('location')
-    historical_yields = current_form.get('historical_yields')
-    photo_uploaded = bool(current_form.get('photo_uploaded'))
-
     extracted_data = {
         'crop_type': None,
         'sowing_date': None,
         'location': None,
         'historical_yields': None
     }
+
+    if not os.environ.get("GEMINI_API_KEY") or genai is None:
+        advice = generate_grounded_agronomic_advice(question, context=current_form, lang="ar")
+        return build_response(advice["response"], extracted_data)
+
+    crop_type = normalize_crop(current_form.get('crop_type'))
+    sowing_date = current_form.get('sowing_date')
+    location = current_form.get('location')
+    historical_yields = current_form.get('historical_yields')
+    photo_uploaded = bool(current_form.get('photo_uploaded'))
 
     if not crop_type:
         extracted_data['crop_type'] = normalize_crop(question)
@@ -232,17 +239,21 @@ def ask_agronomist_interactive(question: str, history: list, current_form: dict,
         if "la localisation" in missing_fields:
             missing_fields.remove("la localisation")
 
-    if genai is None:
-        # Fallback si Gemini n'est pas disponible
-        fallback_msg = "Désolé, Gemini n'est pas disponible actuellement. "
-        if missing_fields:
-            fallback_msg += f"Pour lancer l'analyse complète, veuillez renseigner : {', '.join(missing_fields)}."
-        return build_response(fallback_msg, extracted_data)
+    # Récupération RAG pour enrichir la réponse conversationnelle
+    rag_chunks = retrieve_agronomic_knowledge(question, target_crop=crop_type, top_k=2)
+    rag_context_text = format_rag_context_for_prompt(rag_chunks)
 
     prompt = f"""
-    Tu es un conseiller agronome marocain virtuel. Réponds de manière utile et professionnelle à la question de l'agriculteur (en darija marocaine écrite en lettres latines ou arabizi, ou en français si la question est en français).
+    Tu es un conseiller agronome marocain virtuel (INRA / ONCA Meknès).
+    Réponds de manière pragmatique et rassurante en Darija marocaine (lettres latines / arabizi ou français selon l'interlocuteur).
+    Adosse tes conseils aux recommandations officielles ci-dessous :
+
+    === CONNAISSANCES AGRONOMIQUES OFFICIELLES (RAG INRA / FAO) ===
+    {rag_context_text}
+    ================================================================
     
-    Ton objectif est d'aider l'agriculteur sur ses questions agricoles générales ou spécifiques, tout en l'accompagnant à compléter les informations de sa parcelle.
+    Ton objectif est d'aider l'agriculteur sur ses questions agricoles générales ou spécifiques (rotation, azote, eau, maladies),
+    tout en l'accompagnant à compléter les informations de sa parcelle.
 
     Voici les informations de la parcelle actuellement connues :
     - Culture : {crop_type or 'Non spécifiée'}
@@ -257,17 +268,17 @@ def ask_agronomist_interactive(question: str, history: list, current_form: dict,
     Message / Question de l'agriculteur : "{question}"
 
     Instructions de réponse :
-    1. Réponds précisément à la question de l'agriculteur d'abord (que ce soit une question sur l'irrigation, les engrais, les maladies ou générale).
-    2. À la fin de ta réponse, si des informations clés sont manquantes, rappelle-lui de manière amicale et non bloquante de les fournir (ex: en sélectionnant sa culture, en chargeant une photo de feuille ou en indiquant le lieu sur la carte) afin de pouvoir lancer l'analyse agronomique complète de sa parcelle.
-    3. Si le message de l'agriculteur contenait de nouvelles informations pour le formulaire (ex: "j'ai semé du blé" ou "je suis à Béni Mellal"), extraits-les.
+    1. Réponds précisément à la question de l'agriculteur en t'appuyant sur les connaissances RAG et cite la source (INRA Maroc ou FAO).
+    2. À la fin de ta réponse, si des informations clés sont manquantes, rappelle-lui de manière amicale de les renseigner.
+    3. Si le message contenait de nouvelles informations pour le formulaire, extrais-les.
     4. Retourne TOUJOURS un JSON strict ayant exactement ce format :
     {{
-      "response": "Ta réponse d'agronome suivie du rappel amical",
+      "response": "Ta réponse d'agronome avec citation scientifique suivie du rappel amical",
       "extracted_data": {{
-         "crop_type": "wheat" ou "barley" ou "olive" ou "potato" ou "tomato" ou null (uniquement si détecté dans le dernier message),
-         "sowing_date": "YYYY-MM-DD" ou null (uniquement si détecté dans le dernier message),
-         "location": "Nom de la ville/région au Maroc" ou null (uniquement si détecté dans le dernier message),
-         "historical_yields": [ {{"year": 2024, "yield": 4500.0}} ] ou null (uniquement si détecté dans le dernier message)
+         "crop_type": "wheat" ou "barley" ou "olive" ou "potato" ou "tomato" ou null,
+         "sowing_date": "YYYY-MM-DD" ou null,
+         "location": "Nom de la ville/région au Maroc" ou null,
+         "historical_yields": [ {{"year": 2024, "yield": 4500.0}} ] ou null
       }}
     }}
     """

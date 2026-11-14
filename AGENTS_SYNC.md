@@ -101,13 +101,14 @@ Pour que l'Agent B puisse construire l'interface web et la route FastAPI **en pa
 | :--- | :---: | :---: | :--- |
 | Client API NASA POWER + Cache | Agent A | `[FAIT]` | Cache local opérationnel pour Meknès (1984-2025) |
 | Remplacement météo WOFOST | Agent A | `[FAIT]` | `nasa_power_weather.py` branché dans `step4_simulation/` |
-| Moteur de rotation 2 fenêtres | Agent A | `[FAIT]` | `step7_rotation/` complet, testé via `test_rotation.py` |
-| Serveur FastAPI / route rotation | Agent B | `[FAIT]` | `app.py` & `main.py` branchés sur `recommend_crop_rotation` |
+| Moteur de rotation physique (kg/ha) | Agent A | `[FAIT]` | `step7_rotation/` calculant rendement réel kg/ha (P10-P90), score santé sol (/100) et azote fixé |
+| Base RAG Agronomique (INRA/FAO/ICARDA) | Agent A | `[FAIT]` | `step5_llm/rag_agronomy.py` branché sur le chat en Darija avec citations officielles |
+| Serveur FastAPI / routes rotation & chat | Agent B & A | `[FAIT]` | `main.py` exposant `/recommend-rotation` et `/chat` avec RAG |
 | Humidité sol NASA SMAP (0-5cm) | Agent B | `[FAIT]` | `step2_soil/smap_soil.py` opérationnel (calibré 12-18% Saïss) |
-| Interface Web (Tableau des 3 cultures) | Agent B | `[FAIT]` | `templates/index.html` avec alerte NASA POWER, SMAP & cartes Darija/FR |
+| Interface Web (Tableau des 3 cultures) | Agent B & A | `[FAIT]` | `templates/index.html` affichant rendements physiques (kg/ha), score sol, eau & citations RAG |
 | Slides Pitch (7 slides en anglais) | Agent B | `[FAIT]` | `presentation/SLIDES.md` & deck web interactif sur `/presentation` |
 | Documentation soumission NASA | Agent B | `[FAIT]` | `README_EN.md` & `SUBMISSION_SPACEAPPS.md` rédigés |
-| Fiche Q&A (Anticipation 5 questions) | Agent A & B | `[À FAIRE]` | Réponses courtes de 20s pour le pitch |
+| Fiche Q&A (Anticipation 5 questions) | Agent A & B | `[FAIT]` | 5 réponses béton prêtes pour le jury (NASA data, validation sol, RAG) |
 
 ---
 

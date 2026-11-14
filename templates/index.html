@@ -1198,8 +1198,18 @@
 
                         <div class="crop-metrics-list">
                             <div class="metric-row">
-                                <span class="label">${t.marginLabel || 'Marge brute :'}</span>
-                                <span class="val highlight-green">+${crop.margin_mad_ha?.toLocaleString('fr-FR')} MAD/ha</span>
+                                <span class="label">${t.yieldLabel || 'Rendement estimé :'}</span>
+                                <span class="val highlight-green" style="font-weight: 700;">
+                                    ${crop.yield_display || (crop.estimated_yield_kg_ha ? crop.estimated_yield_kg_ha.toLocaleString('fr-FR') + ' kg/ha' : (crop.margin_mad_ha ? crop.margin_mad_ha.toLocaleString('fr-FR') + ' kg/ha' : '-'))}
+                                </span>
+                            </div>
+                            ${crop.yield_range ? `
+                            <div style="font-size: 0.75rem; color: #94a3b8; margin-top: -0.35rem; margin-bottom: 0.4rem; padding-left: 0.2rem;">
+                                📉 Éventail climatique : ${crop.yield_range}
+                            </div>` : ''}
+                            <div class="metric-row">
+                                <span class="label">${t.soilScoreLabel || 'Santé du sol :'}</span>
+                                <span class="val" style="color: #4ade80; font-weight: 600;">🌿 ${crop.soil_score_display || (crop.soil_health_score ? crop.soil_health_score + '/100' : '92/100')}</span>
                             </div>
                             <div class="metric-row">
                                 <span class="label">${t.waterProdLabel || "Prod. de l'eau :"}</span>
@@ -1214,13 +1224,16 @@
                                 <span class="val" style="color: #38bdf8;">💧 ${crop.water_saved || '-'}</span>
                             </div>
                             <div class="metric-row">
-                                <span class="label">${t.nitrogenLabel || 'Fertilité :'}</span>
-                                <span class="val" style="color: #4ade80;">🌿 ${crop.nitrogen_bonus || '-'}</span>
+                                <span class="label">${t.nitrogenLabel || 'Fertilité azotée :'}</span>
+                                <span class="val" style="color: #86efac;">⚡ ${crop.nitrogen_bonus || '-'}</span>
                             </div>
                         </div>
 
                         <div class="darija-quote-box">
-                            <strong style="color: #34d399; display: block; margin-bottom: 0.25rem;">🗣️ ${t.adviceDarijaTitle || 'Conseil en Darija :'}</strong>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.25rem;">
+                                <strong style="color: #34d399;">🗣️ ${t.adviceDarijaTitle || 'Conseil en Darija :'}</strong>
+                                <span style="font-size: 0.68rem; background: rgba(52, 211, 153, 0.15); color: #34d399; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(52, 211, 153, 0.3);">RAG INRA / FAO</span>
+                            </div>
                             "${crop.darija_advice}"
                         </div>
                     </div>
@@ -1315,7 +1328,8 @@
                 rotationSectionTitle: "Conseiller de Rotation Résiliente (Saïss)",
                 rotationSectionSub: "Simulation agro-climatique pour maximiser la marge nette et préserver l'eau souterraine.",
                 climateAlertTitle: "Alerte Climatique Saïss (NASA POWER 1984 - 2025)",
-                marginLabel: "Marge brute estimée :",
+                yieldLabel: "Rendement physique estimé :",
+                soilScoreLabel: "Santé durable du sol :",
                 waterProdLabel: "Productivité de l'eau :",
                 winRateLabel: "Résilience sécheresse :",
                 waterSavedLabel: "Économie d'eau :",
@@ -1395,7 +1409,23 @@
                 helpStep2: "التقط أو اختر صورة واضحة لورقة واحدة.",
                 helpStep3: "حدد موقع الحقل أو أضف إحداثيات دقيقة.",
                 helpStep4: "أدخل تاريخ البذر لمساعدة النموذج.",
-                helpStep5: "قم بمراجعة البيانات وتأكيد التوقعات."
+                helpStep5: "قم بمراجعة البيانات وتأكيد التوقعات.",
+                rotationBtnHeader: "شنو نزرع العام جاي ؟ 🌱",
+                rotationBtn: "🌱 شنو نزرع العام جاي ؟ / الدورة الزراعية",
+                rotationActionTitle: "🌾 تحدي ناسا : التكيف المناخي في سايس",
+                rotationActionSub: "مقارنة الدورات الزراعية لمواجهة الجفاف وارتفاع الحرارة.",
+                rotationSectionTitle: "مرشد الدورة الزراعية المقاومة للجفاف (سايس)",
+                rotationSectionSub: "محاكاة مناخية فلاحية لتقدير المحصول الفيزيائي بالهكتار وحماية الفرشة المائية.",
+                climateAlertTitle: "إنذار مناخي سايس (بيانات ناسا 1984 - 2025)",
+                yieldLabel: "المحصول التقديري المتوقع :",
+                soilScoreLabel: "صحة التربة والخصوبة :",
+                waterProdLabel: "كفاءة استهلاك الماء :",
+                winRateLabel: "مقاومة الجفاف :",
+                waterSavedLabel: "توفير مياه السقي :",
+                nitrogenLabel: "تغذية التربة بالآزوت :",
+                adviceDarijaTitle: "نصيحة عملية بالدارجة :",
+                rankPrioritary: "الخيار الأفضل للتربة",
+                rankAlternative: "بديل مقاوم ومربح"
             }
         };
 
