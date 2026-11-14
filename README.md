@@ -36,9 +36,9 @@ earth-eyes fusionne **41 ans de données satellitaires NASA** (NASA POWER + NASA
 
 ---
 
-## 🌟 Ce que font les deux agents
+## 🌟 Piliers & Composants Techniques
 
-### 🟢 Agent A — Moteur Climat & Rotation (Samya)
+### 🌾 1. Moteur Climat & Modélisation des Rotations (Moteur Décisionnel)
 > `step4_simulation/` · `step7_rotation/`
 
 - **`nasa_climate_client.py`** : Client NASA POWER, récupère et met en cache 41 ans de données journalières pour Meknès (33,89°N / -5,55°E). Cache JSON local hors-ligne.
@@ -48,8 +48,8 @@ earth-eyes fusionne **41 ans de données satellitaires NASA** (NASA POWER + NASA
 - **`simulation_runner.py`** : Intégration du modèle biophysique WOFOST piloté par NASA POWER pour estimer la croissance et le rendement potentiel.
 - **`nasa_power_weather.py`** : Adaptateur météo qui remplace les données Open-Meteo par les données NASA POWER dans WOFOST.
 
-### 🔵 Agent B — Interface, API & Impact (Fatima Zahra)
-> `app.py` · `main.py` · `step2_soil/smap_soil.py` · `templates/` · `presentation/`
+### 📱 2. Interface Agricole, Diagnostic Sanitaire & API Gateway
+> `app.py` · `main.py` · `step1_disease/` · `step2_soil/` · `templates/` · `presentation/`
 
 - **`smap_soil.py`** : Intégration NASA SMAP. Profil mensuel d'humidité Saïss (calibré 12%–18%), micro-gradient topographique piémont Moyen-Atlas, calcul de l'ajustement RU (mm), conseil bilingue darija/français.
 - **`main.py` / `app.py`** : Serveur FastAPI avec routes : `/predict` (estimation rendement), `/recommend-rotation` (rotation anti-sécheresse), `/presentation` (pitch NASA 7 slides), `/soil-moisture` (SMAP).
@@ -65,13 +65,13 @@ earth-eyes fusionne **41 ans de données satellitaires NASA** (NASA POWER + NASA
 graph TD
     A["Agriculteur : GPS + Date Semis + Photo de feuille"] --> B["FastAPI Gateway (app.py / main.py)"]
 
-    subgraph "Diagnostic Sanitaire (Step 1 - Agent B)"
+    subgraph "Diagnostic Sanitaire (Step 1 - Vision CNN)"
         B -->|Photo| C["step1_disease/predict.py"]
         C -->|CNN PlantVillage / Blé / Olivier / Agrumes| C1["Maladie + Confiance"]
         C -->|Masquage HSV| C2["Sévérité %"]
     end
 
-    subgraph "Sol & Humidité SMAP (Step 2 - Agent B)"
+    subgraph "Sol & Humidité SMAP (Step 2 - NASA SMAP & SoilGrids)"
         B -->|GPS| D1["step2_soil/soil_api.py → SoilGrids"]
         B -->|GPS + Mois| D2["step2_soil/smap_soil.py → NASA SMAP"]
         D1 --> D3["Texture sol : argile, sable, pH"]
@@ -83,7 +83,7 @@ graph TD
         E --> E1["NDVI moyen"]
     end
 
-    subgraph "Moteur Biophysique WOFOST (Step 4 - Agent A)"
+    subgraph "Moteur Biophysique WOFOST (Step 4 - Simulation Climat)"
         D3 & B --> F["step4_simulation/simulation_runner.py"]
         F -->|NASA POWER Weather| F1["Climat réel 1984–2025"]
         F1 --> F2["Rendement biophysique + GDD + LAI"]
@@ -94,7 +94,7 @@ graph TD
         G --> G1["Rendement estimé + Intervalles de confiance"]
     end
 
-    subgraph "Rotation Anti-Sécheresse (Step 7 - Agent A)"
+    subgraph "Rotation Anti-Sécheresse (Step 7 - Moteur 41 ans NASA)"
         B -->|GPS + culture précédente| H["step7_rotation/rotation_engine.py"]
         H -->|NASA POWER 41 ans| H1["Simulation 2 ères : 1984–2003 vs 2004–2025"]
         H1 --> H2["Classement : Win Rate, MAD/ha, MAD/m³, bonus N"]
@@ -189,20 +189,20 @@ earth-eyes/
 ├── schema.py                       # Schémas de données parcelles
 ├── requirements.txt
 ├── templates/
-│   └── index.html                  # UI bilingue darija/français (Agent B)
+│   └── index.html                  # UI bilingue darija/français
 ├── presentation/
 │   ├── SLIDES.md                   # 7 slides NASA pitch (en anglais)
-│   └── index.html                  # Deck web interactif (Agent B)
+│   └── index.html                  # Deck web interactif
 ├── images/                         # Captures d'écran de l'interface
-├── step1_disease/                  # Vision par ordinateur & CNN (pré-existant)
+├── step1_disease/                  # Vision par ordinateur & CNN
 │   ├── predict.py
 │   └── models/                     # Modèles .h5 : PlantVillage, Blé, Olivier, Agrumes
-├── step2_soil/                     # Sol & humidité NASA SMAP (Agent B)
+├── step2_soil/                     # Sol & humidité NASA SMAP
 │   ├── smap_soil.py                # NASA SMAP 9km, calibré Saïss 12–18%
 │   └── soil_api.py                 # ISRIC SoilGrids (texture, pH)
 ├── step3_satellite/                # NDVI Sentinel-2 via GEE
 │   └── satellite_ndvi.py
-├── step4_simulation/               # WOFOST piloté NASA POWER (Agent A)
+├── step4_simulation/               # WOFOST piloté NASA POWER
 │   ├── simulation_runner.py
 │   ├── nasa_power_weather.py
 │   └── openmeteo_weather.py
@@ -211,7 +211,7 @@ earth-eyes/
 ├── step6_ml/                       # Fusion Random Forest
 │   ├── yield_predictor.py
 │   └── yield_rf_model.pkl
-├── step7_rotation/                 # Moteur de rotation NASA POWER (Agent A)
+├── step7_rotation/                 # Moteur de rotation NASA POWER
 │   ├── rotation_engine.py          # Simulation 2 ères 1984–2025
 │   ├── nasa_climate_client.py      # Client NASA POWER + cache JSON
 │   ├── crop_catalog.py             # 5 cultures : Blé, Pois chiche, Orge, Féverole, Tournesol
@@ -261,9 +261,5 @@ earth-eyes/
 
 ## 🤝 Équipe
 
-| Rôle | Contributeur | Périmètre |
-|------|-------------|-----------|
-| **Agent A** — Moteur NASA & Climat | Samya | `step4_simulation/`, `step7_rotation/` — NASA POWER, WOFOST, moteur de rotation 2 ères |
-| **Agent B** — Interface & Impact | Fatima Zahra Azzi | `step2_soil/smap_soil.py`, `app.py`, `templates/`, `presentation/`, docs NASA |
-
-Projet encadré par **Anas Bennalla** · NASA Space Apps Challenge 2026 · Meknès, Maroc
+Projet développé en binôme par **Fatima Zahra Azzi** et **Samya**, encadré par **Anas Bennalla**.  
+*NASA International Space Apps Challenge 2026 · Meknès, Maroc.*

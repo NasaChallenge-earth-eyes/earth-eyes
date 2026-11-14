@@ -2,7 +2,7 @@
 ### NASA International Space Apps Challenge 2026 — Meknès Local & Global
 **Challenge Track:** [Adapting Farms with NASA Data](https://www.spaceappschallenge.org/2026/challenges/adapting-farms-with-nasa-data/)  
 **Territory Focus:** Saïss Plain (Meknès, Fès, El Hajeb), Morocco  
-**Team EarthEyes:** Dev A (NASA Space Data & Agro-Climate Simulation Engine) & Dev B (FastAPI Architecture, Farmer UI & Impact)
+**Team EarthEyes:** Fatima Zahra Azzi & Samya (NASA Space Apps Challenge 2026)
 
 ---
 
