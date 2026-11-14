@@ -13,6 +13,11 @@ else:
     _PANDAS_IMPORT_ERROR = None
 
 try:
+    from step4_simulation.nasa_power_weather import NASAPowerWeatherDataProvider
+except Exception:
+    NASAPowerWeatherDataProvider = None
+
+try:
     from step4_simulation.openmeteo_weather import OpenMeteoWeatherDataProvider
 except Exception:
     OpenMeteoWeatherDataProvider = None
@@ -193,23 +198,37 @@ def run_one_simulation(
     except Exception:
         crop_data.set_active_crop('wheat', 'Winter_wheat_101')
 
-    # Données météo (Open-Meteo avec fallback NASA POWER)
+    # Données météo officielles NASA POWER (avec fallback de sécurité)
     weather_start = sowing_date - dt.timedelta(days=14)
-    # S'assurer que weather_end ne dépasse pas aujourd'hui
     today = date.today()
     weather_end = min(harvest_date + dt.timedelta(days=1), today)
     if weather_end < weather_start:
         weather_end = weather_start + dt.timedelta(days=15)
 
-    try:
-        weather = OpenMeteoWeatherDataProvider(
-            latitude=lat, 
-            longitude=lon, 
-            start_date=weather_start, 
-            end_date=weather_end
-        )
-    except Exception as e:
-        print(f"Erreur météo Open-Meteo: {e}. Utilisation du fournisseur hors-ligne de secours (rapide).")
+    weather = None
+    if NASAPowerWeatherDataProvider is not None:
+        try:
+            weather = NASAPowerWeatherDataProvider(
+                latitude=lat,
+                longitude=lon,
+                start_date=weather_start,
+                end_date=weather_end
+            )
+        except Exception as e:
+            print(f"Info: API NASA POWER en direct non joignable ({e}). Tentative fallback...")
+
+    if weather is None and OpenMeteoWeatherDataProvider is not None:
+        try:
+            weather = OpenMeteoWeatherDataProvider(
+                latitude=lat, 
+                longitude=lon, 
+                start_date=weather_start, 
+                end_date=weather_end
+            )
+        except Exception as e:
+            print(f"Info: Fallback Open-Meteo indisponible: {e}")
+
+    if weather is None:
         weather = OfflineDummyWeatherDataProvider(
             latitude=lat,
             longitude=lon,
