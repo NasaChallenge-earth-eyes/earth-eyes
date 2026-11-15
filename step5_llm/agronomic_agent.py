@@ -222,10 +222,28 @@ def tool_calculate_farm_custom_quantities(
     """
     Calculateur d'exploitation adapté aux agriculteurs marocains (Fellahs) :
     Calcule la récolte en Quintaux, semences, eau économisée et gains d'engrais en Dirhams (MAD).
+    Accepte aussi bien les crop_key exactes ("pois_chiche") que les noms lisibles ("Pois chiche", "L-7emmez").
     """
-    crop_key = crop_choice.lower().strip()
+    # Normalisation fuzzy : nom lisible → clé catalog
+    FUZZY_CROP_MAP = {
+        "pois chiche": "pois_chiche", "pois_chiche": "pois_chiche", "7emmez": "pois_chiche",
+        "l-7emmez": "pois_chiche", "hmez": "pois_chiche", "chickpea": "pois_chiche",
+        "feverole": "feverole", "féverole": "feverole", "fève": "feverole",
+        "foul": "feverole", "l-foul": "feverole", "faba": "feverole",
+        "orge": "orge", "ch3ir": "orge", "l-ch3ir": "orge", "barley": "orge",
+        "tournesol": "tournesol", "nwwar": "tournesol", "sunflower": "tournesol",
+        "blé": "blé", "ble": "blé", "gezza": "blé", "qme7": "blé", "wheat": "blé"
+    }
+    crop_key = crop_choice.lower().strip().replace("é", "e").replace("è", "e")
+    # Cherche d'abord match exact dans le catalog
     if crop_key not in CROP_CATALOG:
-        crop_key = "pois_chiche"
+        # Cherche dans le mapping fuzzy
+        matched = None
+        for token, key in FUZZY_CROP_MAP.items():
+            if token in crop_key or crop_key in token:
+                matched = key
+                break
+        crop_key = matched if matched and matched in CROP_CATALOG else "pois_chiche"
 
     crop = CROP_CATALOG[crop_key]
     hectares = max(0.5, float(surface_hectares))
@@ -245,7 +263,9 @@ def tool_calculate_farm_custom_quantities(
     n_fixed_per_ha = crop.get("nitrogen_fixation_kg_ha", 35.0)
     total_n_fixed_kg = round(n_fixed_per_ha * hectares, 1)
     bags_ammonitrate_saved = round(total_n_fixed_kg / 16.75, 1)
-    fertilizer_mad_saved = round(total_n_fixed_kg * 12.0, 0)
+    # Prix réel urée au Maroc : ~4.5 MAD/kg N (harmonisé avec water_productivity.py)
+    NITROGEN_MAD_PER_KG = 4.50
+    fertilizer_mad_saved = round(total_n_fixed_kg * NITROGEN_MAD_PER_KG, 0)
 
     pumping_mad_saved = round(total_water_saved_m3 * 0.60, 0) if str(water_regime).lower() in ["saqwi", "puits", "irrigation"] else 0.0
     total_mad_benefit = round(fertilizer_mad_saved + pumping_mad_saved, 0)
@@ -481,37 +501,65 @@ def run_agronomic_agent_on_photo(
 # =====================================================================
 
 def extract_parameters_from_text(text: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    """
+    Extrait surface, régime hydrique et culture cible depuis le texte libre et le contexte JSON.
+    Le contexte JSON (UI) prime sur la détection textuelle.
+    target_crop = None si non détecté → le LLM choisit lui-même la culture via recommend_crop_rotation.
+    """
     context = context or {}
     text_clean = text.lower()
-    
-    surface = float(context.get("surface_hectares") or 5.0)
+
+    # Surface : contexte UI prime, sinon regex dans le texte, sinon défaut 5 ha
+    ctx_surface = context.get("surface_hectares") or context.get("surface")
+    surface = float(ctx_surface) if ctx_surface else 5.0
     match_ha = re.search(r'(\d+[\.,]?\d*)\s*(?:ha|hektar|hectare|hct|h\b)', text_clean)
-    if match_ha:
+    if match_ha and not ctx_surface:
         try:
             surface = float(match_ha.group(1).replace(",", "."))
         except ValueError:
             pass
 
-    water_regime = str(context.get("water_regime") or "bour").lower()
-    if any(k in text_clean for k in ["saqwi", "saqui", "puits", "bir", "bire", "irrigué", "irrigation"]):
+    # Régime hydrique : contexte UI prime, sinon détection textuelle
+    ctx_regime = str(context.get("water_regime") or "").lower().strip()
+    if ctx_regime in ["saqwi", "bour"]:
+        water_regime = ctx_regime
+    elif any(k in text_clean for k in ["saqwi", "saqui", "puits", "bir", "bire", "irrigué", "irrigation", "l-bir", "bire"]):
         water_regime = "saqwi"
     elif any(k in text_clean for k in ["bour", "bwr", "pluvial", "matar", "chta"]):
         water_regime = "bour"
+    else:
+        water_regime = "bour"  # défaut Saïss = pluvial
 
-    target_crop = "pois_chiche"
-    if any(k in text_clean for k in ["foul", "feve", "fève", "feverole"]):
-        target_crop = "feverole"
-    elif any(k in text_clean for k in ["ch3ir", "orge"]):
-        target_crop = "orge"
-    elif any(k in text_clean for k in ["chams", "chems", "tournesol"]):
-        target_crop = "tournesol"
-    elif any(k in text_clean for k in ["7emmez", "pois chiche"]):
-        target_crop = "pois_chiche"
+    # Culture cible — clés valides du CROP_CATALOG: blé, pois_chiche, feverole, orge, tournesol
+    # None si question générale → le LLM choisit via recommend_crop_rotation
+    target_crop: Optional[str] = None
+    # Mapping fuzzy nom lisible → clé catalog
+    CROP_NAME_MAP = {
+        "foul": "feverole", "fève": "feverole", "feve": "feverole", "feverole": "feverole",
+        "l-foul": "feverole", "lfoul": "feverole",
+        "ch3ir": "orge", "orge": "orge", "l-ch3ir": "orge",
+        "chams": "tournesol", "chems": "tournesol", "tournesol": "tournesol",
+        "nwwar": "tournesol", "nwwar ch-chems": "tournesol",
+        "7emmez": "pois_chiche", "pois chiche": "pois_chiche", "l-7emmez": "pois_chiche",
+        "hmez": "pois_chiche", "pois_chiche": "pois_chiche",
+        "gezza": "blé", "qme7": "blé", "blé": "blé", "ble": "blé", "blé tendre": "blé"
+    }
+    for token, crop_key in CROP_NAME_MAP.items():
+        if token in text_clean:
+            target_crop = crop_key
+            break
+    # Fallback depuis contexte UI
+    if not target_crop:
+        ctx_crop = str(context.get("crop_type") or "").lower().strip()
+        for token, crop_key in CROP_NAME_MAP.items():
+            if token in ctx_crop or ctx_crop == crop_key:
+                target_crop = crop_key
+                break
 
     return {
         "surface_hectares": surface,
         "water_regime": water_regime,
-        "target_crop": target_crop
+        "target_crop": target_crop  # None si non détecté → LLM choisit
     }
 
 
@@ -545,41 +593,97 @@ def run_agronomic_agent(
     # -----------------------------------------------------------------
     # Étape 1 : Le LLM Cerveau analyse les inputs et décide des briques
     # -----------------------------------------------------------------
+    # Résumé des 3 derniers tours de conversation pour contexte
+    history_summary = ""
+    if history:
+        recent = history[-3:]
+        history_summary = "\n".join([
+            f"  [{h.get('role','?').upper()}]: {str(h.get('content', h.get('parts', '')))[:120]}"
+            for h in recent
+        ])
+
+    # Catalogue des cultures connues (clés exactes acceptées par les briques)
+    crop_catalog_summary = "\n".join([
+        f"  - \"{k}\": {CROP_CATALOG[k]['name_fr']} / {CROP_CATALOG[k]['name_darija']}"
+        for k in CROP_CATALOG
+    ])
+
     planner_prompt = f"""
 Tu es le CERVEAU AGRONOME AUTONOME d'EarthEyes (NASA Space Apps Meknès 2026).
 Tu disposes d'une autonomie totale pour décider quelles briques scientifiques appeler.
 
 === INPUTS DISPONIBLES DE LA PARCELLE ===
-- Localisation : Meknès, Bassin du Saïss ({lat}, {lon})
-- Surface de la ferme : {surface_ha} Hectares
-- Régime hydrique : {water_regime.upper()} (Bour pluvial ou Saqwi puits)
+- Localisation GPS : Meknès, Bassin du Saïss ({lat}, {lon})
+- Surface de la ferme : {surface_ha} Ha
+- Régime hydrique : {water_regime.upper()} (BOUR = pluvial / SAQWI = puits irrigué)
 - Culture actuelle/précédente : {current_crop}
+- Culture détectée dans le message : {target_crop or "non détectée (question générale)"}
+
+=== HISTORIQUE CONVERSATIONNEL (3 derniers tours) ===
+{history_summary or "(Première question de la session)"}
+
+=== CATALOGUE EXACT DES CULTURES (crop_key valides UNIQUEMENT) ===
+{crop_catalog_summary}
+→ Utilise TOUJOURS ces clés exactes dans les args des briques. Ne jamais inventer une clé.
 
 === BRIQUES SCIENTIFIQUES ACCESSIBLES ===
-1. recommend_crop_rotation : simulation NASA POWER 42 ans → retourne le CLASSEMENT COMPLET de TOUTES les cultures avec leurs scores (rendement, eau, azote, santé sol). Utilise cette brique quand le fellah veut savoir quelle culture choisir ou quelle est la meilleure option.
-2. compare_all_crops : tableau comparatif COMPLET de toutes les cultures disponibles (ou une sélection) sur 6 critères. Utilise cette brique si l'utilisateur veut COMPARER des cultures entre elles (sans forcément connaître laquelle est meilleure à l'avance). Args optionnels: focus_crops (liste de crop_key comme ["blé","pois_chiche","feverole"]).
-3. check_smap_moisture : mesure l'humidité superficielle (0-5cm) via NASA SMAP pour valider si le sol est prêt au semis.
-4. analyze_terrain_srtm : altitude et pente (%) via NASA SRTM 30m pour l'érosion et le labour en courbes de niveau.
-5. get_soil_physicochemistry : texture (argile/limon/sable) et pH via SoilGrids ISRIC (Terss ou Hamri).
-6. check_satellite_ndvi : indice foliaire de végétation Sentinel-2 / MODIS.
-7. calculate_farm_custom_quantities : calcule pour la surface en hectares du fellah la récolte en Quintaux, l'eau totale épargnée (m³) et les dirhams économisés en engrais.
-8. consult_rag_knowledge : bulletins scientifiques officiels INRA Maroc et FAO.
+1. recommend_crop_rotation
+   → Simulation NASA POWER 42 ans → CLASSEMENT COMPLET de TOUTES les cultures avec scores
+   → Args: {{previous_crop: str (crop_key exact), risk_profile: "équilibré"|"prudent"|"ambitieux", lat: float, lon: float}}
+   → Utilise quand : "quelle culture choisir", "quelle est la meilleure option", "nzra3 chnou"
+
+2. compare_all_crops
+   → Tableau comparatif multi-critères de toutes les cultures (ou sélection)
+   → Args: {{previous_crop: str, lat: float, lon: float, focus_crops: list[crop_key] ou null}}
+   → Utilise quand : "compare X vs Y", "الفول ولا الحمص", "lequel est mieux entre..."
+   → Si focus_crops = null → compare toutes les cultures du catalogue
+
+3. check_smap_moisture
+   → NASA SMAP L3/L4 : humidité superficielle sol (0-5cm) → prêt au semis ?
+   → Args: {{lat: float, lon: float}}
+   → Utilise quand : "واجدة للزرع", "humidité", "semis", "l-ard wajda"
+
+4. analyze_terrain_srtm
+   → NASA SRTM 30m : altitude (m), pente (%), risque érosion, conseil labour
+   → Args: {{lat: float, lon: float}}
+   → Utilise quand : "pente", "érosion", "hadra", "7ret f l-3ard", "ruissellement"
+
+5. get_soil_physicochemistry
+   → SoilGrids ISRIC : texture (argile/limon/sable %), pH, type sol Saïss (Terss/Hamri)
+   → Args: {{lat: float, lon: float}}
+   → Utilise quand : "type de sol", "pH", "argile", "trab", "terss", "hamri"
+
+6. check_satellite_ndvi
+   → Sentinel-2/MODIS : indice NDVI végétation, vigueur, stress hydrique
+   → Args: {{lat: float, lon: float}}
+   → Utilise quand : "végétation", "vigueur", "stress", "couverture", "NDVI"
+
+7. calculate_farm_custom_quantities
+   → Calcul exploitation : récolte totale (Quintaux), eau économisée (m³), azote (kg), gains (MAD)
+   → Args: {{surface_hectares: float, crop_choice: str (crop_key exact!), water_regime: "bour"|"saqwi"}}
+   → Utilise TOUJOURS après recommend_crop_rotation ou compare_all_crops pour concrétiser les chiffres du fellah
+
+8. consult_rag_knowledge
+   → Base documentaire INRA Maroc + FAO-33 + FAO-56 + ICARDA
+   → Args: {{query: str, crop: str (crop_key exact)}}
+   → Utilise quand : questions sur maladies, références scientifiques, techniques de labour
 
 === RÈGLES DE DÉCISION INTELLIGENTE ===
-- Si la question porte sur "quelle culture choisir / quelle est la meilleure" → appelle recommend_crop_rotation (classement complet) + calculate_farm_custom_quantities.
-- Si la question porte sur "comparer X vs Y" ou "lequel est mieux entre..." → appelle compare_all_crops avec les focus_crops appropriés + consult_rag_knowledge.
-- Si la question porte sur l'humidité / prêt à semer → check_smap_moisture + get_soil_physicochemistry.
-- Si la question porte sur la pente / érosion / labour → analyze_terrain_srtm.
-- Si la question est ouverte / générale → recommend_crop_rotation + calculate_farm_custom_quantities + consult_rag_knowledge.
-- Tu peux combiner 1 à 4 briques si la question le justifie.
+- Question choix culture → recommend_crop_rotation + calculate_farm_custom_quantities
+- Question comparaison → compare_all_crops + consult_rag_knowledge
+- Question semis/humidité → check_smap_moisture + get_soil_physicochemistry
+- Question pente/érosion → analyze_terrain_srtm + consult_rag_knowledge
+- Question rendement/argent → recommend_crop_rotation + calculate_farm_custom_quantities
+- Question générale → recommend_crop_rotation + calculate_farm_custom_quantities + consult_rag_knowledge
+- Tu peux combiner 2 à 4 briques. Ne dépasse pas 4 briques par appel.
 
-Requête de l'agriculteur : "{message}"
+Requête actuelle de l'agriculteur : "{message}"
 
-Réponds UNIQUEMENT en JSON strict :
+Réponds UNIQUEMENT en JSON strict (aucun texte avant/après) :
 {{
-  "reasoning": "explication agronomique claire et courte de pourquoi tu appelles ces briques précises",
+  "reasoning": "explication agronomique courte et précise de ton choix de briques",
   "tools_to_call": [
-    {{"tool_name": "nom_de_la_brique", "args": {{}}}}
+    {{"tool_name": "nom_brique_exacte", "args": {{}}}}
   ]
 }}
 """
@@ -603,17 +707,19 @@ Réponds UNIQUEMENT en JSON strict :
     # Fallback si le LLM n'a pas pu répondre ou a renvoyé une liste vide
     if not tools_to_run:
         clean_m = message.lower()
-        if any(k in clean_m for k in ["ha", "hektar", "ربح", "وفر", "qentar", "quintaux"]):
+        if any(k in clean_m for k in ["ha", "hektar", "ربح", "وفر", "qentar", "quintaux"]) and target_crop:
             tools_to_run.append(("calculate_farm_custom_quantities", {"surface_hectares": surface_ha, "crop_choice": target_crop, "water_regime": water_regime}))
-        if any(k in clean_m for k in ["مقارنة", "compare", "vs", "أحسن", "lequel", "أفضل", "khir", "a7san"]):
+        if any(k in clean_m for k in ["مقارنة", "compare", "vs", "أحسن", "lequel", "أفضل", "khir", "a7san", "qaren", "mfadel"]):
             tools_to_run.append(("compare_all_crops", {"previous_crop": current_crop, "lat": lat, "lon": lon}))
-        if any(k in clean_m for k in ["smap", "humidité", "واجدة", "semis"]):
+        if any(k in clean_m for k in ["smap", "humidité", "واجدة", "semis", "wajda", "rotoba"]):
             tools_to_run.append(("check_smap_moisture", {"lat": lat, "lon": lon}))
-        if any(k in clean_m for k in ["srtm", "pente", "érosion", "تضاريس"]):
+        if any(k in clean_m for k in ["srtm", "pente", "érosion", "تضاريس", "hadra", "jrif"]):
             tools_to_run.append(("analyze_terrain_srtm", {"lat": lat, "lon": lon}))
-        # Par défaut, au moins la rotation et le RAG
+        # Par défaut : rotation (classement complet) + quantités si culture connue + RAG
         if not tools_to_run:
             tools_to_run.append(("recommend_crop_rotation", {"previous_crop": current_crop, "lat": lat, "lon": lon}))
+            if target_crop:
+                tools_to_run.append(("calculate_farm_custom_quantities", {"surface_hectares": surface_ha, "crop_choice": target_crop, "water_regime": water_regime}))
             tools_to_run.append(("consult_rag_knowledge", {"query": message, "crop": current_crop}))
 
     # -----------------------------------------------------------------
@@ -654,7 +760,17 @@ Réponds UNIQUEMENT en JSON strict :
                 # Mise à jour du target_crop avec le vrai gagnant
                 target_crop = res["full_ranking"][0]["crop_fr"].lower().replace(" ", "_") if res["full_ranking"] else target_crop
             elif t_name == "calculate_farm_custom_quantities":
-                res = func(surface_hectares=surface_ha, crop_choice=target_crop, water_regime=water_regime)
+                # Résoudre la culture si target_crop est None → utiliser le gagnant de la rotation si disponible
+                crop_for_calc = target_crop
+                if not crop_for_calc:
+                    # Chercher le gagnant dans les briques déjà exécutées
+                    for prev in executed_tools_results:
+                        if prev["tool_name"] == "recommend_crop_rotation" and prev["data"].get("full_ranking"):
+                            crop_for_calc = prev["data"]["full_ranking"][0].get("crop_key") or "pois_chiche"
+                            break
+                    if not crop_for_calc:
+                        crop_for_calc = "pois_chiche"  # défaut final
+                res = func(surface_hectares=surface_ha, crop_choice=crop_for_calc, water_regime=water_regime)
                 summary = f"{res['total_yield_q']} Qtx attendus | -{res['total_water_saved_m3']:,} m³ d'eau | +{res['total_nitrogen_fixed_kg']} kg N ({res['fertilizer_savings_mad']} MAD économisés)"
                 action = "SHOW_FARM_TOTALS"
                 payload = res
@@ -714,58 +830,129 @@ Réponds UNIQUEMENT en JSON strict :
     # -----------------------------------------------------------------
     # Étape 3 : Le Cerveau examine les résultats réels et formule le conseil
     # -----------------------------------------------------------------
+    # Résumés courts (1 ligne par outil)
     tools_outputs_formatted = "\n".join([f"- **{t['label']}** : {t['summary']}" for t in executed_tools_results])
-    
+
+    # Données complètes JSON des outils clés (pour que le LLM puisse citer les vrais chiffres)
+    full_data_blocks = []
+    for t in executed_tools_results:
+        if t["tool_name"] in ["recommend_crop_rotation", "compare_all_crops"]:
+            # Tableau complet de classement
+            d = t["data"]
+            if "full_ranking" in d:
+                rows = d["full_ranking"]
+                table_str = "\n".join([
+                    f"    #{r['rank']} {r['crop_fr']} / {r['crop_darija']} | Agro:{r.get('agro_ecological_score',0)}/100 | Sol:{r['soil_health_score']}/100 | {r['yield_q_ha']}q/ha | -{r['water_saved_m3_ha']}m³ | +{r['nitrogen_bonus_kg_ha']}kg N"
+                    for r in rows
+                ])
+                full_data_blocks.append(f"**CLASSEMENT NASA POWER COMPLET ({d.get('total_candidates_evaluated',0)} cultures) :**\n{table_str}")
+            elif "comparison_table" in d:
+                rows = d["comparison_table"]
+                table_str = "\n".join([
+                    f"    #{i+1} {r['crop_fr']} / {r['crop_darija']} | Sol:{r['soil_health_score']}/100 | {r['base_yield_q_ha']}q/ha | -{r['water_saved_vs_wheat_m3_ha']}m³ | +{r['nitrogen_fixation_kg_ha']}kg N | {r.get('disease_break','')[:60]}"
+                    for i, r in enumerate(rows)
+                ])
+                full_data_blocks.append(f"**COMPARAISON MULTI-CULTURES ({d['total_crops_compared']} cultures) :**\n{table_str}")
+        elif t["tool_name"] == "calculate_farm_custom_quantities":
+            d = t["data"]
+            full_data_blocks.append(
+                f"**CALCUL EXPLOITATION ({d['surface_hectares']} Ha de {d['crop_name_fr']}) :**\n"
+                f"    Récolte totale: {d['total_yield_q']} qentar ({d['total_yield_tonnes']} tonnes)\n"
+                f"    Eau économisée: {d['total_water_saved_m3']:,} m³\n"
+                f"    Azote fixé: {d['total_nitrogen_fixed_kg']} kg N → {d['bags_ammonitrate_saved']} sacs épargnés\n"
+                f"    Gains engrais: {int(d['fertilizer_savings_mad']):,} MAD | Gains pompage: {int(d.get('pumping_savings_mad',0)):,} MAD"
+            )
+        elif t["tool_name"] == "check_smap_moisture":
+            d = t["data"]
+            full_data_blocks.append(
+                f"**NASA SMAP Humidité Sol :** {d['surface_soil_moisture_pct']}% → {d['condition_status']}\n"
+                f"    Conseil semis: {d.get('sowing_advice_fr','')}"
+            )
+
+    full_data_section = "\n\n".join(full_data_blocks)
+
     synth_prompt = f"""
 Tu es l'Agent Agronome Central d'EarthEyes (NASA Space Apps Meknès 2026).
 Tu as toi-même choisi et exécuté ces briques scientifiques pour le fellah :
 
-=== RÉSULTATS DES BRIQUES EXÉCUTÉES ===
+=== RÉSUMÉ DES BRIQUES EXÉCUTÉES ===
 {tools_outputs_formatted}
 
-=== INPUTS PARCELLE ===
+=== DONNÉES COMPLÈTES DES BRIQUES (utilise ces chiffres exacts) ===
+{full_data_section or "(Aucune donnée étendue disponible)"}
+
+=== CONTEXTE PARCELLE ===
 - Localisation : Meknès, Bassin du Saïss ({lat}, {lon})
-- Surface : {surface_ha} Hectares
+- Surface : {surface_ha} Ha
 - Régime hydrique : {water_regime.upper()}
 - Culture précédente : {current_crop}
 
 Question de l'agriculteur : "{message}"
 
 CONSIGNES DE SYNTHÈSE :
-1. Réponds chaleureusement en Darija marocaine claire (avec les termes techniques en français entre parenthèses).
-2. Si tu as un classement COMPLET de cultures (recommend_crop_rotation ou compare_all_crops) :
-   - Présente les 2-3 meilleures options avec leurs avantages distincts.
-   - Annonce clairement le GAGNANT avec son score et pourquoi.
-   - Ne te limite JAMAIS à une seule culture si tu as un classement complet.
-3. Appuie-toi directement sur les chiffres calculés (quintaux totaux, eau sauvée en m³, dirhams d'engrais économisés).
-4. Cite les sources scientifiques officielles (NASA POWER 42 ans, SMAP, INRA Maroc).
-5. Structure avec des puces emoji pour une lecture facile sur téléphone.
+1. Réponds chaleureusement en Darija marocaine claire (termes techniques en français entre parenthèses).
+2. Si tu as un CLASSEMENT COMPLET (recommend_crop_rotation ou compare_all_crops) :
+   - Présente les 2-3 meilleures options avec LEURS AVANTAGES DISTINCTS et leurs chiffres réels.
+   - Annonce clairement le GAGNANT avec son score agro-écologique et pourquoi il gagne.
+   - Ne te limite JAMAIS à 1 seule culture quand tu as le classement complet.
+3. Cite les VRAIS chiffres calculés (quintaux totaux réels, m³ eau, MAD économisés) — jamais de valeurs génériques.
+4. Cite les sources : NASA POWER 42 ans, NASA SMAP, INRA Maroc Meknès, FAO-33.
+5. Structure claire avec puces emoji pour lecture facile sur téléphone.
+6. Max 250 mots — l'agriculteur lit sur mobile.
 """
 
     agent_reply_text = call_gemini_brain(synth_prompt, is_json=False, timeout=10)
 
-    # Fallback déterministe
+    # Fallback déterministe — utilise les VRAIES données des outils exécutés
     if not agent_reply_text:
         farm_item = next((t["data"] for t in executed_tools_results if t["tool_name"] == "calculate_farm_custom_quantities"), None)
         rot_item = next((t["data"] for t in executed_tools_results if t["tool_name"] == "recommend_crop_rotation"), None)
+        cmp_item = next((t["data"] for t in executed_tools_results if t["tool_name"] == "compare_all_crops"), None)
+        smap_item = next((t["data"] for t in executed_tools_results if t["tool_name"] == "check_smap_moisture"), None)
 
         if farm_item:
+            # Récupérer le score de santé du sol réel depuis rot_item ou cmp_item
+            real_soil_score = None
+            real_smap_pct = smap_item["surface_soil_moisture_pct"] if smap_item else None
+            if rot_item and rot_item.get("full_ranking"):
+                real_soil_score = rot_item["full_ranking"][0]["soil_health_score"]
+            elif cmp_item and cmp_item.get("comparison_table"):
+                non_wheat = [r for r in cmp_item["comparison_table"] if r["crop_key"] != "blé"]
+                real_soil_score = non_wheat[0]["soil_health_score"] if non_wheat else None
+
+            soil_line = f"• **Score Se77at t-trab :** {real_soil_score}/100" if real_soil_score else ""
+            smap_line = (
+                f"• **N-nasi7a dyal l-weqt :** R-rotoba dyal l-ard f Saïss : **{real_smap_pct}%** (NASA SMAP) → "
+                + ("L-weqt mnaseb l zri3a ! ✅" if real_smap_pct and 12 <= real_smap_pct <= 18 else "Raqeb l-rotoba qbel ma tzra3.")
+            ) if real_smap_pct else ""
+
             agent_reply_text = (
                 f"🌱 **Nasi7a dyal l-Agent EarthEyes (NASA POWER 42 ans & INRA Maroc) :**\n\n"
                 f"{farm_item['summary_darija']}\n\n"
-                f"• **Score Se77at t-trab :** 92/100 (l-3rouq dyal l-7emmez kay-fiyqo l-ard l-ghliya o kay-herbo l-mrad dyal septoriose).\n"
-                f"• **N-nasi7a dyal l-weqt :** R-rotoba dyal l-ard f Saïss mzyana d'après NASA SMAP (15.7%), l-ard wajda l z-zri3a incha Allah !"
+                + (soil_line + "\n" if soil_line else "")
+                + (smap_line if smap_line else "")
             )
-        elif rot_item:
-            best = rot_item["recommendations"][0]
-            agent_reply_text = (
-                f"🌱 **Nasi7a dyal l-Agent EarthEyes (NASA POWER 42 ans) :**\n\n"
-                f"Mor l-gezza, a7sen 7aja t-dir hiya **{best['crop_name_darija']} ({best['crop_name_fr']})** !\n"
-                f"• **Ghella l-motawaqqi3a :** {best['estimated_yield_kg_ha']} kg/ha ({best['estimated_yield_q_ha']} q/ha)\n"
-                f"• **L-ma li ghadi twaffer :** {best['water_saved_m3_ha']} m³/ha\n"
-                f"• **L-azot fabor :** +{best['nitrogen_bonus_kg_ha']} kg N/ha f l-ard.\n\n"
-                f"📚 *Al-Marji3 :* INRA Maroc Meknès & Directive FAO-33."
-            )
+        elif rot_item and rot_item.get("full_ranking"):
+            # Présenter top 2-3 du classement réel
+            ranking = rot_item["full_ranking"]
+            lines = [f"🌱 **Classement NASA POWER 42 ans — A7sen Cultures f {current_crop.capitalize()} :**\n"]
+            for r in ranking[:3]:
+                lines.append(
+                    f"{'🥇' if r['rank']==1 else '🥈' if r['rank']==2 else '🥉'} **#{r['rank']} {r['crop_darija']} ({r['crop_fr']})** "
+                    f"| Sol: {r['soil_health_score']}/100 | {r['yield_q_ha']} q/ha | -{r['water_saved_m3_ha']} m³/ha | +{r['nitrogen_bonus_kg_ha']} kg N/ha"
+                )
+            lines.append(f"\n📚 *Al-Marji3 :* INRA Maroc Meknès & NASA POWER 1984-2025.")
+            agent_reply_text = "\n".join(lines)
+        elif cmp_item:
+            rows = [r for r in cmp_item["comparison_table"] if r["crop_key"] != "blé"][:3]
+            lines = [f"⚖️ **Comparaison {cmp_item['total_crops_compared']} Cultures :**\n"]
+            for i, r in enumerate(rows):
+                lines.append(
+                    f"{'🥇' if i==0 else '🥈' if i==1 else '🥉'} **{r['crop_darija']} ({r['crop_fr']})** "
+                    f"| Sol: {r['soil_health_score']}/100 | {r['base_yield_q_ha']} q/ha | -{r['water_saved_vs_wheat_m3_ha']} m³ | +{r['nitrogen_fixation_kg_ha']} kg N/ha"
+                )
+            lines.append(f"\n🏆 **Gagnant :** {cmp_item['best_overall_darija']} ({cmp_item['best_overall']})")
+            agent_reply_text = "\n".join(lines)
         else:
             rag_advice = generate_grounded_agronomic_advice(message, context=context, lang="ar")
             agent_reply_text = rag_advice["response"]
