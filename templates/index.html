@@ -970,6 +970,382 @@
             border-color: var(--green);
             color: var(--green);
         }
+
+        /* Phase 4: Calm Natural Results Styles */
+        .telemetry-bar-compact {
+            background: var(--surface);
+            border: 1px solid rgba(38, 54, 45, 0.08);
+            border-radius: var(--radius);
+            padding: 0.75rem 1rem;
+            box-shadow: var(--shadow);
+            transition: all 180ms ease;
+        }
+        .telemetry-summary-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+            font-size: 0.86rem;
+            color: var(--ink);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .telemetry-summary-line::-webkit-details-marker {
+            display: none;
+        }
+        .telemetry-compact-text {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+        .telemetry-dot {
+            color: var(--muted);
+            opacity: 0.4;
+        }
+        .telemetry-tag {
+            font-size: 0.76rem;
+            color: var(--green);
+            background: var(--green-soft);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .telemetry-tiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.85rem;
+            padding-top: 0.85rem;
+            border-top: 1px solid rgba(38, 54, 45, 0.08);
+        }
+        .telemetry-tile {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 0.65rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+        .tile-label {
+            font-size: 0.74rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+        .tile-value {
+            font-size: 0.96rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+        .tile-sub {
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+        .results-card {
+            background: var(--surface);
+            border: 1px solid rgba(38, 54, 45, 0.08);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        .climate-context-line {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.65rem 0.9rem;
+            background: #FAF7F2;
+            border-left: 3px solid var(--earth);
+            border-radius: 0 10px 10px 0;
+            font-size: 0.84rem;
+            color: var(--ink);
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            line-height: 1.4;
+        }
+        body.rtl .climate-context-line {
+            border-left: none;
+            border-right: 3px solid var(--earth);
+            border-radius: 10px 0 0 10px;
+        }
+        .climate-sep {
+            color: var(--muted);
+            opacity: 0.4;
+        }
+        .climate-resilience-tag {
+            color: var(--green);
+            font-weight: 500;
+        }
+
+        .rotation-cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        /* Hero Crop Card #1 */
+        .hero-crop-card {
+            background: #FCFBF7;
+            border: 1.5px solid var(--green);
+            border-radius: 14px;
+            padding: 1.4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+        }
+        .hero-badge-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.35rem;
+        }
+        .hero-rank-pill {
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--green);
+            background: var(--green-soft);
+            padding: 2px 9px;
+            border-radius: 999px;
+            letter-spacing: 0.02em;
+        }
+        .hero-family-tag {
+            font-size: 0.76rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+        .hero-score-tag {
+            font-size: 0.74rem;
+            color: var(--muted);
+            background: rgba(38, 54, 45, 0.05);
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+        .hero-crop-title {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 1.55rem;
+            font-weight: 600;
+            color: var(--ink);
+            margin: 0;
+            display: flex;
+            align-items: baseline;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+        .hero-darija-title {
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 1.05rem;
+            font-weight: 400;
+            color: var(--muted);
+        }
+        body.rtl .hero-darija-title {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+        .hero-justification {
+            font-size: 0.92rem;
+            color: var(--ink);
+            line-height: 1.45;
+            margin: 0;
+        }
+        .hero-metrics-triplet {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            background: var(--surface);
+            border: 1px solid rgba(38, 54, 45, 0.08);
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+        }
+        @media (max-width: 480px) {
+            .hero-metrics-triplet {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+        .hero-metric-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+        .metric-num-label {
+            font-size: 0.76rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+        .metric-num-value {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+        .farmer-soft-quote {
+            margin: 0;
+            padding: 0.85rem 1rem;
+            background: #F4F6F2;
+            border-left: 3px solid var(--green);
+            border-radius: 0 10px 10px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            font-style: italic;
+        }
+        body.rtl .farmer-soft-quote {
+            border-left: none;
+            border-right: 3px solid var(--green);
+            border-radius: 10px 0 0 10px;
+        }
+        .quote-text {
+            font-size: 0.92rem;
+            color: var(--ink);
+            line-height: 1.45;
+        }
+        .quote-author {
+            font-size: 0.76rem;
+            color: var(--muted);
+            font-style: normal;
+            font-weight: 500;
+        }
+        .crop-details-accordion {
+            border-top: 1px solid rgba(38, 54, 45, 0.08);
+            padding-top: 0.5rem;
+        }
+        .crop-details-accordion summary {
+            font-size: 0.82rem;
+            color: var(--green);
+            cursor: pointer;
+            font-weight: 500;
+            list-style: none;
+            user-select: none;
+        }
+        .crop-details-accordion summary::-webkit-details-marker {
+            display: none;
+        }
+        .crop-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.6rem;
+            font-size: 0.82rem;
+            color: var(--ink);
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0.5rem;
+            background: var(--surface);
+            border-radius: 6px;
+        }
+
+        /* Compact Cards #2 and #3 */
+        .compact-crop-card {
+            background: var(--surface);
+            border: 1px solid rgba(38, 54, 45, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 150ms ease;
+        }
+        .compact-crop-card:hover {
+            border-color: rgba(38, 54, 45, 0.2);
+        }
+        .compact-crop-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1.1rem;
+            gap: 0.75rem;
+        }
+        .compact-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .compact-rank {
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: var(--muted);
+            background: var(--bg);
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+        .compact-names {
+            display: flex;
+            align-items: baseline;
+            gap: 0.4rem;
+        }
+        .compact-name-fr {
+            font-weight: 600;
+            font-size: 0.98rem;
+            color: var(--ink);
+        }
+        .compact-name-darija {
+            font-size: 0.84rem;
+            color: var(--muted);
+        }
+        .compact-right {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+        .compact-key-metric {
+            font-weight: 600;
+            font-size: 0.92rem;
+            color: var(--ink);
+        }
+        .compact-toggle-btn {
+            background: transparent;
+            border: 1px solid rgba(38, 54, 45, 0.15);
+            border-radius: 6px;
+            padding: 0.3rem 0.55rem;
+            font-size: 0.78rem;
+            color: var(--muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: all 150ms ease;
+            min-height: 32px;
+        }
+        .compact-toggle-btn:hover {
+            color: var(--ink);
+            border-color: var(--ink);
+        }
+        .compact-details-panel {
+            padding: 0 1.1rem 1rem 1.1rem;
+            border-top: 1px solid rgba(38, 54, 45, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+        .compact-justification {
+            font-size: 0.86rem;
+            color: var(--ink);
+            margin: 0.5rem 0 0 0;
+            line-height: 1.4;
+        }
+        .compact-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+        }
+        .c-metric {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            background: var(--bg);
+            padding: 0.45rem 0.6rem;
+            border-radius: 8px;
+        }
+        .c-label {
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+        .c-val {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
 </style>
 </head>
 <body>
@@ -1125,44 +1501,89 @@
         <div style="display: flex; flex-direction: column; gap: 2rem; width: 100%;">
             
             <!-- NASA Rotation Recommendation Dashboard -->
-            <div class="card" id="rotationDashboard" style="border-color: rgba(16, 185, 129, 0.45); box-shadow: 0 0 30px rgba(16, 185, 129, 0.16);">
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.85rem; margin-bottom: 1.1rem;">
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 0.6rem;">
-                            <span class="badge-nasa">NASA Space Apps 2026</span>
-                            <h2 style="margin: 0; font-size: 1.35rem;" data-i18n="rotationSectionTitle">Climate-Resilient Rotation Engine</h2>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.84rem; margin-top: 0.25rem;" data-i18n="rotationSectionSub">
-                            Agro-climatic simulation maximizing net margin while drastically preserving groundwater.
-                        </p>
+            <!-- Real-Time Telemetry Bar (Visible sans scroll, dépliable en 4 tuiles sobres) -->
+            <details class="telemetry-bar-compact" id="telemetryBar">
+                <summary class="telemetry-summary-line">
+                    <div class="telemetry-compact-text">
+                        <span>🛰️ Humidité <strong id="telSmap">14.2%</strong></span>
+                        <span class="telemetry-dot">·</span>
+                        <span>Pente <strong id="telSrtm">5.0%</strong></span>
+                        <span class="telemetry-dot">·</span>
+                        <span>NDVI <strong id="telNdvi">0.45</strong></span>
+                        <span class="telemetry-dot">·</span>
+                        <span>pH <strong id="telSoil">7.3</strong></span>
+                    </div>
+                    <span class="telemetry-tag">Sources NASA ▾</span>
+                </summary>
+                <div class="telemetry-tiles-grid">
+                    <div class="telemetry-tile">
+                        <span class="tile-label">🛰️ NASA SMAP (0-5cm)</span>
+                        <span class="tile-value" style="color: var(--water);">14.2%</span>
+                        <span class="tile-sub">Humidité semis (12-18%)</span>
+                    </div>
+                    <div class="telemetry-tile">
+                        <span class="tile-label">⛰️ NASA SRTM 30m</span>
+                        <span class="tile-value">708 m · 5.0%</span>
+                        <span class="tile-sub">Pente modérée (courbes de niveau)</span>
+                    </div>
+                    <div class="telemetry-tile">
+                        <span class="tile-label">🌿 Sentinel-2 NDVI</span>
+                        <span class="tile-value" style="color: var(--green);">0.45</span>
+                        <span class="tile-sub">Vigueur végétative canopée</span>
+                    </div>
+                    <div class="telemetry-tile">
+                        <span class="tile-label">🧪 ISRIC SoilGrids</span>
+                        <span class="tile-value">pH 7.3 · Argile 36%</span>
+                        <span class="tile-sub">Vertisol fertile du Saïss</span>
                     </div>
                 </div>
+            </details>
 
-                <!-- Climate Alert Banner -->
-                <div class="climate-alert-box">
-                    <div style="font-size: 2.2rem;">⚠️</div>
-                    <div style="flex: 1;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.35rem;">
-                            <span class="badge-nasa">NASA POWER Data (1984-2025)</span>
-                            <span class="badge-city" id="rotCity">Meknès (Saïss Plain Pilot)</span>
-                        </div>
-                        <div id="rotClimateAlert" style="font-weight: 700; color: #fef08a; font-size: 1rem; line-height: 1.45;">
-                            +1.2°C warming & -21.4% spring rainfall decrease detected across 41 years of NASA POWER telemetry.
-                        </div>
-                        <div style="display: flex; gap: 1.2rem; font-size: 0.84rem; color: #cbd5e1; margin-top: 0.5rem; flex-wrap: wrap;">
-                            <span id="rotSmapInfo">🛰️ <strong>NASA SMAP (0-5cm):</strong> Sowing seedbed moisture ~15.7% (Optimal 12% - 18%)</span>
-                            <span>💧 <strong>Strategy:</strong> Break monoculture wheat trap with drought-hardy legumes</span>
-                        </div>
-                    </div>
+            <!-- État B: Résultats de Rotation Résiliente -->
+            <div class="card results-card" id="rotationDashboard">
+                <!-- Ligne de contexte sobre (pas de gros bandeau d'alerte) -->
+                <div class="climate-context-line" id="rotClimateContext">
+                    <span>🌱</span>
+                    <span id="rotClimateAlert">Saïss 1984-2025 : +0.53°C, -9.4% de pluie au printemps (Source NASA POWER)</span>
+                    <span class="climate-sep">·</span>
+                    <span class="climate-resilience-tag" id="rotResilienceTag">Résilience hydrique supérieure au blé (50% des saisons)</span>
+                    <span id="rotCity" style="display:none;">Meknès</span>
                 </div>
 
-                <!-- Recommended Crops Cards Grid -->
-                <div id="rotationCardsGrid" class="rotation-grid">
-                    <!-- Populated dynamically via JavaScript -->
+                <!-- Grille des recommandations (Héro #1 + Lignes compactes #2 & #3) -->
+                <div id="rotationCardsGrid" class="rotation-cards-container">
+                    <!-- Populated dynamically via renderRotationResults -->
                 </div>
             </div>
 
-            <!-- Autonomous AI Agronomist Agent (Gemini 2.5 Flash) -->
+            <!-- Face-to-Face Decision Comparator (Optionnel via Agent) -->
+            <div class="card" id="comparisonDashboard" style="display: none; border-color: rgba(38, 54, 45, 0.12);">
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(38,54,45,0.08); padding-bottom: 0.85rem; margin-bottom: 1rem;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.15rem; font-family: 'Fraunces', serif;" data-i18n="compareTitle">Monoculture Blé ❌ contre Rotation Légumineuse ✅</h2>
+                        <p style="color: var(--muted); font-size: 0.82rem; margin-top: 0.25rem;">Rupture parasitaire, azote symbiotique et bilan hydrique.</p>
+                    </div>
+                    <button type="button" onclick="document.getElementById('comparisonDashboard').style.display='none'" style="background:none; border:none; color:var(--muted); font-size:1.25rem; cursor:pointer;">✕</button>
+                </div>
+                <div class="comparison-table-grid" id="comparisonGridContent"></div>
+                <div id="comparisonVerdictBox" style="margin-top: 1rem; padding: 0.9rem 1rem; background: var(--green-soft); border-left: 3px solid var(--green); border-radius: 0 8px 8px 0; font-size: 0.9rem; color: var(--ink);"></div>
+            </div>
+
+            <!-- Whole-Farm Production & Savings Card (Optionnel via Agent) -->
+            <div class="card" id="farmTotalsCard" style="display: none; border-color: rgba(38, 54, 45, 0.12);">
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(38,54,45,0.08); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.15rem; font-family: 'Fraunces', serif;" id="farmTotalsTitle">Bilan Production & Eau pour votre Exploitation</h2>
+                        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.2rem;">Métriques proportionnelles à la surface de votre parcelle.</p>
+                    </div>
+                    <button type="button" class="btn-whatsapp-share" id="btnShareTotalsWhatsApp" onclick="shareTotalsOnWhatsApp()">
+                        📲 <span data-i18n="shareWhatsApp">Partager sur WhatsApp</span>
+                    </button>
+                </div>
+                <div class="metrics-grid" id="farmTotalsMetricsGrid"></div>
+                <div id="farmTotalsSummaryText" style="margin-top: 1rem; font-size: 0.92rem; color: var(--ink); line-height: 1.5; background: var(--bg); padding: 0.85rem; border-radius: 10px;"></div>
+            </div>
+<!-- Autonomous AI Agronomist Agent (Gemini 2.5 Flash) -->
             <div class="card" style="min-height: 470px; display: flex; flex-direction: column;">
                 <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.75rem; margin-bottom: 0.85rem;">
                     <div>
@@ -1265,56 +1686,10 @@
                 <div id="farmTotalsSummaryText" style="margin-top: 1rem; font-size: 0.92rem; color: #f1f5f9; line-height: 1.5; background: rgba(0,0,0,0.3); padding: 0.85rem; border-radius: 10px;"></div>
             </div>
 
-            <!-- Live NASA Earth Observation Telemetry -->
-            <div class="card" id="telemetryCard">
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.75rem; margin-bottom: 1rem;">
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span class="badge-nasa">NASA Earth Data Live</span>
-                            <h2 style="margin: 0; font-size: 1.25rem;" data-i18n="telemetryTitle">Real-Time Earth Telemetry (Saïss)</h2>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem;">
-                            Physical measurements collected by NASA SMAP, SRTM 30m, and ISRIC SoilGrids.
-                        </p>
                     </div>
-                    
-                </div>
-
-                <div class="metrics-grid">
-                    <div class="metric-card">
-                        <div class="metric-label">🛰️ Soil Moisture (SMAP 0-5cm)</div>
-                        <div class="metric-value" style="color: #38bdf8;" id="telSmap">14.2%</div>
-                        <div style="font-size: 0.74rem; color: #4ade80; margin-top: 0.25rem;">✅ Sowing Ready (12-18%)</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">⛰️ Topography (SRTM 30m)</div>
-                        <div class="metric-value" style="color: #facc15;" id="telSrtm">708 m | 5.0%</div>
-                        <div style="font-size: 0.74rem; color: #fbbf24; margin-top: 0.25rem;">⚠️ Moderate slope risk</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">🌿 Vigor (Sentinel-2 NDVI)</div>
-                        <div class="metric-value" style="color: #4ade80;" id="telNdvi">0.45</div>
-                        <div style="font-size: 0.74rem; color: #cbd5e1; margin-top: 0.25rem;">Normal canopy coverage</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-label">🧪 Soil Texture (SoilGrids)</div>
-                        <div class="metric-value" style="font-size: 1.05rem; color: #fff;" id="telSoil">pH 7.3 | Clay 36%</div>
-                        <div style="font-size: 0.74rem; color: #cbd5e1; margin-top: 0.25rem;">Saïss fertile vertisol</div>
-                    </div>
-                </div>
-
-                <div style="margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(255, 255, 255, 0.03); border-radius: 10px; border: 1px dashed var(--glass-border); display: flex; align-items: center; justify-content: space-between;">
-                    <div style="font-size: 0.85rem; color: #cbd5e1;">
-                        📷 <strong>Leaf Pathology AI:</strong> <span id="foliarStatus" style="color: #34d399;">Healthy Tissue (Click 📷 in chat to test any leaf image)</span>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
     </div>
 
-    <!-- Discreet Footer -->
+<!-- Discreet Footer -->
     <footer class="app-footer">
         <div class="footer-badges">
             <span class="footer-pill">NASA Space Apps 2026</span>
@@ -2086,74 +2461,162 @@ function setLanguage(lang) {
         function renderRotationResults(data) {
             if (!data) return;
 
-            const cityEl = document.getElementById('rotCity');
-            if (cityEl) cityEl.innerText = (data.city || 'Meknès') + ' (Saïss Basin)';
-
+            // 1. Update discreet climate context line with NASA POWER dynamic values
             const alertEl = document.getElementById('rotClimateAlert');
-            if (alertEl && data.climate_alert) alertEl.innerText = data.climate_alert;
+            if (alertEl) {
+                if (data.climate_trend_nasa) {
+                    const ct = data.climate_trend_nasa;
+                    alertEl.innerText = `Saïss 1984-2025 : ${ct.temp_increase_celsius || '+0.53°C'}, ${ct.spring_rain_decrease_percent || '-9.4%'} de pluie au printemps (Source NASA POWER)`;
+                } else if (data.climate_alert) {
+                    alertEl.innerText = data.climate_alert;
+                }
+            }
+
+            // Hoist win_rate to context line if identical across cards
+            const recs = data.recommendations || [];
+            const resilienceEl = document.getElementById('rotResilienceTag');
+            if (resilienceEl && recs.length > 0 && recs[0].win_rate) {
+                resilienceEl.innerText = recs[0].win_rate;
+            }
 
             const container = document.getElementById('rotationCardsGrid');
             if (!container) return;
 
-            const recs = data.recommendations || [];
             if (recs.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-muted);">No recommendations available.</p>';
+                container.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 1rem;">Aucune recommandation disponible pour ces paramètres.</p>';
                 return;
             }
 
             const t = translations[currentLang] || translations.en;
 
-            container.innerHTML = recs.map(crop => {
-                const isRank1 = crop.rank === 1;
-                const rankClass = isRank1 ? 'rank-1' : '';
-                const pillClass = isRank1 ? 'gold' : 'silver';
-                const rankText = isRank1 ? (t.rankPrioritary || 'Priority Recommendation') : (t.rankAlternative || 'Resilient Alternative');
+            // Build Hero Card (#1) and Compact Rows (#2 and #3)
+            let html = '';
 
-                return `
-                    <div class="crop-card ${rankClass}">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span class="rank-pill ${pillClass}">#${crop.rank} • ${rankText}</span>
-                            <span style="font-size:0.8rem; color:#94a3b8; font-weight:600;">${crop.family || ''}</span>
-                        </div>
+            recs.forEach((crop, idx) => {
+                const isHero = crop.rank === 1 || idx === 0;
 
-                        <div>
-                            <div class="crop-main-name">${crop.name_fr}</div>
-                            <div class="crop-sub-names">🗣️ ${crop.name_darija}</div>
-                        </div>
+                if (isHero) {
+                    // HERO CARD FOR #1 (Exactement 3 chiffres max, citation darija douce, justification)
+                    html += `
+                        <div class="hero-crop-card">
+                            <div class="hero-crop-header">
+                                <div class="hero-badge-row">
+                                    <span class="hero-rank-pill">#1 ${t.rankPrioritary || 'Recommandation Prioritaire'}</span>
+                                    <span class="hero-family-tag">${crop.family || ''}</span>
+                                    <!-- NET_MARGIN_PLACEHOLDER: Score agro-écologique ${crop.agro_ecological_score || 81}/100 -->
+                                    <span class="hero-score-tag">Score : ${crop.agro_ecological_score || '81'}/100</span>
+                                </div>
+                                <h2 class="hero-crop-title">
+                                    ${crop.name_fr}
+                                    <span class="hero-darija-title">${crop.name_darija}</span>
+                                </h2>
+                            </div>
 
-                        <div class="crop-metrics-list">
-                            <div class="metric-row">
-                                <span class="label">${t.yieldLabel || 'Physical Yield:'}</span>
-                                <span class="val highlight-green">${crop.yield_display || (crop.estimated_yield_kg_ha ? crop.estimated_yield_kg_ha.toLocaleString() + ' kg/ha' : '-')}</span>
-                            </div>
-                            <div class="metric-row">
-                                <span class="label">${t.soilScoreLabel || 'Soil Health:'}</span>
-                                <span class="val" style="color: #4ade80;">🌿 ${crop.soil_score_display || (crop.soil_health_score ? crop.soil_health_score + '/100' : '92/100')}</span>
-                            </div>
-                            <div class="metric-row">
-                                <span class="label">${t.waterProdLabel || 'Water Productivity:'}</span>
-                                <span class="val highlight-blue">${crop.water_productivity || '-'}</span>
-                            </div>
-                            <div class="metric-row">
-                                <span class="label">${t.winRateLabel || 'Drought Resilience:'}</span>
-                                <span class="val" style="color: #fde047;">${crop.win_rate || '-'}</span>
-                            </div>
-                            <div class="metric-row">
-                                <span class="label">${t.waterSavedLabel || 'Water Saved:'}</span>
-                                <span class="val" style="color: #38bdf8;">💧 ${crop.water_saved || '-'}</span>
-                            </div>
-                            <div class="metric-row">
-                                <span class="label">${t.nitrogenLabel || 'Nitrogen Bonus:'}</span>
-                                <span class="val" style="color: #34d399;">⚡ ${crop.nitrogen_bonus || '-'}</span>
-                            </div>
-                        </div>
+                            <p class="hero-justification">
+                                ${crop.soil_health_impact || "Rupture du cycle parasitaire du blé et fixation naturelle de l'azote atmosphérique sans engrais chimique."}
+                            </p>
 
-                        <div class="darija-quote-box">
-                            <strong>${t.adviceDarijaTitle || 'Advice:'}</strong> "${crop.darija_advice || crop.darija_summary || ''}"
+                            <!-- Exactement 3 Chiffres Clés Maximum -->
+                            <div class="hero-metrics-triplet">
+                                <div class="hero-metric-item">
+                                    <span class="metric-num-label">${t.yieldLabel || 'Rendement estimé'}</span>
+                                    <span class="metric-num-value">${crop.yield_display || (crop.estimated_yield_kg_ha ? crop.estimated_yield_kg_ha.toLocaleString() + ' kg/ha' : '-')}</span>
+                                </div>
+                                <div class="hero-metric-item">
+                                    <span class="metric-num-label">${t.waterSavedLabel || 'Eau économisée'}</span>
+                                    <span class="metric-num-value" style="color: var(--water);">${crop.water_saved || '-'}</span>
+                                </div>
+                                <div class="hero-metric-item">
+                                    <span class="metric-num-label">${t.nitrogenLabel || 'Azote fixé'}</span>
+                                    <span class="metric-num-value" style="color: var(--green);">${crop.nitrogen_bonus || '-'}</span>
+                                </div>
+                            </div>
+
+                            ${crop.darija_advice ? `
+                            <blockquote class="farmer-soft-quote">
+                                <span class="quote-text">« ${crop.darija_advice} »</span>
+                                <span class="quote-author">— ${t.adviceDarijaTitle || 'Conseil pratique du fermier'}</span>
+                            </blockquote>
+                            ` : ''}
+
+                            <details class="crop-details-accordion">
+                                <summary>${currentLang === 'ar' ? 'تفاصيل علمية إضافية ▾' : 'Détails agronomiques complémentaires ▾'}</summary>
+                                <div class="crop-details-grid">
+                                    <div class="detail-row">
+                                        <span>${t.soilScoreLabel || 'Santé du sol :'}</span>
+                                        <strong>${crop.soil_score_display || (crop.soil_health_score ? crop.soil_health_score + '/100' : '92/100')}</strong>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span>${t.waterProdLabel || 'Productivité eau :'}</span>
+                                        <strong>${crop.water_productivity || '-'}</strong>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span>Système racinaire :</span>
+                                        <strong>${crop.root_type || 'Pivotant profond'}</strong>
+                                    </div>
+                                </div>
+                            </details>
                         </div>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                } else {
+                    // COMPACT ROWS FOR #2 AND #3
+                    html += `
+                        <div class="compact-crop-card">
+                            <div class="compact-crop-row">
+                                <div class="compact-left">
+                                    <span class="compact-rank">#${crop.rank}</span>
+                                    <div class="compact-names">
+                                        <span class="compact-name-fr">${crop.name_fr}</span>
+                                        <span class="compact-name-darija">(${crop.name_darija})</span>
+                                    </div>
+                                </div>
+                                <div class="compact-right">
+                                    <span class="compact-key-metric">${crop.yield_display || (crop.estimated_yield_kg_ha ? crop.estimated_yield_kg_ha.toLocaleString() + ' kg/ha' : '-')}</span>
+                                    <button type="button" class="compact-toggle-btn" onclick="toggleCompactDetails(this)">
+                                        <span>${currentLang === 'ar' ? 'تفاصيل' : 'Détails'}</span> <span class="chevron">▾</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="compact-details-panel" style="display: none;">
+                                <p class="compact-justification">${crop.soil_health_impact || ''}</p>
+                                <div class="compact-metrics-grid">
+                                    <div class="c-metric">
+                                        <span class="c-label">${t.waterSavedLabel || 'Eau économisée'}</span>
+                                        <span class="c-val" style="color: var(--water);">${crop.water_saved || '-'}</span>
+                                    </div>
+                                    <div class="c-metric">
+                                        <span class="c-label">${t.nitrogenLabel || 'Azote fixé'}</span>
+                                        <span class="c-val" style="color: var(--green);">${crop.nitrogen_bonus || '-'}</span>
+                                    </div>
+                                    <div class="c-metric">
+                                        <span class="c-label">${t.soilScoreLabel || 'Santé du sol'}</span>
+                                        <span class="c-val">${crop.soil_score_display || (crop.soil_health_score ? crop.soil_health_score + '/100' : '-')}</span>
+                                    </div>
+                                </div>
+                                ${crop.darija_advice ? `
+                                <blockquote class="farmer-soft-quote" style="margin-top: 0.4rem; padding: 0.6rem 0.8rem;">
+                                    <span class="quote-text" style="font-size: 0.85rem;">« ${crop.darija_advice} »</span>
+                                </blockquote>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            container.innerHTML = html;
+        }
+
+        function toggleCompactDetails(btn) {
+            const card = btn.closest('.compact-crop-card');
+            if (!card) return;
+            const panel = card.querySelector('.compact-details-panel');
+            const chevron = btn.querySelector('.chevron');
+            if (panel) {
+                const isOpen = panel.style.display !== 'none';
+                panel.style.display = isOpen ? 'none' : 'flex';
+                if (chevron) chevron.innerText = isOpen ? '▾' : '▴';
+            }
         }
 
         // Farm Operational Controls
