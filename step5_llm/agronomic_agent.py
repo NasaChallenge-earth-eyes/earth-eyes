@@ -890,7 +890,13 @@ Tu as toi-même choisi et exécuté ces briques scientifiques pour le fellah :
 Question de l'agriculteur : "{message}"
 
 CONSIGNES DE SYNTHÈSE :
-1. Réponds chaleureusement en Darija marocaine claire (termes techniques en français entre parenthèses).
+1. LANGUE : Détecte la langue de la question de l'agriculteur et réponds EXACTEMENT dans la même langue :
+   - Question en arabe (أحرف عربية) → réponds en arabe standard (فصحى) avec terminologie agricole claire. N'utilise PAS le Darija écrit en lettres latines ("salam", "khoya"...).
+   - Question en darija (أحرف عربية بالدارجة) → réponds en darija marocaine avec les lettres arabes uniquement.
+   - Question en français → réponds en français.
+   - Question en anglais → réponds en anglais.
+   - Question en darija latine ("salam", "nzra3"...) → c'est la SEULE situation où tu peux répondre en darija latine.
+   - En cas de doute → préfère l'arabe standard (فصحى).
 2. Si tu as un CLASSEMENT COMPLET (recommend_crop_rotation ou compare_all_crops) :
    - Présente les 2-3 meilleures options avec LEURS AVANTAGES DISTINCTS et leurs chiffres réels.
    - Annonce clairement le GAGNANT avec son score agro-écologique et pourquoi il gagne.
