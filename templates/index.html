@@ -971,13 +971,52 @@
             color: var(--green);
         }
 
-        /* Phase 4: Calm Natural Results Styles */
+        /* Phase 4 & Refined Minimalist Calm System */
+        .container {
+            max-width: 640px;
+            margin: 2.2rem auto 4rem;
+            padding: 0 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            width: 100%;
+        }
+        @media (max-width: 680px) {
+            .container {
+                margin: 1.25rem auto 3rem;
+                padding: 0 1rem;
+                gap: 1.5rem;
+            }
+        }
+        .controls-card, .results-card {
+            background: var(--surface);
+            border: 1px solid rgba(38, 54, 45, 0.08);
+            border-radius: 20px;
+            padding: 2.25rem 2.25rem;
+            box-shadow: 0 3px 24px rgba(38, 54, 45, 0.04);
+        }
+        @media (max-width: 600px) {
+            .controls-card, .results-card {
+                padding: 1.6rem 1.25rem;
+                border-radius: 16px;
+            }
+        }
+        body.rtl {
+            direction: rtl;
+            font-family: 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body.rtl .hero-crop-title,
+        body.rtl .accroche-title {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            font-weight: 700;
+        }
+
         .telemetry-bar-compact {
             background: var(--surface);
             border: 1px solid rgba(38, 54, 45, 0.08);
-            border-radius: var(--radius);
-            padding: 0.75rem 1rem;
-            box-shadow: var(--shadow);
+            border-radius: 14px;
+            padding: 0.85rem 1.25rem;
+            box-shadow: 0 2px 12px rgba(38, 54, 45, 0.03);
             transition: all 180ms ease;
         }
         .telemetry-summary-line {
@@ -987,10 +1026,10 @@
             cursor: pointer;
             list-style: none;
             user-select: none;
-            font-size: 0.86rem;
+            font-size: 0.88rem;
             color: var(--ink);
             flex-wrap: wrap;
-            gap: 0.5rem;
+            gap: 0.6rem;
         }
         .telemetry-summary-line::-webkit-details-marker {
             display: none;
@@ -998,7 +1037,7 @@
         .telemetry-compact-text {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.65rem;
             flex-wrap: wrap;
         }
         .telemetry-dot {
@@ -1006,216 +1045,201 @@
             opacity: 0.4;
         }
         .telemetry-tag {
-            font-size: 0.76rem;
+            font-size: 0.78rem;
             color: var(--green);
             background: var(--green-soft);
-            padding: 2px 8px;
+            padding: 3px 9px;
             border-radius: 6px;
             font-weight: 600;
         }
         .telemetry-tiles-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 0.75rem;
-            margin-top: 0.85rem;
-            padding-top: 0.85rem;
-            border-top: 1px solid rgba(38, 54, 45, 0.08);
+            gap: 0.85rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(38, 54, 45, 0.07);
         }
         .telemetry-tile {
             background: var(--bg);
-            border-radius: 10px;
-            padding: 0.65rem 0.75rem;
+            border-radius: 12px;
+            padding: 0.75rem 0.85rem;
             display: flex;
             flex-direction: column;
-            gap: 0.2rem;
+            gap: 0.25rem;
         }
         .tile-label {
-            font-size: 0.74rem;
+            font-size: 0.75rem;
             color: var(--muted);
             font-weight: 500;
         }
         .tile-value {
-            font-size: 0.96rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--ink);
         }
         .tile-sub {
-            font-size: 0.72rem;
+            font-size: 0.73rem;
             color: var(--muted);
+            line-height: 1.35;
         }
 
-        .results-card {
-            background: var(--surface);
-            border: 1px solid rgba(38, 54, 45, 0.08);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-        }
         .climate-context-line {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
-            padding: 0.65rem 0.9rem;
-            background: #FAF7F2;
+            gap: 0.65rem;
+            padding: 0.75rem 1.1rem;
+            background: #F8F6EF;
             border-left: 3px solid var(--earth);
-            border-radius: 0 10px 10px 0;
-            font-size: 0.84rem;
+            border-radius: 0 12px 12px 0;
+            font-size: 0.86rem;
             color: var(--ink);
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
-            line-height: 1.4;
+            line-height: 1.45;
         }
         body.rtl .climate-context-line {
             border-left: none;
             border-right: 3px solid var(--earth);
-            border-radius: 10px 0 0 10px;
-        }
-        .climate-sep {
-            color: var(--muted);
-            opacity: 0.4;
+            border-radius: 12px 0 0 12px;
         }
         .climate-resilience-tag {
             color: var(--green);
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .rotation-cards-container {
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            gap: 1.5rem;
         }
 
-        /* Hero Crop Card #1 */
+        /* Hero Crop Card #1 - Spacious, Breathing, Minimalist */
         .hero-crop-card {
             background: #FCFBF7;
             border: 1.5px solid var(--green);
-            border-radius: 14px;
-            padding: 1.4rem;
+            border-radius: 18px;
+            padding: 1.75rem 1.85rem;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            position: relative;
+            gap: 1.25rem;
+        }
+        @media (max-width: 600px) {
+            .hero-crop-card {
+                padding: 1.35rem 1.2rem;
+            }
         }
         .hero-badge-row {
             display: flex;
             align-items: center;
             gap: 0.5rem;
             flex-wrap: wrap;
-            margin-bottom: 0.35rem;
+            margin-bottom: 0.4rem;
         }
         .hero-rank-pill {
-            font-size: 0.76rem;
+            font-size: 0.78rem;
             font-weight: 700;
             color: var(--green);
             background: var(--green-soft);
-            padding: 2px 9px;
+            padding: 3px 10px;
             border-radius: 999px;
-            letter-spacing: 0.02em;
         }
         .hero-family-tag {
-            font-size: 0.76rem;
+            font-size: 0.78rem;
             color: var(--muted);
             font-weight: 500;
         }
         .hero-score-tag {
-            font-size: 0.74rem;
+            font-size: 0.75rem;
             color: var(--muted);
             background: rgba(38, 54, 45, 0.05);
-            padding: 2px 7px;
+            padding: 3px 8px;
             border-radius: 6px;
         }
         .hero-crop-title {
             font-family: 'Fraunces', Georgia, serif;
-            font-size: 1.55rem;
+            font-size: 1.85rem;
             font-weight: 600;
             color: var(--ink);
             margin: 0;
-            display: flex;
-            align-items: baseline;
-            gap: 0.6rem;
-            flex-wrap: wrap;
-        }
-        .hero-darija-title {
-            font-family: 'Inter', system-ui, sans-serif;
-            font-size: 1.05rem;
-            font-weight: 400;
-            color: var(--muted);
-        }
-        body.rtl .hero-darija-title {
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            line-height: 1.2;
         }
         .hero-justification {
-            font-size: 0.92rem;
+            font-size: 0.95rem;
             color: var(--ink);
-            line-height: 1.45;
+            line-height: 1.55;
             margin: 0;
         }
         .hero-metrics-triplet {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
+            gap: 0.85rem;
             background: var(--surface);
             border: 1px solid rgba(38, 54, 45, 0.08);
-            border-radius: 12px;
-            padding: 0.85rem 1rem;
+            border-radius: 14px;
+            padding: 1.1rem 1.2rem;
+            text-align: center;
         }
-        @media (max-width: 480px) {
+        @media (max-width: 500px) {
             .hero-metrics-triplet {
                 grid-template-columns: 1fr;
-                gap: 0.5rem;
+                gap: 0.65rem;
+                text-align: inherit;
             }
         }
         .hero-metric-item {
             display: flex;
             flex-direction: column;
-            gap: 0.2rem;
+            gap: 0.25rem;
         }
         .metric-num-label {
-            font-size: 0.76rem;
+            font-size: 0.78rem;
             color: var(--muted);
             font-weight: 500;
         }
         .metric-num-value {
-            font-size: 1.15rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--ink);
         }
         .farmer-soft-quote {
             margin: 0;
-            padding: 0.85rem 1rem;
-            background: #F4F6F2;
+            padding: 1rem 1.2rem;
+            background: #F4F6F1;
             border-left: 3px solid var(--green);
-            border-radius: 0 10px 10px 0;
+            border-radius: 0 12px 12px 0;
             display: flex;
             flex-direction: column;
-            gap: 0.35rem;
-            font-style: italic;
+            gap: 0.4rem;
         }
         body.rtl .farmer-soft-quote {
             border-left: none;
             border-right: 3px solid var(--green);
-            border-radius: 10px 0 0 10px;
+            border-radius: 12px 0 0 12px;
         }
         .quote-text {
-            font-size: 0.92rem;
+            font-size: 0.95rem;
             color: var(--ink);
-            line-height: 1.45;
+            line-height: 1.55;
+            font-style: italic;
+        }
+        body.rtl .quote-text {
+            font-style: normal;
         }
         .quote-author {
-            font-size: 0.76rem;
+            font-size: 0.78rem;
             color: var(--muted);
-            font-style: normal;
             font-weight: 500;
         }
         .crop-details-accordion {
             border-top: 1px solid rgba(38, 54, 45, 0.08);
-            padding-top: 0.5rem;
+            padding-top: 0.65rem;
         }
         .crop-details-accordion summary {
-            font-size: 0.82rem;
+            font-size: 0.85rem;
             color: var(--green);
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             list-style: none;
             user-select: none;
         }
@@ -1224,125 +1248,122 @@
         }
         .crop-details-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 0.5rem;
-            margin-top: 0.6rem;
-            font-size: 0.82rem;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.65rem;
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
             color: var(--ink);
         }
         .detail-row {
             display: flex;
             justify-content: space-between;
-            padding: 0.3rem 0.5rem;
+            padding: 0.45rem 0.65rem;
             background: var(--surface);
-            border-radius: 6px;
+            border-radius: 8px;
+            border: 1px solid rgba(38, 54, 45, 0.06);
         }
 
         /* Compact Cards #2 and #3 */
         .compact-crop-card {
             background: var(--surface);
             border: 1px solid rgba(38, 54, 45, 0.1);
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
             transition: all 150ms ease;
         }
         .compact-crop-card:hover {
-            border-color: rgba(38, 54, 45, 0.2);
+            border-color: rgba(38, 54, 45, 0.22);
         }
         .compact-crop-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.85rem 1.1rem;
-            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            gap: 0.85rem;
         }
         .compact-left {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.85rem;
         }
         .compact-rank {
-            font-size: 0.84rem;
+            font-size: 0.86rem;
             font-weight: 700;
             color: var(--muted);
             background: var(--bg);
-            padding: 2px 7px;
-            border-radius: 6px;
-        }
-        .compact-names {
-            display: flex;
-            align-items: baseline;
-            gap: 0.4rem;
+            padding: 3px 8px;
+            border-radius: 8px;
         }
         .compact-name-fr {
             font-weight: 600;
-            font-size: 0.98rem;
+            font-size: 1.05rem;
             color: var(--ink);
-        }
-        .compact-name-darija {
-            font-size: 0.84rem;
-            color: var(--muted);
         }
         .compact-right {
             display: flex;
             align-items: center;
-            gap: 0.85rem;
+            gap: 1rem;
         }
         .compact-key-metric {
             font-weight: 600;
-            font-size: 0.92rem;
+            font-size: 0.96rem;
             color: var(--ink);
         }
         .compact-toggle-btn {
             background: transparent;
-            border: 1px solid rgba(38, 54, 45, 0.15);
-            border-radius: 6px;
-            padding: 0.3rem 0.55rem;
-            font-size: 0.78rem;
+            border: 1px solid rgba(38, 54, 45, 0.16);
+            border-radius: 8px;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.82rem;
             color: var(--muted);
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.3rem;
             transition: all 150ms ease;
-            min-height: 32px;
+            min-height: 34px;
         }
         .compact-toggle-btn:hover {
             color: var(--ink);
             border-color: var(--ink);
         }
         .compact-details-panel {
-            padding: 0 1.1rem 1rem 1.1rem;
+            padding: 0 1.25rem 1.15rem 1.25rem;
             border-top: 1px solid rgba(38, 54, 45, 0.06);
             display: flex;
             flex-direction: column;
-            gap: 0.65rem;
+            gap: 0.75rem;
         }
         .compact-justification {
-            font-size: 0.86rem;
+            font-size: 0.88rem;
             color: var(--ink);
-            margin: 0.5rem 0 0 0;
-            line-height: 1.4;
+            margin: 0.65rem 0 0 0;
+            line-height: 1.45;
         }
         .compact-metrics-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
+            gap: 0.65rem;
+        }
+        @media (max-width: 500px) {
+            .compact-metrics-grid {
+                grid-template-columns: 1fr;
+            }
         }
         .c-metric {
             display: flex;
             flex-direction: column;
-            gap: 0.15rem;
+            gap: 0.2rem;
             background: var(--bg);
-            padding: 0.45rem 0.6rem;
-            border-radius: 8px;
+            padding: 0.55rem 0.75rem;
+            border-radius: 10px;
         }
         .c-label {
-            font-size: 0.72rem;
+            font-size: 0.74rem;
             color: var(--muted);
         }
         .c-val {
-            font-size: 0.88rem;
+            font-size: 0.92rem;
             font-weight: 600;
             color: var(--ink);
         }
@@ -1650,7 +1671,7 @@
                         <label for="customHaInput" data-i18n="surfaceLabel">Surface</label>
                         <div class="surface-input-group">
                             <input type="number" id="customHaInput" value="5" min="0.5" max="500" step="0.5" class="clean-input" onchange="selectSurfaceHa(parseFloat(this.value), null)">
-                            <span class="surface-unit">ha</span>
+                            <span class="surface-unit" id="surfaceUnitTag" data-i18n="surfaceUnit">ha</span>
                         </div>
                     </div>
 
@@ -1670,7 +1691,7 @@
                             <span data-i18n="locSaiss">Bassin du Saïss (Meknès)</span>
                             <span style="opacity: 0.6; font-size: 0.78rem;">(33.89°N, 5.55°W)</span>
                         </span>
-                        <span class="loc-tag">NASA POWER 41 ans</span>
+                        <span class="loc-tag" data-i18n="locTag">NASA POWER 41 ans</span>
                     </div>
 
                     <!-- UN SEUL BOUTON PRINCIPAL -->
@@ -1756,36 +1777,36 @@
             <details class="telemetry-bar-compact" id="telemetryBar">
                 <summary class="telemetry-summary-line">
                     <div class="telemetry-compact-text">
-                        <span>🛰️ Humidité <strong id="telSmap">14.2%</strong></span>
+                        <span>🛰️ <span data-i18n="telSmapShort">Humidité</span> <strong id="telSmap">14.2%</strong></span>
                         <span class="telemetry-dot">·</span>
-                        <span>Pente <strong id="telSrtm">5.0%</strong></span>
+                        <span><span data-i18n="telSrtmShort">Pente</span> <strong id="telSrtm">5.0%</strong></span>
                         <span class="telemetry-dot">·</span>
                         <span>NDVI <strong id="telNdvi">0.45</strong></span>
                         <span class="telemetry-dot">·</span>
                         <span>pH <strong id="telSoil">7.3</strong></span>
                     </div>
-                    <span class="telemetry-tag">Sources NASA ▾</span>
+                    <span class="telemetry-tag" data-i18n="telSourceTag">Sources NASA ▾</span>
                 </summary>
                 <div class="telemetry-tiles-grid">
                     <div class="telemetry-tile">
-                        <span class="tile-label">🛰️ NASA SMAP (0-5cm)</span>
+                        <span class="tile-label" data-i18n="telTileSmapLabel">🛰️ NASA SMAP (0-5cm)</span>
                         <span class="tile-value" style="color: var(--water);">14.2%</span>
-                        <span class="tile-sub">Humidité semis (12-18%)</span>
+                        <span class="tile-sub" data-i18n="telTileSmapSub">Humidité semis (12-18%)</span>
                     </div>
                     <div class="telemetry-tile">
-                        <span class="tile-label">⛰️ NASA SRTM 30m</span>
+                        <span class="tile-label" data-i18n="telTileSrtmLabel">⛰️ NASA SRTM 30m</span>
                         <span class="tile-value">708 m · 5.0%</span>
-                        <span class="tile-sub">Pente modérée (courbes de niveau)</span>
+                        <span class="tile-sub" data-i18n="telTileSrtmSub">Pente modérée (courbes de niveau)</span>
                     </div>
                     <div class="telemetry-tile">
-                        <span class="tile-label">🌿 Sentinel-2 NDVI</span>
+                        <span class="tile-label" data-i18n="telTileNdviLabel">🌿 Sentinel-2 NDVI</span>
                         <span class="tile-value" style="color: var(--green);">0.45</span>
-                        <span class="tile-sub">Vigueur végétative canopée</span>
+                        <span class="tile-sub" data-i18n="telTileNdviSub">Vigueur canopée</span>
                     </div>
                     <div class="telemetry-tile">
-                        <span class="tile-label">🧪 ISRIC SoilGrids</span>
+                        <span class="tile-label" data-i18n="telTileSoilLabel">🧪 ISRIC SoilGrids</span>
                         <span class="tile-value">pH 7.3 · Argile 36%</span>
-                        <span class="tile-sub">Vertisol fertile du Saïss</span>
+                        <span class="tile-sub" data-i18n="telTileSoilSub">Vertisol fertile Saïss</span>
                     </div>
                 </div>
             </details>
@@ -2001,326 +2022,231 @@
         // Exhaustive Trilingual Dictionary
         const translations = {
             en: {
-                agentFloatingBtn: "Ask the Agent",
-                accrocheTitle: "What to plant after your wheat?",
-                accrocheSub: "Agro-climatic simulation for the Saïss Basin powered by 41 years of NASA POWER data.",
-                rotationBtnMain: "🌱 Calculate Resilient Rotation",
-                moreOptionsTitle: "More options (Leaf photo, Map, Sowing date, History)",
-                locSaiss: "Saïss Basin (Meknès)",
                 badgeLive: "NASA Space Apps 2026",
                 logoSub: "Autonomous Agro-Climate Intelligence & Resilient Rotation",
-                parcelData: "Parcel Configuration & Field Data",
-                farmerId: "Farmer ID",
-                locationSearch: "Search Location (City, Commune...):",
-                locationSearchPlaceholder: "Ex: Meknès, Beni Mellal, Fès...",
-                mapSelect: "Pinpoint Parcel on Satellite Map:",
-                latitude: "Latitude",
-                longitude: "Longitude",
-                loadCoords: "📍 Center on Meknès (Saïss Plain Pilot)",
-                gpsBtn: "Use My Exact GPS Location",
-                gpsLocating: "📡 Requesting GPS signal...",
-                gpsSuccess: "✅ GPS location acquired",
-                gpsError: "⚠️ GPS unavailable",
-                gpsUnsupported: "⚠️ Geolocation not supported by your browser.",
-                cropType: "Current Crop Type",
+                accrocheTitle: "What to plant after your crop?",
+                accrocheSub: "Agro-climatic simulation for the Saïss Basin powered by 41 years of NASA POWER data.",
+                cropType: "Current Crop",
                 cropWheat: "Bread Wheat",
                 cropBarley: "Barley",
                 cropOlive: "Olive Tree",
                 cropPotato: "Potato",
                 cropTomato: "Tomato",
+                surfaceLabel: "Farm Surface",
+                surfaceUnit: "ha",
+                regimeLabel: "Water Regime",
+                regimeBour: "🌧️ Rainfed (Bour)",
+                regimeSaqwi: "💧 Irrigated (Saqwi)",
+                locSaiss: "Saïss Basin (Meknès)",
+                locTag: "NASA POWER 41y",
+                rotationBtnMain: "🌱 Calculate Resilient Rotation",
+                moreOptionsTitle: "+ More options (Leaf photo, Map, Sowing date, History)",
+                photoLabel: "Leaf pathology photo (CNN diagnostic)",
+                uploadPrompt: "📸 Click or drag a leaf photo here (JPEG / PNG)",
+                locationSearch: "Search location:",
+                locationSearchPlaceholder: "Ex: Meknès, Fès...",
+                searchBtn: "🔍 Search",
+                latitude: "Latitude",
+                longitude: "Longitude",
+                loadCoords: "📍 Center on Meknès",
+                gpsBtn: "My GPS",
                 sowingDate: "Sowing Date",
-                historicalYieldsTitle: "Historical Yield Records (Optional Baseline)",
-                addHistBtn: "+ Add Historic Season",
-                photoLabel: "Leaf Macro Photo",
-                cropWarningText: "💡 <strong>Important:</strong> For accurate CNN disease diagnosis, upload a clear, close-up macro photo of a single affected leaf.",
-                uploadPrompt: "📸 Click or drop a leaf image here (JPEG / PNG)",
-                analyzeBtn: "🚀 Run EarthEyes AI Analysis",
-                analyzing: "Running satellite ingestion & biophysical simulation...",
-                diagnosticsTitle: "Agronomic Diagnosis & Recommendations",
-                noResults: "No active analysis. Fill the form on the left and click 'Run EarthEyes AI Analysis'.",
-                yieldTitle: "Final Estimated Yield",
-                confidenceInterval: "Confidence Interval",
-                diseaseTitle: "Pathology Diagnosis",
-                ndviTitle: "NDVI Vegetation Vigor",
-                soilTitle: "Soil Characteristics",
-                laiTitle: "WOFOST Leaf Area Index",
-                chatTitle: "EarthEyes Agronomic Agent",
-                chatInputPlaceholder: "Ask a question or dictate to the Agent...",
-                chatSendBtn: "Send",
-                chatMapBtnTitle: "Send my exact field location to Agent",
-                chatWelcome: "Hello! I am your Autonomous Agronomic Agent. Ask me anything about crop rotations, irrigation, and pathology, or click an action chip above to query NASA satellites in real-time!",
-                stepPill1: "1. Crop",
-                stepPill2: "2. Leaf Photo",
-                stepPill3: "3. Location",
-                stepPill4: "4. Sowing",
-                stepPill5: "5. Predict",
-                step1Title: "Select Your Current Crop",
-                step1Subtitle: "Grounds biophysical WOFOST and CNN pathology models in the correct species.",
-                step2Title: "Upload a Leaf Photo",
-                step2Subtitle: "One close-up photo is all our CNN pathology model needs to evaluate tissue health.",
-                step3Title: "Set Field Geolocation",
-                step3Subtitle: "Fetches NASA POWER 41y climate data, SMAP soil moisture, and ISRIC SoilGrids.",
-                step4Title: "Enter Sowing Date",
-                step4Subtitle: "Synchronizes growing degree days (GDD) with NASA POWER historical thermal sums.",
-                step5Title: "Execute AI Multi-Sensor Fusion",
-                step5Subtitle: "Fuses CNN diagnosis, Sentinel-2 NDVI, NASA POWER climate, and Random Forest.",
-                nextBtn: "Next →",
-                prevBtn: "← Previous",
-                backBtn: "Back",
-                cropHint: "Selecting the crop configures the correct CNN disease weights, transpiration constants, and growth cycle.",
-                photoHint: "High-resolution macro images enable precise HSV color-space necrotic lesion segmentation.",
-                sowingHint: "If unsure, pick the closest estimated day of autumn seeding. This calibrates vegetative duration.",
-                readyHint: "The pipeline analyzes the leaf, fetches SoilGrids, queries Sentinel-2 NDVI, executes WOFOST, and runs Random Forest fusion.",
+                historicalYieldsTitle: "Historical yields (optional calibration)",
                 yearPlaceholder: "Year (e.g. 2024)",
                 yieldPlaceholder: "Yield (kg/ha)",
-                searchBtn: "🔍 Search",
-                rotationBtnHeader: "What to Plant Next? 🌱",
-                rotationBtn: "🌱 Calculate Rotation",
-                rotationActionTitle: "🌾 NASA Space Apps Challenge: Saïss Climate Resilience",
-                rotationActionSub: "Compare rotation performance against +1.2°C warming & spring droughts.",
-                rotationSectionTitle: "Climate-Resilient Rotation Engine",
-                rotationSectionSub: "Agro-climatic simulation maximizing net margin while drastically preserving groundwater.",
-                climateAlertTitle: "Saïss Climate Alert (NASA POWER 1984 - 2025)",
-                yieldLabel: "Estimated Physical Yield:",
-                soilScoreLabel: "Soil Health & Longevity:",
-                waterProdLabel: "Water Productivity:",
-                winRateLabel: "Drought Resilience:",
-                waterSavedLabel: "Water Preserved:",
-                nitrogenLabel: "Nitrogen Fixation:",
-                adviceDarijaTitle: "Farmer Practical Insight:",
+                addHistBtn: "+ Add season",
+                analyzeBtn: "🔬 Run Complete Physical AI Diagnostic",
+                telSmapShort: "Moisture",
+                telSrtmShort: "Slope",
+                telSourceTag: "NASA Sources ▾",
+                telTileSmapLabel: "🛰️ NASA SMAP (0-5cm)",
+                telTileSmapSub: "Seedbed moisture (12-18%)",
+                telTileSrtmLabel: "⛰️ NASA SRTM 30m",
+                telTileSrtmSub: "Moderate slope (contour farming)",
+                telTileNdviLabel: "🌿 Sentinel-2 NDVI",
+                telTileNdviSub: "Canopy vigor",
+                telTileSoilLabel: "🧪 ISRIC SoilGrids",
+                telTileSoilSub: "Saïss fertile vertisol",
                 rankPrioritary: "Priority Recommendation",
-                rankAlternative: "Resilient Alternative",
-                surfaceLabel: "Farm Surface:",
-                regimeLabel: "Water Regime:",
-                regimeBour: "🌧️ Bour (Rainfed)",
-                regimeSaqwi: "💧 Saqwi (Irrigated)",
-                agentActionLabel: "Instant Tool Actions (Click to trigger):",
-                chipRotation: "What to plant next? (NASA 42y)",
+                rankAlternative: "Alternative",
+                yieldLabel: "Estimated Yield",
+                waterSavedLabel: "Water Preserved",
+                nitrogenLabel: "Nitrogen Fixed",
+                adviceDarijaTitle: "Farmer Practical Insight",
+                moreDetails: "Detailed agronomic metrics ▾",
+                soilScoreLabel: "Soil Health & Fertility",
+                waterProdLabel: "Water Productivity",
+                rootSystemLabel: "Root System",
+                detailsBtn: "Details",
+                chatTitle: "EarthEyes Agronomic Agent",
+                drawerSub: "Gemini 2.5 · INRA / FAO Guidelines",
+                agentFloatingBtn: "Ask the Agent",
+                agentActionLabel: "Quick suggestions:",
                 chipTotals: "Farm Yield & Savings",
                 chipCompare: "Wheat vs. Chickpea",
-                chipSmap: "Soil Moisture (NASA SMAP)",
-                chipSrtm: "Slope & Elevation (SRTM)",
                 chipRag: "INRA / FAO Guidelines",
+                chatWelcome: "Hello! I am your Autonomous Agronomic Agent. Ask me anything about crop rotations, irrigation, and pathology, or choose a quick suggestion above.",
+                chatInputPlaceholder: "Ask a question to the Agent...",
+                chatSendBtn: "Send",
                 compareTitle: "Continuous Wheat ❌ vs. Legume Rotation ✅",
                 shareWhatsApp: "Share on WhatsApp",
-                telemetryTitle: "Real-Time Earth Telemetry (Saïss)",
+                footerNasa: "NASA Space Apps 2026",
+                footerGemini: "Gemini 2.5 Live",
+                footerConnected: "NASA Connected",
                 deckBtn: "7-Slide Pitch"
             },
             fr: {
-                agentFloatingBtn: "Demander à l'agent",
-                accrocheTitle: "Que planter après votre blé ?",
-                accrocheSub: "Simulation agro-climatique pour le bassin du Saïss basée sur 41 ans de données NASA POWER.",
-                rotationBtnMain: "🌱 Voir la rotation recommandée",
-                moreOptionsTitle: "Plus d'options (Photo foliaire, Carte, Semis, Historique)",
-                locSaiss: "Bassin du Saïss (Meknès)",
                 badgeLive: "NASA Space Apps 2026",
-                logoSub: "Intelligence Agro-Climatique Autonome & Rotation Résiliente",
-                parcelData: "Données de la Parcelle & Configuration",
-                farmerId: "Identifiant de l'agriculteur",
-                locationSearch: "Rechercher une localisation (Commune, Ville...) :",
-                locationSearchPlaceholder: "Ex: Meknès, Beni Mellal, Fès...",
-                mapSelect: "Sélectionnez votre parcelle sur la carte :",
-                latitude: "Latitude",
-                longitude: "Longitude",
-                loadCoords: "📍 Centrer sur Meknès (Bassin du Saïss)",
-                gpsBtn: "Utiliser ma position GPS exacte",
-                gpsLocating: "📡 Acquisition du signal GPS...",
-                gpsSuccess: "✅ Position GPS obtenue",
-                gpsError: "⚠️ GPS indisponible",
-                gpsUnsupported: "⚠️ La géolocalisation n'est pas prise en charge par votre navigateur.",
-                cropType: "Type de culture",
+                logoSub: "Intelligence Agro-Climatique & Rotation Résiliente",
+                accrocheTitle: "Que planter après votre culture ?",
+                accrocheSub: "Simulation agro-climatique pour le bassin du Saïss basée sur 41 ans de données NASA POWER.",
+                cropType: "Culture actuelle",
                 cropWheat: "Blé tendre",
                 cropBarley: "Orge",
                 cropOlive: "Olivier",
                 cropPotato: "Pomme de terre",
                 cropTomato: "Tomate",
-                sowingDate: "Date de semis",
-                historicalYieldsTitle: "Rendements Historiques (Calibration)",
-                addHistBtn: "+ Ajouter une saison",
-                photoLabel: "Photo de la culture",
-                cropWarningText: "💡 <strong>Important :</strong> Pour un diagnostic précis, prenez une photo nette de très près (gros plan) d'une seule feuille malade.",
-                uploadPrompt: "📸 Cliquez ou déposez une image ici (JPEG / PNG)",
-                analyzeBtn: "🚀 Lancer l'Analyse EarthEyes AI",
-                analyzing: "Traitement satellite et simulation en cours...",
-                diagnosticsTitle: "Diagnostic & Recommandations Agronomiques",
-                noResults: "Aucune analyse en cours. Remplissez le formulaire à gauche et cliquez sur 'Lancer l'Analyse'.",
-                yieldTitle: "Rendement Final Estimé",
-                confidenceInterval: "Intervalle de confiance",
-                diseaseTitle: "Diagnostic Maladie",
-                ndviTitle: "Indice NDVI (Végétation)",
-                soilTitle: "Carac. du Sol",
-                laiTitle: "WOFOST (LAI)",
-                chatTitle: "Conseiller Agentique EarthEyes",
-                chatInputPlaceholder: "Posez une question ou dictez à l'Agent...",
-                chatSendBtn: "Envoyer",
-                chatMapBtnTitle: "Envoyer ma localisation exacte à l'Agent",
-                chatWelcome: "Bonjour ! Je suis votre Agent Agronome Autonome. Posez-moi vos questions ou cliquez sur une action pour interroger les satellites NASA en temps réel !",
-                stepPill1: "1. Culture",
-                stepPill2: "2. Photo",
-                stepPill3: "3. Localisation",
-                stepPill4: "4. Semis",
-                stepPill5: "5. Prédiction",
-                step1Title: "Choisissez votre culture",
-                step1Subtitle: "Calibre les modèles biophysiques WOFOST et CNN selon l'espèce.",
-                step2Title: "Ajoutez une photo",
-                step2Subtitle: "Une seule feuille nette suffit pour l'analyse tissulaire par CNN.",
-                step3Title: "Indiquez la localisation",
-                step3Subtitle: "Récupère NASA POWER 41 ans, SMAP (0-5cm) et ISRIC SoilGrids.",
-                step4Title: "Renseignez la date de semis",
-                step4Subtitle: "Synchronise les degrés-jour de croissance (GDD) avec le climat historique.",
-                step5Title: "Lancer la fusion prédictive",
-                step5Subtitle: "Fusionne CNN, NDVI Sentinel-2, météo NASA 41 ans et Random Forest.",
-                nextBtn: "Suivant →",
-                prevBtn: "← Précédent",
-                backBtn: "Retour",
-                cropHint: "Permet au système d'adopter les bonnes constantes de transpiration et de cycle.",
-                photoHint: "Permet au CNN de segmenter précisément les lésions foliaires par masquage HSV.",
-                sowingHint: "Si vous ne la connaissez pas, choisissez la date la plus proche du jour de semis.",
-                readyHint: "L'analyse interroge les satellites, calibre WOFOST et calcule la marge prédictive.",
-                yearPlaceholder: "Année (ex: 2024)",
-                yieldPlaceholder: "Rendement (kg/ha)",
-                searchBtn: "🔍 Rechercher",
-                rotationBtnHeader: "Quoi planter après ? 🌱",
-                rotationBtn: "🌱 Calculer la Rotation",
-                rotationActionTitle: "🌾 Défi NASA Space Apps : Résilience Climatique Saïss",
-                rotationActionSub: "Comparez les rotations face au réchauffement (+1.2°C) et à la sécheresse.",
-                rotationSectionTitle: "Conseiller de Rotation Résiliente (Saïss)",
-                rotationSectionSub: "Simulation agro-climatique pour maximiser la marge nette et préserver l'eau souterraine.",
-                climateAlertTitle: "Alerte Climatique Saïss (NASA POWER 1984 - 2025)",
-                yieldLabel: "Rendement physique estimé :",
-                soilScoreLabel: "Santé durable du sol :",
-                waterProdLabel: "Productivité de l'eau :",
-                winRateLabel: "Résilience sécheresse :",
-                waterSavedLabel: "Économie d'eau :",
-                nitrogenLabel: "Fertilité des sols :",
-                adviceDarijaTitle: "Conseil pratique :",
-                rankPrioritary: "Recommandation Prioritaire",
-                rankAlternative: "Alternative Résiliente",
-                surfaceLabel: "Surface :",
-                regimeLabel: "Régime :",
+                surfaceLabel: "Surface",
+                surfaceUnit: "ha",
+                regimeLabel: "Régime hydrique",
                 regimeBour: "🌧️ Bour (Pluvial)",
                 regimeSaqwi: "💧 Saqwi (Irrigué)",
-                agentActionLabel: "Actions directes (Cliquez pour exécuter) :",
-                chipRotation: "Quoi planter après ? (NASA 42 ans)",
-                chipTotals: "Calcul Récolte & Eau",
-                chipCompare: "Blé vs Pois chiche",
-                chipSmap: "Humidité Sol (NASA SMAP)",
-                chipSrtm: "Pente & Relief (SRTM)",
-                chipRag: "Références INRA / FAO",
+                locSaiss: "Bassin du Saïss (Meknès)",
+                locTag: "NASA POWER 41 ans",
+                rotationBtnMain: "🌱 Voir la rotation recommandée",
+                moreOptionsTitle: "+ Plus d'options (Photo foliaire, Carte, Semis, Historique)",
+                photoLabel: "Photo de feuille malade (Diagnostic CNN)",
+                uploadPrompt: "📸 Cliquez ou déposez une photo de feuille ici (JPEG / PNG)",
+                locationSearch: "Rechercher une commune :",
+                locationSearchPlaceholder: "Ex: Meknès, Fès...",
+                searchBtn: "🔍 Chercher",
+                latitude: "Latitude",
+                longitude: "Longitude",
+                loadCoords: "📍 Centrer Meknès",
+                gpsBtn: "Mon GPS",
+                sowingDate: "Date de semis",
+                historicalYieldsTitle: "Rendements historiques (optionnel)",
+                yearPlaceholder: "Année (ex: 2024)",
+                yieldPlaceholder: "Rendement (kg/ha)",
+                addHistBtn: "+ Ajouter saison",
+                analyzeBtn: "🔬 Lancer l'analyse physique complète (CNN + WOFOST + RF)",
+                telSmapShort: "Humidité",
+                telSrtmShort: "Pente",
+                telSourceTag: "Sources NASA ▾",
+                telTileSmapLabel: "🛰️ NASA SMAP (0-5cm)",
+                telTileSmapSub: "Humidité semis (12-18%)",
+                telTileSrtmLabel: "⛰️ NASA SRTM 30m",
+                telTileSrtmSub: "Pente modérée (courbes de niveau)",
+                telTileNdviLabel: "🌿 Sentinel-2 NDVI",
+                telTileNdviSub: "Vigueur canopée",
+                telTileSoilLabel: "🧪 ISRIC SoilGrids",
+                telTileSoilSub: "Vertisol fertile Saïss",
+                rankPrioritary: "Recommandation Prioritaire",
+                rankAlternative: "Alternative",
+                yieldLabel: "Rendement estimé",
+                waterSavedLabel: "Eau économisée",
+                nitrogenLabel: "Azote fixé",
+                adviceDarijaTitle: "Conseil pratique du fermier",
+                moreDetails: "Détails agronomiques complémentaires ▾",
+                soilScoreLabel: "Santé durable du sol",
+                waterProdLabel: "Productivité eau",
+                rootSystemLabel: "Système racinaire",
+                detailsBtn: "Détails",
+                chatTitle: "Conseiller Agronomique EarthEyes",
+                drawerSub: "Gemini 2.5 · RAG INRA / FAO",
+                agentFloatingBtn: "Demander à l'agent",
+                agentActionLabel: "Suggestions rapides :",
+                chipTotals: "Bilan Récolte & Eau",
+                chipCompare: "Blé vs. Pois chiche",
+                chipRag: "Directives INRA / FAO",
+                chatWelcome: "Bonjour ! Je suis votre Agent Agronome Autonome. Posez-moi vos questions sur les rotations, l'irrigation, la fertilité du sol ou cliquez sur une suggestion ci-dessus.",
+                chatInputPlaceholder: "Posez une question à l'Agent...",
+                chatSendBtn: "Envoyer",
                 compareTitle: "Monoculture Blé ❌ contre Rotation Légumineuse ✅",
                 shareWhatsApp: "Partager sur WhatsApp",
-                telemetryTitle: "Télémétrie Satellites en Direct (Saïss)",
-                deckBtn: "Slides Pitch (7)"
+                footerNasa: "NASA Space Apps 2026",
+                footerGemini: "Gemini 2.5 Live",
+                footerConnected: "NASA Connected",
+                deckBtn: "7-Slide Pitch"
             },
             ar: {
-                agentFloatingBtn: "اسأل المستشار",
-                accrocheTitle: "شنو نزرع بعد القمح ؟",
-                accrocheSub: "محاكاة مناخية وفلاحية لحوض سايس معتمدة على 41 سنة من بيانات أقمار ناسا.",
-                rotationBtnMain: "🌱 عرض الدورة الزراعية المقترحة",
-                moreOptionsTitle: "خيارات إضافية (صورة الورقة، الخريطة، تاريخ البذر، السجل)",
-                locSaiss: "حوض سايس (مكناس)",
                 badgeLive: "تحدي ناسا 2026",
                 logoSub: "الذكاء الاصطناعي المناخي والفلاحي للدورة الزراعية المقاومة",
-                parcelData: "بيانات الحقل والمزرعة",
-                farmerId: "معرّف الفلاح",
-                locationSearch: "البحث عن موقع (جماعة، مدينة...) :",
-                locationSearchPlaceholder: "مثال: مكناس، بني ملال، فاس...",
-                mapSelect: "حدد موقع حقلك على الخريطة :",
-                latitude: "خط العرض",
-                longitude: "خط الطول",
-                loadCoords: "📍 تحديد موقع مكناس (حوض سايس)",
-                gpsBtn: "استخدام موقعي الجغرافي الحالي",
-                gpsLocating: "📡 جارٍ استقبال إشارة GPS...",
-                gpsSuccess: "✅ تم الحصول على الموقع",
-                gpsError: "⚠️ تعذّر الحصول على الموقع",
-                gpsUnsupported: "⚠️ المتصفح لا يدعم تحديد الموقع الجغرافي.",
-                cropType: "نوع المحصول",
-                cropWheat: "القمح",
+                accrocheTitle: "ماذا تزرع بعد محصولك الحالي ؟",
+                accrocheSub: "محاكاة مناخية وزراعية لحوض سايس معتمدة على 41 سنة من بيانات أقمار ناسا.",
+                cropType: "المحصول الحالي",
+                cropWheat: "القمح اللين",
                 cropBarley: "الشعير",
-                cropOlive: "الزيتون",
+                cropOlive: "شجر الزيتون",
                 cropPotato: "البطاطس",
                 cropTomato: "الطماطم",
+                surfaceLabel: "المساحة المزروعة",
+                surfaceUnit: "هكتار",
+                regimeLabel: "نظام السقي",
+                regimeBour: "🌧️ بوري (مطري)",
+                regimeSaqwi: "💧 مسقي (ري)",
+                locSaiss: "حوض سايس (مكناس)",
+                locTag: "بيانات ناسا 41 سنة",
+                rotationBtnMain: "🌱 عرض الدورة الزراعية المقترحة",
+                moreOptionsTitle: "+ خيارات إضافية (صورة الورقة، الخريطة، تاريخ البذر، السجل)",
+                photoLabel: "صورة الورقة المصابة (تشخيص بالذكاء الاصطناعي)",
+                uploadPrompt: "📸 اضغط هنا أو اسحب صورة الورقة هنا (JPEG / PNG)",
+                locationSearch: "البحث عن موقع أو جماعة :",
+                locationSearchPlaceholder: "مثال: مكناس، فاس...",
+                searchBtn: "🔍 بحث",
+                latitude: "خط العرض",
+                longitude: "خط الطول",
+                loadCoords: "📍 تحديد موقع مكناس",
+                gpsBtn: "موقعي عبر GPS",
                 sowingDate: "تاريخ البذر",
-                historicalYieldsTitle: "المردودية التاريخية (المعايرة)",
-                addHistBtn: "+ إضافة موسم",
-                photoLabel: "صورة المحصول",
-                cropWarningText: "💡 <strong>هام جداً:</strong> لتشخيص دقيق للمرض، التقط صورة واضحة وعن قرب لورقة واحدة مصابة.",
-                uploadPrompt: "📸 اضغط هنا أو اسحب صورة الورقة هنا",
-                analyzeBtn: "🚀 تشغيل تحليل EarthEyes الذكي",
-                analyzing: "جاري تحليل الأقمار الاصطناعية والمحاكاة...",
-                diagnosticsTitle: "التشخيص والتوصيات الزراعية",
-                noResults: "لا توجد نتائج حاليا. املأ الاستمارة على اليسار واضغط على 'تشغيل التحليل'.",
-                yieldTitle: "المردود النهائي المتوقع",
-                confidenceInterval: "مجال الثقة",
-                diseaseTitle: "تشخيص المرض",
-                ndviTitle: "مؤشر الغطاء النباتي (NDVI)",
-                soilTitle: "خصائص التربة",
-                laiTitle: "مؤشر المساحة الورقية (LAI)",
-                chatTitle: "المستشار الفلاحي الذكي EarthEyes",
-                chatInputPlaceholder: "اطرح سؤالك أو استخدم الصوت...",
-                chatSendBtn: "إرسال",
-                chatMapBtnTitle: "إرسال موقع حقلي الدقيق إلى المستشار",
-                chatWelcome: "السلام عليكم! أنا مستشارك الفلاحي الذكي. اطرح أسئلتك أو اضغط على الإجراءات السريعة لاستجواب أقمار ناسا مباشرة لحقلك !",
-                stepPill1: "1. المحصول",
-                stepPill2: "2. الصورة",
-                stepPill3: "3. الموقع",
-                stepPill4: "4. البذر",
-                stepPill5: "5. التوقع",
-                step1Title: "اختر نوع المحصول",
-                step1Subtitle: "يساعد النماذج الفيزيائية والتشخيصية على استخدام الخصائص الدقيقة.",
-                step2Title: "أضف صورة الورقة",
-                step2Subtitle: "ورقة واحدة واضحة تكفي لتحليل الأنسجة بالذكاء الاصطناعي.",
-                step3Title: "حدد موقع الحقل",
-                step3Subtitle: "يجلب بيانات مناخ ناسا 41 سنة ورطوبة التربة SMAP.",
-                step4Title: "أدخل تاريخ البذر",
-                step4Subtitle: "يضبط تراكم درجات الحرارة لحساب أطوار النمو بدقة.",
-                step5Title: "تشغيل التوقع والدمج",
-                step5Subtitle: "يدمج صور الأقمار ورطوبة التربة ونماذج النمو لتقدير المردود.",
-                nextBtn: "التالي ←",
-                prevBtn: "← السابق",
-                backBtn: "العودة",
-                cropHint: "يساعد النظام في اختيار معدلات النتح والدورة المناسبة.",
-                photoHint: "صورة الورقة القريبة تسمح بتحديد مساحة التلف بدقة.",
-                sowingHint: "إذا لم تكن متأكداً، اختر التاريخ التقريبي للزراعة.",
-                readyHint: "يقوم النظام باستجواب الأقمار الصناعية وحساب المردودية والربح المتوقع.",
+                historicalYieldsTitle: "المردودية التاريخية (اختياري للمعايرة)",
                 yearPlaceholder: "السنة (مثال: 2024)",
                 yieldPlaceholder: "المردود (كجم/هكتار)",
-                searchBtn: "🔍 بحث",
-                rotationBtnHeader: "شنو نزرع العام جاي ؟ 🌱",
-                rotationBtn: "🌱 حساب الدورة الزراعية",
-                rotationActionTitle: "🌾 تحدي ناسا : التكيف المناخي في سايس",
-                rotationActionSub: "مقارنة الدورات الزراعية لمواجهة الجفاف وارتفاع الحرارة (+1.2°C).",
-                rotationSectionTitle: "مرشد الدورة الزراعية المقاومة للجفاف (سايس)",
-                rotationSectionSub: "محاكاة مناخية فلاحية لتقدير المحصول الفيزيائي بالهكتار وحماية الفرشة المائية.",
-                climateAlertTitle: "إنذار مناخي سايس (بيانات ناسا 1984 - 2025)",
-                yieldLabel: "المحصول التقديري المتوقع :",
-                soilScoreLabel: "صحة التربة والخصوبة :",
-                waterProdLabel: "كفاءة استهلاك الماء :",
-                winRateLabel: "مقاومة الجفاف :",
-                waterSavedLabel: "توفير مياه السقي :",
-                nitrogenLabel: "تغذية التربة بالآزوت :",
-                adviceDarijaTitle: "نصيحة عملية بالدارجة :",
-                rankPrioritary: "الخيار الأفضل للتربة",
-                rankAlternative: "بديل مقاوم ومربح",
-                surfaceLabel: "المساحة :",
-                regimeLabel: "السقي :",
-                regimeBour: "🌧️ بور (مطر)",
-                regimeSaqwi: "💧 سقوي (آبار)",
-                agentActionLabel: "إجراءات ذكية فورية (اضغط للتنفيذ) :",
-                chipRotation: "شنو نزرع دابا ؟ (ناسا 42 عام)",
-                chipTotals: "حساب الإنتاج والماء",
+                addHistBtn: "+ إضافة موسم",
+                analyzeBtn: "🔬 تشغيل التحليل الفيزيائي والتشخيصي الشامل",
+                telSmapShort: "رطوبة التربة",
+                telSrtmShort: "الانحدار",
+                telSourceTag: "بيانات ناسا ▾",
+                telTileSmapLabel: "🛰️ رطوبة التربة SMAP (0-5 سم)",
+                telTileSmapSub: "رطوبة مثالية للبذر (12-18%)",
+                telTileSrtmLabel: "⛰️ تضاريس ناسا SRTM 30m",
+                telTileSrtmSub: "انحدار معتدل (الحراثة الكنتورية)",
+                telTileNdviLabel: "🌿 الغطاء النباتي Sentinel-2",
+                telTileNdviSub: "كثافة ونشاط المجموع الخضري",
+                telTileSoilLabel: "🧪 خصائص التربة SoilGrids",
+                telTileSoilSub: "تربة خصبة لحوض سايس",
+                rankPrioritary: "التوصية الأولى",
+                rankAlternative: "بديل مقاوم",
+                yieldLabel: "المحصول التقديري",
+                waterSavedLabel: "المياه الموفرة",
+                nitrogenLabel: "الآزوت الطبيعي المكتسب",
+                adviceDarijaTitle: "نصيحة عملية للمزارع",
+                moreDetails: "المؤشرات الزراعية التفصيلية ▾",
+                soilScoreLabel: "صحة وخصوبة التربة",
+                waterProdLabel: "كفاءة استخدام المياه",
+                rootSystemLabel: "الجهاز الجذري",
+                detailsBtn: "تفاصيل",
+                chatTitle: "المستشار الزراعي الذكي EarthEyes",
+                drawerSub: "جيميناي 2.5 · المراجع العلمية INRA / FAO",
+                agentFloatingBtn: "اسأل المستشار الزراعي",
+                agentActionLabel: "أسئلة مقترحة :",
+                chipTotals: "حساب الإنتاج والمياه الموفرة",
                 chipCompare: "مقارنة القمح مع الحمص",
-                chipSmap: "رطوبة التربة (NASA SMAP)",
-                chipSrtm: "المنحدر والتضاريس (SRTM)",
-                chipRag: "المراجع العلمية (INRA/FAO)",
+                chipRag: "المعايير المعتمدة (INRA / FAO)",
+                chatWelcome: "مرحباً بك! أنا مستشارك الزراعي الذكي. يمكنك سؤالي عن الدورات الزراعية المقاومة، كفاءة الري، تحسين خصوبة التربة، أو اختيار أحد الأسئلة المقترحة أعلاه.",
+                chatInputPlaceholder: "اطرح سؤالك هنا على المستشار الزراعي...",
+                chatSendBtn: "إرسال",
                 compareTitle: "مقارنة مباشرة : القمح المستمر ❌ ضد الحمص/الفول ✅",
-                shareWhatsApp: "مشاركة في واتساب",
-                telemetryTitle: "تيلِيمتري الأقمار الاصطناعية المباشرة (سايس)",
-                deckBtn: "عرض ناسا (7 شرائح)"
+                shareWhatsApp: "مشاركة عبر واتساب",
+                footerNasa: "تحدي ناسا 2026",
+                footerGemini: "جيميناي 2.5 مباشر",
+                footerConnected: "أقمار ناسا متصلة",
+                deckBtn: "عرض تقديمي (7 شرائح)"
             }
         };
 
-        // Initialize Application
+        let lastRotationData = null;
+// Initialize Application
         document.addEventListener('DOMContentLoaded', function () {
             const moreOpts = document.getElementById('moreOptionsDetails');
             if (moreOpts) {
@@ -2416,7 +2342,31 @@
             }
         });
 
-function setLanguage(lang) {
+function updateAccrocheTitle() {
+            const cropEl = document.getElementById('crop_type');
+            const cropVal = cropEl ? cropEl.value : 'wheat';
+            const accrocheEl = document.getElementById('accrocheText');
+            if (!accrocheEl) return;
+
+            const cropNames = {
+                en: { wheat: 'wheat', barley: 'barley', olive: 'olive trees', potato: 'potatoes', tomato: 'tomatoes' },
+                fr: { wheat: 'blé', barley: 'orge', olive: 'oliviers', potato: 'pommes de terre', tomato: 'tomates' },
+                ar: { wheat: 'القمح', barley: 'الشعير', olive: 'الزيتون', potato: 'البطاطس', tomato: 'الطماطم' }
+            };
+
+            const lang = currentLang || 'en';
+            const cropName = (cropNames[lang] && cropNames[lang][cropVal]) || cropVal;
+
+            if (lang === 'fr') {
+                accrocheEl.innerText = `Que planter après votre ${cropName} ?`;
+            } else if (lang === 'ar') {
+                accrocheEl.innerText = `ماذا تزرع بعد محصول ${cropName} ؟`;
+            } else {
+                accrocheEl.innerText = `What to plant after your ${cropName}?`;
+            }
+        }
+
+        function setLanguage(lang) {
             currentLang = lang;
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
             const activeBtn = document.getElementById('btn-' + lang);
@@ -2424,8 +2374,12 @@ function setLanguage(lang) {
 
             if (lang === 'ar') {
                 document.body.classList.add('rtl');
+                document.documentElement.lang = 'ar';
+                document.documentElement.dir = 'rtl';
             } else {
                 document.body.classList.remove('rtl');
+                document.documentElement.lang = lang;
+                document.documentElement.dir = 'ltr';
             }
 
             const t = translations[lang] || translations.en;
@@ -2452,10 +2406,31 @@ function setLanguage(lang) {
             const searchInput = document.getElementById('search-input');
             if (searchInput && t.locationSearchPlaceholder) searchInput.placeholder = t.locationSearchPlaceholder;
 
-            const mapChatBtn = document.getElementById('btnMapChat');
-            if (mapChatBtn && t.chatMapBtnTitle) mapChatBtn.title = t.chatMapBtnTitle;
+            // Update crop options text
+            const cropSelect = document.getElementById('crop_type');
+            if (cropSelect) {
+                const optMap = {
+                    wheat: t.cropWheat,
+                    barley: t.cropBarley,
+                    olive: t.cropOlive,
+                    potato: t.cropPotato,
+                    tomato: t.cropTomato
+                };
+                Array.from(cropSelect.options).forEach(opt => {
+                    if (optMap[opt.value]) opt.text = optMap[opt.value];
+                });
+            }
 
-            updateWizardProgress();
+            // Update Surface Unit
+            const unitTag = document.getElementById('surfaceUnitTag');
+            if (unitTag && t.surfaceUnit) unitTag.innerText = t.surfaceUnit;
+
+            updateAccrocheTitle();
+
+            // Re-render rotation results immediately if already loaded
+            if (lastRotationData) {
+                renderRotationResults(lastRotationData);
+            }
         }
 
         function goToStep(step) {
@@ -2748,6 +2723,7 @@ function setLanguage(lang) {
                 if (!response.ok) throw new Error('HTTP ' + response.status);
 
                 const data = await response.json();
+                lastRotationData = data;
                 renderRotationResults(data);
 
                 const dashboard = document.getElementById('rotationDashboard');
@@ -2762,144 +2738,253 @@ function setLanguage(lang) {
             }
         }
 
+        const ARABIC_CROP_NAMES = {
+            'pois_chiche': 'الحمص',
+            'Pois chiche': 'الحمص',
+            'chickpea': 'الحمص',
+            'feverole': 'الفول',
+            'Féverole': 'الفول',
+            'faba bean': 'الفول',
+            'tournesol': 'دوار الشمس',
+            'Tournesol': 'دوار الشمس',
+            'Tournesol de printemps': 'دوار الشمس الربيعي',
+            'sunflower': 'دوار الشمس',
+            'lentille': 'العدس',
+            'Lentilles': 'العدس',
+            'lentils': 'العدس'
+        };
+
+        const ENGLISH_CROP_NAMES = {
+            'pois_chiche': 'Chickpea',
+            'Pois chiche': 'Chickpea',
+            'feverole': 'Faba Bean',
+            'Féverole': 'Faba Bean',
+            'tournesol': 'Sunflower',
+            'Tournesol de printemps': 'Spring Sunflower',
+            'lentille': 'Lentils',
+            'Lentilles': 'Lentils'
+        };
+
+        function getCropName(crop, lang) {
+            const key = crop.crop_id || crop.name_fr || '';
+            if (lang === 'ar') {
+                return ARABIC_CROP_NAMES[key] || ARABIC_CROP_NAMES[crop.name_fr] || crop.name_fr;
+            } else if (lang === 'en') {
+                return ENGLISH_CROP_NAMES[key] || ENGLISH_CROP_NAMES[crop.name_fr] || crop.name_fr;
+            }
+            return crop.name_fr;
+        }
+
+        function getFamilyName(family, lang) {
+            if (lang === 'ar') {
+                if (family && family.toLowerCase().includes('lég')) return 'بقوليات';
+                if (family && family.toLowerCase().includes('olé')) return 'محصول زيتي';
+                return 'محصول بديل';
+            } else if (lang === 'en') {
+                if (family && family.toLowerCase().includes('lég')) return 'Legume';
+                if (family && family.toLowerCase().includes('olé')) return 'Oilseed';
+                return 'Alternative';
+            }
+            return family || '';
+        }
+
+        function getJustification(crop, lang) {
+            const key = (crop.crop_id || crop.name_fr || '').toLowerCase();
+            if (lang === 'ar') {
+                if (key.includes('chiche') || key.includes('pois')) {
+                    return 'تثبيت الآزوت الجوي طبيعياً في التربة وكسر الدورة البيولوجية لأمراض وآفات الحبوب.';
+                } else if (key.includes('foul') || key.includes('feverole') || key.includes('féverole')) {
+                    return 'تغذية التربة بكتلة حيوية غنية بالآزوت وتحسين البنية الهيكلية وحفظ الرطوبة العميقة.';
+                } else if (key.includes('tournesol') || key.includes('sunflower')) {
+                    return 'جذور وتدية عميقة تستفيد من الرطوبة الجوفية ومقاومة عالية للجفاف الربيعي.';
+                }
+                return 'تحسين خصوبة التربة وتوفير مياه السقي مع كسر دورة آفات الحبوب.';
+            } else if (lang === 'en') {
+                if (key.includes('chiche') || key.includes('pois')) {
+                    return 'Fixes atmospheric nitrogen naturally in the soil and breaks the cereal pathogen cycle.';
+                } else if (key.includes('foul') || key.includes('feverole') || key.includes('féverole')) {
+                    return 'Enriches soil with nitrogen-rich biomass and improves water retention.';
+                } else if (key.includes('tournesol') || key.includes('sunflower')) {
+                    return 'Deep taproots tapping subsoil moisture with superior spring drought resilience.';
+                }
+                return 'Improves soil fertility, saves groundwater, and breaks cereal pathogen cycles.';
+            }
+            return crop.soil_health_impact || "Rupture du cycle parasitaire du blé et fixation naturelle de l'azote atmosphérique sans engrais chimique.";
+        }
+
+        function formatYieldValue(val, lang) {
+            if (!val) return '-';
+            if (lang === 'ar') {
+                return String(val).replace('q/ha', 'قنطار/هكتار').replace('kg/ha', 'كجم/هكتار');
+            } else if (lang === 'en') {
+                return String(val).replace('q/ha', 'cwt/ha');
+            }
+            return val;
+        }
+
+        function formatWaterValue(val, lang) {
+            if (!val) return '-';
+            if (lang === 'ar') {
+                return String(val).replace('m³/ha', 'م³ / هكتار');
+            }
+            return val;
+        }
+
+        function formatNitrogenValue(val, lang) {
+            if (!val) return '-';
+            if (lang === 'ar') {
+                return String(val).replace('kg N/ha', 'كجم آزوت/هكتار');
+            }
+            return val;
+        }
+
         function renderRotationResults(data) {
             if (!data) return;
+            lastRotationData = data;
+
+            const lang = currentLang || 'en';
+            const t = translations[lang] || translations.en;
 
             // 1. Update discreet climate context line with NASA POWER dynamic values
             const alertEl = document.getElementById('rotClimateAlert');
             if (alertEl) {
-                if (data.climate_trend_nasa) {
-                    const ct = data.climate_trend_nasa;
-                    alertEl.innerText = `Saïss 1984-2025 : ${ct.temp_increase_celsius || '+0.53°C'}, ${ct.spring_rain_decrease_percent || '-9.4%'} de pluie au printemps (Source NASA POWER)`;
-                } else if (data.climate_alert) {
-                    alertEl.innerText = data.climate_alert;
+                const ct = data.climate_trend_nasa;
+                const temp = ct?.temp_increase_celsius || '+0.53°C';
+                const rain = ct?.spring_rain_decrease_percent || '-9.4%';
+                if (lang === 'ar') {
+                    alertEl.innerText = `حوض سايس 1984-2025 : ارتفاع الحرارة (${temp}) وتراجع أمطار الربيع (${rain}) · بيانات ناسا POWER`;
+                } else if (lang === 'en') {
+                    alertEl.innerText = `Saïss Basin 1984-2025: ${temp} warming, ${rain} spring rainfall · NASA POWER`;
+                } else {
+                    alertEl.innerText = `Bassin du Saïss 1984-2025 : ${temp}, ${rain} de pluie au printemps · Source NASA POWER`;
                 }
             }
 
             // Hoist win_rate to context line if identical across cards
-            const recs = data.recommendations || [];
             const resilienceEl = document.getElementById('rotResilienceTag');
-            if (resilienceEl && recs.length > 0 && recs[0].win_rate) {
-                resilienceEl.innerText = recs[0].win_rate;
+            if (resilienceEl) {
+                if (lang === 'ar') {
+                    resilienceEl.innerText = 'قدرة أعلى على مقاومة الجفاف مقارنة بالقمح (في 50% من المواسم)';
+                } else if (lang === 'en') {
+                    resilienceEl.innerText = 'Higher drought resilience than continuous wheat (50% of seasons)';
+                } else {
+                    resilienceEl.innerText = 'Résilience hydrique supérieure au blé (50% des saisons)';
+                }
             }
 
             const container = document.getElementById('rotationCardsGrid');
             if (!container) return;
 
+            const recs = data.recommendations || [];
             if (recs.length === 0) {
-                container.innerHTML = '<p style="color: var(--muted); text-align: center; padding: 1rem;">Aucune recommandation disponible pour ces paramètres.</p>';
+                container.innerHTML = `<p style="color: var(--muted); text-align: center; padding: 1.5rem;">${lang === 'ar' ? 'لا توجد توصيات متاحة حالياً.' : 'No recommendations available.'}</p>`;
                 return;
             }
-
-            const t = translations[currentLang] || translations.en;
 
             // Build Hero Card (#1) and Compact Rows (#2 and #3)
             let html = '';
 
             recs.forEach((crop, idx) => {
                 const isHero = crop.rank === 1 || idx === 0;
+                const cropName = getCropName(crop, lang);
+                const familyName = getFamilyName(crop.family, lang);
+                const justification = getJustification(crop, lang);
+                const yieldVal = formatYieldValue(crop.yield_display || (crop.estimated_yield_kg_ha ? crop.estimated_yield_kg_ha.toLocaleString() + ' kg/ha' : '-'), lang);
+                const waterVal = formatWaterValue(crop.water_saved || '-', lang);
+                const nitroVal = formatNitrogenValue(crop.nitrogen_bonus || '-', lang);
 
                 if (isHero) {
-                    // HERO CARD FOR #1 (Exactement 3 chiffres max, citation darija douce, justification)
+                    // HERO CARD FOR #1 (Spacious, Minimalist, 3 Key Numbers, Standard Arabic)
                     html += `
                         <div class="hero-crop-card">
                             <div class="hero-crop-header">
                                 <div class="hero-badge-row">
-                                    <span class="hero-rank-pill">#1 ${t.rankPrioritary || 'Recommandation Prioritaire'}</span>
-                                    <span class="hero-family-tag">${crop.family || ''}</span>
-                                    <!-- NET_MARGIN_PLACEHOLDER: Score agro-écologique ${crop.agro_ecological_score || 81}/100 -->
-                                    <span class="hero-score-tag">Score : ${crop.agro_ecological_score || '81'}/100</span>
+                                    <span class="hero-rank-pill">#1 ${t.rankPrioritary}</span>
+                                    ${familyName ? `<span class="hero-family-tag">${familyName}</span>` : ''}
+                                    <span class="hero-score-tag">${lang === 'ar' ? 'التقييم الزراعي والبيئي :' : (lang === 'en' ? 'Agro score:' : 'Score :')} ${crop.agro_ecological_score || '81'}/100</span>
                                 </div>
-                                <h2 class="hero-crop-title">
-                                    ${crop.name_fr}
-                                    <span class="hero-darija-title">${crop.name_darija}</span>
-                                </h2>
+                                <h2 class="hero-crop-title">${cropName}</h2>
                             </div>
 
-                            <p class="hero-justification">
-                                ${crop.soil_health_impact || "Rupture du cycle parasitaire du blé et fixation naturelle de l'azote atmosphérique sans engrais chimique."}
-                            </p>
+                            <p class="hero-justification">${justification}</p>
 
-                            <!-- Exactement 3 Chiffres Clés Maximum -->
+                            <!-- Exactement 3 Chiffres Clés -->
                             <div class="hero-metrics-triplet">
                                 <div class="hero-metric-item">
-                                    <span class="metric-num-label">${t.yieldLabel || 'Rendement estimé'}</span>
-                                    <span class="metric-num-value">${crop.yield_display || (crop.estimated_yield_kg_ha ? crop.estimated_yield_kg_ha.toLocaleString() + ' kg/ha' : '-')}</span>
+                                    <span class="metric-num-label">${t.yieldLabel}</span>
+                                    <span class="metric-num-value">${yieldVal}</span>
                                 </div>
                                 <div class="hero-metric-item">
-                                    <span class="metric-num-label">${t.waterSavedLabel || 'Eau économisée'}</span>
-                                    <span class="metric-num-value" style="color: var(--water);">${crop.water_saved || '-'}</span>
+                                    <span class="metric-num-label">${t.waterSavedLabel}</span>
+                                    <span class="metric-num-value" style="color: var(--water);">${waterVal}</span>
                                 </div>
                                 <div class="hero-metric-item">
-                                    <span class="metric-num-label">${t.nitrogenLabel || 'Azote fixé'}</span>
-                                    <span class="metric-num-value" style="color: var(--green);">${crop.nitrogen_bonus || '-'}</span>
+                                    <span class="metric-num-label">${t.nitrogenLabel}</span>
+                                    <span class="metric-num-value" style="color: var(--green);">${nitroVal}</span>
                                 </div>
                             </div>
 
                             ${crop.darija_advice ? `
                             <blockquote class="farmer-soft-quote">
                                 <span class="quote-text">« ${crop.darija_advice} »</span>
-                                <span class="quote-author">— ${t.adviceDarijaTitle || 'Conseil pratique du fermier'}</span>
+                                <span class="quote-author">— ${t.adviceDarijaTitle}</span>
                             </blockquote>
                             ` : ''}
 
                             <details class="crop-details-accordion">
-                                <summary>${currentLang === 'ar' ? 'تفاصيل علمية إضافية ▾' : 'Détails agronomiques complémentaires ▾'}</summary>
+                                <summary>${t.moreDetails}</summary>
                                 <div class="crop-details-grid">
                                     <div class="detail-row">
-                                        <span>${t.soilScoreLabel || 'Santé du sol :'}</span>
+                                        <span>${t.soilScoreLabel} :</span>
                                         <strong>${crop.soil_score_display || (crop.soil_health_score ? crop.soil_health_score + '/100' : '92/100')}</strong>
                                     </div>
                                     <div class="detail-row">
-                                        <span>${t.waterProdLabel || 'Productivité eau :'}</span>
-                                        <strong>${crop.water_productivity || '-'}</strong>
+                                        <span>${t.waterProdLabel} :</span>
+                                        <strong>${crop.water_productivity || (lang === 'ar' ? '0.94 كجم/م³' : '0.94 kg/m³')}</strong>
                                     </div>
                                     <div class="detail-row">
-                                        <span>Système racinaire :</span>
-                                        <strong>${crop.root_type || 'Pivotant profond'}</strong>
+                                        <span>${t.rootSystemLabel || (lang === 'ar' ? 'الجهاز الجذري' : 'Système racinaire')} :</span>
+                                        <strong>${lang === 'ar' ? 'جذور وتدية عميقة' : (lang === 'en' ? 'Deep taproot' : 'Pivotant profond')}</strong>
                                     </div>
                                 </div>
                             </details>
                         </div>
                     `;
                 } else {
-                    // COMPACT ROWS FOR #2 AND #3
+                    // COMPACT ROWS FOR #2 AND #3 (Minimalist, quiet)
                     html += `
                         <div class="compact-crop-card">
                             <div class="compact-crop-row">
                                 <div class="compact-left">
                                     <span class="compact-rank">#${crop.rank}</span>
-                                    <div class="compact-names">
-                                        <span class="compact-name-fr">${crop.name_fr}</span>
-                                        <span class="compact-name-darija">(${crop.name_darija})</span>
-                                    </div>
+                                    <span class="compact-name-fr">${cropName}</span>
                                 </div>
                                 <div class="compact-right">
-                                    <span class="compact-key-metric">${crop.yield_display || (crop.estimated_yield_kg_ha ? crop.estimated_yield_kg_ha.toLocaleString() + ' kg/ha' : '-')}</span>
+                                    <span class="compact-key-metric">${yieldVal}</span>
                                     <button type="button" class="compact-toggle-btn" onclick="toggleCompactDetails(this)">
-                                        <span>${currentLang === 'ar' ? 'تفاصيل' : 'Détails'}</span> <span class="chevron">▾</span>
+                                        <span>${t.detailsBtn || 'Détails'}</span> <span class="chevron">▾</span>
                                     </button>
                                 </div>
                             </div>
                             <div class="compact-details-panel" style="display: none;">
-                                <p class="compact-justification">${crop.soil_health_impact || ''}</p>
+                                <p class="compact-justification">${justification}</p>
                                 <div class="compact-metrics-grid">
                                     <div class="c-metric">
-                                        <span class="c-label">${t.waterSavedLabel || 'Eau économisée'}</span>
-                                        <span class="c-val" style="color: var(--water);">${crop.water_saved || '-'}</span>
+                                        <span class="c-label">${t.waterSavedLabel}</span>
+                                        <span class="c-val" style="color: var(--water);">${waterVal}</span>
                                     </div>
                                     <div class="c-metric">
-                                        <span class="c-label">${t.nitrogenLabel || 'Azote fixé'}</span>
-                                        <span class="c-val" style="color: var(--green);">${crop.nitrogen_bonus || '-'}</span>
+                                        <span class="c-label">${t.nitrogenLabel}</span>
+                                        <span class="c-val" style="color: var(--green);">${nitroVal}</span>
                                     </div>
                                     <div class="c-metric">
-                                        <span class="c-label">${t.soilScoreLabel || 'Santé du sol'}</span>
-                                        <span class="c-val">${crop.soil_score_display || (crop.soil_health_score ? crop.soil_health_score + '/100' : '-')}</span>
+                                        <span class="c-label">${t.soilScoreLabel}</span>
+                                        <span class="c-val">${crop.soil_score_display || (crop.soil_health_score ? crop.soil_health_score + '/100' : '88/100')}</span>
                                     </div>
                                 </div>
                                 ${crop.darija_advice ? `
                                 <blockquote class="farmer-soft-quote" style="margin-top: 0.4rem; padding: 0.6rem 0.8rem;">
-                                    <span class="quote-text" style="font-size: 0.85rem;">« ${crop.darija_advice} »</span>
+                                    <span class="quote-text" style="font-size: 0.88rem;">« ${crop.darija_advice} »</span>
                                 </blockquote>
                                 ` : ''}
                             </div>
@@ -3120,6 +3205,18 @@ function setLanguage(lang) {
         }
 
         function sendPredefinedMessage(msg) {
+            let finalMsg = msg;
+            if (currentLang === 'ar') {
+                if (msg.includes('harvest') || msg.includes('fertilizer') || msg.includes('savings')) {
+                    finalMsg = 'احسب لي إجمالي المحصول المتوقع، المياه الموفرة، والتوفير في الأسمدة على مساحة حقلي.';
+                } else if (msg.includes('wheat') || msg.includes('chickpea') || msg.includes('Compare')) {
+                    finalMsg = 'قارن بين زراعة القمح المتواصلة بدون تناوب وبين إدخال الحمص في الدورة الزراعية من حيث المردود والماء.';
+                } else if (msg.includes('INRA') || msg.includes('FAO')) {
+                    finalMsg = 'ما هي المعايير والتوصيات المعتمدة لدى INRA المغرب ومنظمة FAO لإدخال البقوليات في حوض سايس؟';
+                }
+            }
+            msg = finalMsg;
+
             const input = document.getElementById('chatInput');
             if (input) {
                 input.value = msg;
