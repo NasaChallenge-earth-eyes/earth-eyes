@@ -2109,7 +2109,7 @@
                         <h2 style="margin: 0; font-size: 1.15rem; font-family: 'Fraunces', serif;" data-i18n="compareTitle">Monoculture Blé ❌ contre Rotation Légumineuse ✅</h2>
                         <p style="color: var(--muted); font-size: 0.82rem; margin-top: 0.25rem;">Rupture parasitaire, azote symbiotique et bilan hydrique.</p>
                     </div>
-                    <button type="button" onclick="document.getElementById('comparisonDashboard').style.display='none'" style="background:none; border:none; color:var(--muted); font-size:1.25rem; cursor:pointer;">✕</button>
+                    <button type="button" onclick="closeCard('comparisonDashboard')" aria-label="Fermer" style="background:none; border:none; color:var(--muted); font-size:1.25rem; cursor:pointer; padding:0.25rem 0.5rem; border-radius:6px; transition:background 150ms;" onmouseover="this.style.background='var(--green-soft)'" onmouseout="this.style.background='none'">✕</button>
                 </div>
                 <div class="comparison-table-grid" id="comparisonGridContent"></div>
                 <div id="comparisonVerdictBox" style="margin-top: 1rem; padding: 0.9rem 1rem; background: var(--green-soft); border-left: 3px solid var(--green); border-radius: 0 8px 8px 0; font-size: 0.9rem; color: var(--ink);"></div>
@@ -2129,138 +2129,8 @@
                 <div class="metrics-grid" id="farmTotalsMetricsGrid"></div>
                 <div id="farmTotalsSummaryText" style="margin-top: 1rem; font-size: 0.92rem; color: var(--ink); line-height: 1.5; background: var(--bg); padding: 0.85rem; border-radius: 10px;"></div>
             </div>
-<!-- Face-to-Face Decision Comparator (Optionnel via Agent) -->
-            <div class="card" id="comparisonDashboard" style="display: none; border-color: rgba(38, 54, 45, 0.12);">
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(38,54,45,0.08); padding-bottom: 0.85rem; margin-bottom: 1rem;">
-                    <div>
-                        <h2 style="margin: 0; font-size: 1.15rem; font-family: 'Fraunces', serif;" data-i18n="compareTitle">Monoculture Blé ❌ contre Rotation Légumineuse ✅</h2>
-                        <p style="color: var(--muted); font-size: 0.82rem; margin-top: 0.25rem;">Rupture parasitaire, azote symbiotique et bilan hydrique.</p>
-                    </div>
-                    <button type="button" onclick="document.getElementById('comparisonDashboard').style.display='none'" style="background:none; border:none; color:var(--muted); font-size:1.25rem; cursor:pointer;">✕</button>
-                </div>
-                <div class="comparison-table-grid" id="comparisonGridContent"></div>
-                <div id="comparisonVerdictBox" style="margin-top: 1rem; padding: 0.9rem 1rem; background: var(--green-soft); border-left: 3px solid var(--green); border-radius: 0 8px 8px 0; font-size: 0.9rem; color: var(--ink);"></div>
-            </div>
 
-            <!-- Whole-Farm Production & Savings Card (Optionnel via Agent) -->
-            <div class="card" id="farmTotalsCard" style="display: none; border-color: rgba(38, 54, 45, 0.12);">
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(38,54,45,0.08); padding-bottom: 0.75rem; margin-bottom: 1rem;">
-                    <div>
-                        <h2 style="margin: 0; font-size: 1.15rem; font-family: 'Fraunces', serif;" id="farmTotalsTitle">Bilan Production & Eau pour votre Exploitation</h2>
-                        <p style="color: var(--muted); font-size: 0.8rem; margin-top: 0.2rem;">Métriques proportionnelles à la surface de votre parcelle.</p>
-                    </div>
-                    <button type="button" class="btn-whatsapp-share" id="btnShareTotalsWhatsApp" onclick="shareTotalsOnWhatsApp()">
-                        📲 <span data-i18n="shareWhatsApp">Partager sur WhatsApp</span>
-                    </button>
-                </div>
-                <div class="metrics-grid" id="farmTotalsMetricsGrid"></div>
-                <div id="farmTotalsSummaryText" style="margin-top: 1rem; font-size: 0.92rem; color: var(--ink); line-height: 1.5; background: var(--bg); padding: 0.85rem; border-radius: 10px;"></div>
-            </div>
-<!-- Autonomous AI Agronomist Agent (Gemini 2.5 Flash) -->
-            <div class="card" style="min-height: 470px; display: flex; flex-direction: column;">
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.75rem; margin-bottom: 0.85rem;">
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span class="badge-nasa" style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);">Autonomous Agent</span>
-                            <h2 style="margin: 0; font-size: 1.25rem;" data-i18n="chatTitle">EarthEyes Agronomic Agent</h2>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem;">
-                            Orchestrator for NASA POWER, SMAP, SRTM 30m, SoilGrids, and INRA / FAO agronomic RAG.
-                        </p>
-                    </div>
 
-                </div>
-
-                <!-- Farm Operational Controls (Surface & Water Mode) -->
-                <div class="farm-controls-bar">
-                    <div class="farm-controls-group">
-                        <span>🚜 <strong data-i18n="surfaceLabel">Farm Surface:</strong></span>
-
-                        <input type="number" id="customHaInput" value="5" min="0.5" max="500" step="0.5" onchange="selectSurfaceHa(parseFloat(this.value), null)" style="width: 58px; padding: 2px 6px; font-size: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 6px; color: #fff;">
-                        <span>ha</span>
-                    </div>
-                    <div class="farm-controls-group">
-                        <span>💧 <strong data-i18n="regimeLabel">Water Regime:</strong></span>
-                        <button type="button" id="regimeBourBtn" class="regime-btn active" onclick="setWaterRegime('bour')" data-i18n="regimeBour">🌧️ Bour (Rainfed)</button>
-                        <button type="button" id="regimeSaqwiBtn" class="regime-btn" onclick="setWaterRegime('saqwi')" data-i18n="regimeSaqwi">💧 Saqwi (Irrigated)</button>
-                    </div>
-                </div>
-
-                <!-- Predefined Quick-Action Chips -->
-                <div class="agent-action-bar">
-                    <div class="agent-bar-label">⚡ <span data-i18n="agentActionLabel">Instant Tool Actions (Click to trigger):</span></div>
-                    <div class="agent-chips-scroll">
-                        <button type="button" class="chip-action" onclick="sendPredefinedMessage('Calculate total harvest, groundwater saved, and fertilizer savings for my parcel size.')">
-                            🚜 <span data-i18n="chipTotals">Farm Yield & Savings</span>
-                        </button>
-                        <button type="button" class="chip-action" onclick="sendPredefinedMessage('Compare continuous wheat monoculture vs chickpea rotation in margin, water, and drought resistance.')">
-                            ⚖️ <span data-i18n="chipCompare">Wheat vs. Chickpea</span>
-                        </button>
-                        <button type="button" class="chip-action" onclick="sendPredefinedMessage('What are INRA Morocco and FAO agronomic guidelines for legume crop rotations in Saïss?')">
-                            📚 <span data-i18n="chipRag">INRA / FAO Guidelines</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Chat Messages Stream -->
-                <div class="chat-box" id="chatBox">
-                    <div class="chat-message message-bot" id="welcomeMsg" data-i18n="chatWelcome">
-                        Hello! I am your Autonomous Agronomic Agent. Ask me anything about crop rotations, irrigation, and pathology, or click an action chip above to query NASA satellites in real-time!
-                    </div>
-                </div>
-
-                <!-- Conversational Input Bar -->
-                <div class="chat-input-container" style="margin-top: 0.85rem;">
-                    <label for="chatPhotoInput" class="btn-chat-photo" title="Upload a leaf photo for instant pathology diagnosis">📷</label>
-                    <input type="file" id="chatPhotoInput" accept="image/*" style="display: none;" onchange="if(this.files[0]) uploadPhotoToAgent(this.files[0])">
-                    <button type="button" id="btnVoiceInput" class="btn-voice" onclick="toggleVoiceDictation()" title="Voice dictation (English, French, or Darija)">🎙️</button>
-                    <button type="button" id="btnMapChat" class="btn-map-chat" onclick="sendGPSLocationToAgent()" title="Send my exact field location to Agent">📍</button>
-                    <input type="text" class="chat-input" id="chatInput" placeholder="Ask a question or dictate to the Agent..." onkeydown="if(event.key === 'Enter') sendChatMessage()">
-                    <button class="send-btn" onclick="sendChatMessage()" data-i18n="chatSendBtn">Send</button>
-                </div>
-            </div>
-
-            <!-- Face-to-Face Decision Comparator: Wheat vs. Recommended Legume -->
-            <div class="card" id="comparisonDashboard" style="display: none; border-color: rgba(59, 130, 246, 0.45); box-shadow: 0 0 25px rgba(59, 130, 246, 0.15);">
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.85rem; margin-bottom: 1rem;">
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 0.6rem;">
-                            <span class="badge-nasa" style="background: linear-gradient(135deg, #ef4444 0%, #10b981 100%);">Head-to-Head Comparator</span>
-                            <h2 style="margin: 0; font-size: 1.25rem;" data-i18n="compareTitle">Continuous Wheat ❌ vs. Legume Rotation ✅</h2>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 0.25rem;">
-                            Agronomic breakdown: pathogen cycle disruption, soil nitrogen restoration, and water savings.
-                        </p>
-                    </div>
-                    <button type="button" onclick="document.getElementById('comparisonDashboard').style.display='none'" style="background:none; border:none; color:#94a3b8; font-size:1.25rem; cursor:pointer;">✕</button>
-                </div>
-                
-                <div class="comparison-table-grid" id="comparisonGridContent"></div>
-                <div id="comparisonVerdictBox" style="margin-top: 1rem; padding: 0.9rem 1rem; background: rgba(16, 185, 129, 0.1); border-left: 3px solid #10b981; border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #e2e8f0;"></div>
-            </div>
-
-            <!-- Whole-Farm Multi-Hectare Production & Savings Card -->
-            <div class="card" id="farmTotalsCard" style="display: none; border-color: rgba(16, 185, 129, 0.45);">
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.75rem; margin-bottom: 1rem;">
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span class="badge-nasa">Whole-Farm Calculation</span>
-                            <h2 style="margin: 0; font-size: 1.25rem;" id="farmTotalsTitle">Farm Production & Groundwater Balance</h2>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem;">
-                            Operational metrics scaled to your exact parcel landholding.
-                        </p>
-                    </div>
-                    <button type="button" class="btn-whatsapp-share" id="btnShareTotalsWhatsApp" onclick="shareTotalsOnWhatsApp()">
-                        📲 <span data-i18n="shareWhatsApp">Share on WhatsApp</span>
-                    </button>
-                </div>
-                <div class="metrics-grid" id="farmTotalsMetricsGrid"></div>
-                <div id="farmTotalsSummaryText" style="margin-top: 1rem; font-size: 0.92rem; color: #f1f5f9; line-height: 1.5; background: rgba(0,0,0,0.3); padding: 0.85rem; border-radius: 10px;"></div>
-            </div>
-
-                    </div>
-    </div>
 
 <!-- Discreet Footer -->
     <footer class="app-footer">
@@ -3810,9 +3680,9 @@ function updateAccrocheTitle() {
                     foliarEl.innerText = `${data.disease_class} (Severity: ${data.disease_severity || 0}%)`;
                 }
 
-                // Add announcement in Chat
+                // Announce result in inline chat
                 appendMessage(
-                    `✅ **EarthEyes Multi-Sensor Fusion Complete**:\n` +
+                    `✅ **EarthEyes Multi-Sensor Fusion Complete:**\n` +
                     `• Final Predicted Yield: **${data.final_yield_estimate} kg/ha**\n` +
                     `• Satellite NDVI: **${data.ndvi}**\n` +
                     `• Pathology: **${data.disease_class}**\n` +
@@ -3821,7 +3691,8 @@ function updateAccrocheTitle() {
                     'bot'
                 );
 
-                const chatCard = document.getElementById('chatBox');
+                // Scroll to inline chat
+                const chatCard = document.getElementById('agentInlineChat');
                 if (chatCard) chatCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
             } catch (err) {
@@ -3963,19 +3834,6 @@ function updateAccrocheTitle() {
                 // Sync to shared history
                 chatHistory.push({ role: 'assistant', content: reply });
 
-                // Also sync to old drawer chat box for full history view
-                const oldBox = document.getElementById('chatBox');
-                if (oldBox) {
-                    const ub2 = document.createElement('div');
-                    ub2.className = 'chat-message message-user';
-                    ub2.textContent = msg;
-                    oldBox.appendChild(ub2);
-                    const bb2 = document.createElement('div');
-                    bb2.className = 'chat-message message-bot';
-                    bb2.innerHTML = reply.replace(/\n/g, '<br>');
-                    oldBox.appendChild(bb2);
-                }
-
                 // Handle UI actions from agent
                 if (data.ui_action === 'SHOW_ROTATION' || data.show_rotation) {
                     const dash = document.getElementById('rotationDashboard');
@@ -4002,13 +3860,7 @@ function updateAccrocheTitle() {
         // Also redirect sendChatMessage to sendInlineChat so drawer chips still work inline
         const _origSendChatMessage = window.sendChatMessage;
         window.sendChatMessage = function() {
-            // Check if drawer is open — if yes, use original; otherwise use inline
-            const drawer = document.getElementById('agentDrawer');
-            if (drawer && drawer.classList.contains('open')) {
-                if (_origSendChatMessage) _origSendChatMessage();
-            } else {
-                sendInlineChat();
-            }
+            sendInlineChat();
         };
 
         // sendPredefinedMessage — redirect to inline
@@ -4016,56 +3868,59 @@ function updateAccrocheTitle() {
             sendInlineChat(msg);
         };
 
+        /**
+         * closeCard(id) — close a dismissible result card
+         * Used by the ✕ button on comparisonDashboard
+         */
+        function closeCard(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.transition = 'opacity 200ms ease';
+                el.style.opacity = '0';
+                setTimeout(() => { el.style.display = 'none'; el.style.opacity = '1'; }, 200);
+            }
+        }
+
+        /**
+         * sendGPSLocationToAgent — sends farmer's GPS coords into the inline chat
+         * Triggered by any GPS-to-agent action
+         */
+        function sendGPSLocationToAgent() {
+            const lat = document.getElementById('lat')?.value || '33.89';
+            const lon = document.getElementById('lon')?.value || '-5.55';
+            const lang = currentLang || 'fr';
+            const msgs = {
+                en: `My field is located at lat ${lat}, lon ${lon}. What are the soil moisture and rotation recommendations for this exact location?`,
+                fr: `Mon champ est situé à lat ${lat}, lon ${lon}. Quelles sont les recommandations d'humidité et de rotation pour cet emplacement ?`,
+                ar: `حقلي يقع عند خط العرض ${lat}، خط الطول ${lon}. ما هي توصيات رطوبة التربة والدورة الزراعية لهذا الموقع ؟`
+            };
+            sendInlineChat(msgs[lang] || msgs.fr);
+        }
+
+        /**
+         * appendMessage — now routes to inline chat (was used for predictForm result)
+         */
+        function appendMessage(text, type) {
+            const chatEl = document.getElementById('agentInlineChat');
+            if (!chatEl) return;
+            const bubble = document.createElement('div');
+            bubble.className = type === 'bot' ? 'inline-msg-bot' : 'inline-msg-user';
+            bubble.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            chatEl.appendChild(bubble);
+            chatEl.scrollTop = chatEl.scrollHeight;
+            // Show inline chat container if opening bubble was hiding
+            const opening = document.getElementById('agentOpeningMsg');
+            if (opening) opening.style.display = 'none';
+        }
+
+
     </script>
 
     <!-- Floating agent button removed: chat is now inline -->
 
-    <!-- Agent Backdrop & Drawer Panel -->
-    <div class="agent-backdrop" id="agentBackdrop" onclick="toggleAgentDrawer(false)"></div>
-    <aside class="agent-drawer" id="agentDrawer" role="dialog" aria-modal="true" aria-label="Agent Agronome">
-        <div class="agent-drawer-header">
-            <div class="drawer-header-title">
-                <span class="drawer-avatar">🌱</span>
-                <div>
-                    <h3 data-i18n="chatTitle">EarthEyes Agronomic Agent</h3>
-                    <span class="drawer-sub">Gemini 2.5 · RAG INRA / FAO</span>
-                </div>
-            </div>
-            <button type="button" class="drawer-close-btn" onclick="toggleAgentDrawer(false)" aria-label="Fermer">✕</button>
-        </div>
 
-        <!-- 3 Predefined Suggestion Chips -->
-        <div class="agent-drawer-suggestions">
-            <span class="suggestions-label" data-i18n="agentActionLabel">Suggestions :</span>
-            <div class="suggestions-list">
-                <button type="button" class="chip-action" onclick="sendPredefinedMessage('Calculate total harvest, groundwater saved, and fertilizer savings for my parcel size.')">
-                    🚜 <span data-i18n="chipTotals">Farm Yield & Savings</span>
-                </button>
-                <button type="button" class="chip-action" onclick="sendPredefinedMessage('Compare continuous wheat monoculture vs chickpea rotation in margin, water, and drought resistance.')">
-                    ⚖️ <span data-i18n="chipCompare">Wheat vs. Chickpea</span>
-                </button>
-                <button type="button" class="chip-action" onclick="sendPredefinedMessage('What are INRA Morocco and FAO agronomic guidelines for legume crop rotations in Saïss?')">
-                    📚 <span data-i18n="chipRag">INRA / FAO Guidelines</span>
-                </button>
-            </div>
-        </div>
+    <!-- Agent drawer removed: chat is now fully inline in agentHeroCard -->
 
-        <!-- Chat Stream -->
-        <div class="chat-box" id="chatBox">
-            <div class="chat-message message-bot" id="welcomeMsg" data-i18n="chatWelcome">
-                Hello! I am your Autonomous Agronomic Agent. Ask me anything about crop rotations, irrigation, and pathology, or click an action chip above to query NASA satellites in real-time!
-            </div>
-        </div>
-
-        <!-- Conversational Input Bar -->
-        <div class="chat-input-container">
-            <label for="chatPhotoInput" class="btn-chat-photo" title="Upload a leaf photo for instant pathology diagnosis">📷</label>
-            <input type="file" id="chatPhotoInput" accept="image/*" style="display: none;" onchange="if(this.files[0]) uploadPhotoToAgent(this.files[0])">
-            <button type="button" id="btnVoiceInput" class="btn-voice" onclick="toggleVoiceDictation()" title="Voice dictation (English, French, or Darija)">🎙️</button>
-            <input type="text" class="chat-input" id="chatInput" placeholder="Ask a question or dictate to the Agent..." onkeydown="if(event.key === 'Enter') sendChatMessage()">
-            <button class="send-btn" onclick="sendChatMessage()" data-i18n="chatSendBtn">Send</button>
-        </div>
-    </aside>
 
 </body>
 </html>
