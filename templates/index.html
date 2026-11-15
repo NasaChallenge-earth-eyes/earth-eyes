@@ -709,7 +709,55 @@
                 transition-duration: 0.01ms !important;
             }
         }
-    </style>
+    
+        .lang-sep {
+            color: var(--muted);
+            opacity: 0.4;
+            user-select: none;
+            padding: 0 0.15rem;
+        }
+        .app-footer {
+            max-width: 1200px;
+            margin: 2.5rem auto 1.5rem;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+            color: var(--muted);
+            border-top: 1px solid rgba(38, 54, 45, 0.08);
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        .footer-badges {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .footer-pill {
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+        .footer-sep {
+            color: var(--muted);
+            opacity: 0.4;
+        }
+        .footer-pitch-link {
+            color: var(--ink);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid rgba(38, 54, 45, 0.12);
+            background: var(--surface);
+            transition: all 150ms ease;
+        }
+        .footer-pitch-link:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+</style>
 </head>
 <body>
     <!-- Top Global Header -->
@@ -717,32 +765,17 @@
         <div class="brand-container">
             <div class="logo-symbol">🌱</div>
             <div class="logo-text-group">
-                <div class="logo-title">
-                    EarthEyes
-                    <span class="system-pill" style="margin-left: 0.4rem;">
-                        <span class="radar-dot"></span>
-                        <span data-i18n="badgeLive">NASA Space Apps 2026</span>
-                    </span>
-                </div>
+                <div class="logo-title">EarthEyes</div>
                 <div class="logo-sub" data-i18n="logoSub">Autonomous Agro-Climate Intelligence & Resilient Rotation</div>
             </div>
         </div>
 
         <div class="header-actions">
-            <!-- Strategic Value Button: Rotation Engine -->
-            <button type="button" class="btn-rotation-glow" onclick="fetchRotationRecommendations()" id="btnRotationHeader" title="Calculate optimal crop rotations using 41 years of NASA POWER daily climate data">
-                🌱 <span data-i18n="rotationBtnHeader">What to Plant Next?</span>
-            </button>
-
-            <!-- Direct Jury Link to the 7 NASA Competition Pitch Slides -->
-            <a href="/presentation" target="_blank" class="btn-deck-link" title="Open the 7-Slide NASA Space Apps Pitch Deck">
-                📊 <span data-i18n="deckBtn">7-Slide Pitch</span> ↗
-            </a>
-
-            <!-- Trilingual Switcher: English (Default), French, Darija/Arabic -->
             <div class="lang-switch" role="group" aria-label="Language selection">
                 <button onclick="setLanguage('en')" id="btn-en" class="lang-btn active">EN</button>
+                <span class="lang-sep">·</span>
                 <button onclick="setLanguage('fr')" id="btn-fr" class="lang-btn">FR</button>
+                <span class="lang-sep">·</span>
                 <button onclick="setLanguage('ar')" id="btn-ar" class="lang-btn">عربي</button>
             </div>
         </div>
@@ -753,19 +786,7 @@
         
         <!-- Left Column: Guided Parcel Configuration & Diagnostic Form -->
         <div class="card">
-            <div class="rotation-banner-card">
-                <div>
-                    <div style="font-weight: 700; color: #34d399; font-size: 0.96rem;" data-i18n="rotationActionTitle">
-                        🌾 NASA Space Apps Challenge: Saïss Climate Resilience
-                    </div>
-                    <div style="color: var(--text-muted); font-size: 0.82rem; margin-top: 0.25rem;" data-i18n="rotationActionSub">
-                        Compare rotation performance against +1.2°C warming & spring droughts.
-                    </div>
-                </div>
-                <button type="button" class="btn-rotation-glow" onclick="fetchRotationRecommendations()" data-i18n="rotationBtn">
-                    🌱 Calculate Rotation
-                </button>
-            </div>
+
 
             <h2 data-i18n="parcelData">Parcel Data & Configuration</h2>
 
@@ -978,18 +999,14 @@
                             Orchestrator for NASA POWER, SMAP, SRTM 30m, SoilGrids, and INRA / FAO agronomic RAG.
                         </p>
                     </div>
-                    <span style="font-size: 0.74rem; color: #34d399; font-weight: 700; background: rgba(52, 211, 153, 0.1); padding: 3px 8px; border-radius: 9999px; border: 1px solid rgba(52, 211, 153, 0.3);">
-                        ⚡ Gemini 2.5 Live
-                    </span>
+
                 </div>
 
                 <!-- Farm Operational Controls (Surface & Water Mode) -->
                 <div class="farm-controls-bar">
                     <div class="farm-controls-group">
                         <span>🚜 <strong data-i18n="surfaceLabel">Farm Surface:</strong></span>
-                        <button type="button" class="ha-chip" onclick="selectSurfaceHa(2, this)">2 Ha</button>
-                        <button type="button" class="ha-chip active" onclick="selectSurfaceHa(5, this)">5 Ha</button>
-                        <button type="button" class="ha-chip" onclick="selectSurfaceHa(10, this)">10 Ha</button>
+
                         <input type="number" id="customHaInput" value="5" min="0.5" max="500" step="0.5" onchange="selectSurfaceHa(parseFloat(this.value), null)" style="width: 58px; padding: 2px 6px; font-size: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 6px; color: #fff;">
                         <span>ha</span>
                     </div>
@@ -1004,20 +1021,11 @@
                 <div class="agent-action-bar">
                     <div class="agent-bar-label">⚡ <span data-i18n="agentActionLabel">Instant Tool Actions (Click to trigger):</span></div>
                     <div class="agent-chips-scroll">
-                        <button type="button" class="chip-action" onclick="sendPredefinedMessage('What crop should I plant next year after wheat to save groundwater and fix free nitrogen?')">
-                            🌱 <span data-i18n="chipRotation">What to plant next? (NASA 42y)</span>
-                        </button>
                         <button type="button" class="chip-action" onclick="sendPredefinedMessage('Calculate total harvest, groundwater saved, and fertilizer savings for my parcel size.')">
                             🚜 <span data-i18n="chipTotals">Farm Yield & Savings</span>
                         </button>
                         <button type="button" class="chip-action" onclick="sendPredefinedMessage('Compare continuous wheat monoculture vs chickpea rotation in margin, water, and drought resistance.')">
                             ⚖️ <span data-i18n="chipCompare">Wheat vs. Chickpea</span>
-                        </button>
-                        <button type="button" class="chip-action" onclick="sendPredefinedMessage('Is the soil moisture ready for sowing right now? Check NASA SMAP moisture.')">
-                            💧 <span data-i18n="chipSmap">Soil Moisture (NASA SMAP)</span>
-                        </button>
-                        <button type="button" class="chip-action" onclick="sendPredefinedMessage('Analyze terrain elevation and slope erosion risk with NASA SRTM 30m.')">
-                            ⛰️ <span data-i18n="chipSrtm">Slope & Elevation (SRTM)</span>
                         </button>
                         <button type="button" class="chip-action" onclick="sendPredefinedMessage('What are INRA Morocco and FAO agronomic guidelines for legume crop rotations in Saïss?')">
                             📚 <span data-i18n="chipRag">INRA / FAO Guidelines</span>
@@ -1094,7 +1102,7 @@
                             Physical measurements collected by NASA SMAP, SRTM 30m, and ISRIC SoilGrids.
                         </p>
                     </div>
-                    <span class="system-pill">NASA Connected</span>
+                    
                 </div>
 
                 <div class="metrics-grid">
@@ -1124,14 +1132,26 @@
                     <div style="font-size: 0.85rem; color: #cbd5e1;">
                         📷 <strong>Leaf Pathology AI:</strong> <span id="foliarStatus" style="color: #34d399;">Healthy Tissue (Click 📷 in chat to test any leaf image)</span>
                     </div>
-                    <label for="chatPhotoInput" style="font-size: 0.75rem; background: rgba(52, 211, 153, 0.15); color: #34d399; padding: 4px 10px; border-radius: 6px; cursor: pointer; border: 1px solid rgba(52, 211, 153, 0.3);">
-                        Scan Leaf
-                    </label>
+
                 </div>
             </div>
 
         </div>
     </div>
+
+    <!-- Discreet Footer -->
+    <footer class="app-footer">
+        <div class="footer-badges">
+            <span class="footer-pill">NASA Space Apps 2026</span>
+            <span class="footer-sep">·</span>
+            <span class="footer-pill">Gemini 2.5 Live</span>
+            <span class="footer-sep">·</span>
+            <span class="footer-pill">NASA Connected</span>
+        </div>
+        <a href="/presentation" target="_blank" class="footer-pitch-link" title="Open the 7-Slide NASA Space Apps Pitch Deck">
+            📊 <span data-i18n="deckBtn">7-Slide Pitch</span> ↗
+        </a>
+    </footer>
 
     <!-- Leaflet Map JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
