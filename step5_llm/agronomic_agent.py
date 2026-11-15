@@ -909,57 +909,49 @@ CONSIGNES DE SYNTHÈSE :
 
     agent_reply_text = call_gemini_brain(synth_prompt, is_json=False, timeout=10)
 
-    # Fallback déterministe — utilise les VRAIES données des outils exécutés
+    # Fallback déterministe — données réelles, multilingue selon la question
     if not agent_reply_text:
         farm_item = next((t["data"] for t in executed_tools_results if t["tool_name"] == "calculate_farm_custom_quantities"), None)
-        rot_item = next((t["data"] for t in executed_tools_results if t["tool_name"] == "recommend_crop_rotation"), None)
-        cmp_item = next((t["data"] for t in executed_tools_results if t["tool_name"] == "compare_all_crops"), None)
-        smap_item = next((t["data"] for t in executed_tools_results if t["tool_name"] == "check_smap_moisture"), None)
+        rot_item  = next((t["data"] for t in executed_tools_results if t["tool_name"] == "recommend_crop_rotation"), None)
+        cmp_item  = next((t["data"] for t in executed_tools_results if t["tool_name"] == "compare_all_crops"), None)
 
-        if farm_item:
-            # Récupérer le score de santé du sol réel depuis rot_item ou cmp_item
-            real_soil_score = None
-            real_smap_pct = smap_item["surface_soil_moisture_pct"] if smap_item else None
-            if rot_item and rot_item.get("full_ranking"):
-                real_soil_score = rot_item["full_ranking"][0]["soil_health_score"]
-            elif cmp_item and cmp_item.get("comparison_table"):
-                non_wheat = [r for r in cmp_item["comparison_table"] if r["crop_key"] != "blé"]
-                real_soil_score = non_wheat[0]["soil_health_score"] if non_wheat else None
-
-            soil_line = f"• **Score Se77at t-trab :** {real_soil_score}/100" if real_soil_score else ""
-            smap_line = (
-                f"• **N-nasi7a dyal l-weqt :** R-rotoba dyal l-ard f Saïss : **{real_smap_pct}%** (NASA SMAP) → "
-                + ("L-weqt mnaseb l zri3a ! ✅" if real_smap_pct and 12 <= real_smap_pct <= 18 else "Raqeb l-rotoba qbel ma tzra3.")
-            ) if real_smap_pct else ""
-
-            agent_reply_text = (
-                f"🌱 **Nasi7a dyal l-Agent EarthEyes (NASA POWER 42 ans & INRA Maroc) :**\n\n"
-                f"{farm_item['summary_darija']}\n\n"
-                + (soil_line + "\n" if soil_line else "")
-                + (smap_line if smap_line else "")
-            )
-        elif rot_item and rot_item.get("full_ranking"):
-            # Présenter top 2-3 du classement réel
+        # Le fallback construit un tableau structuré universel que le LLM peut afficher
+        # dans n'importe quelle langue — on reessaie Gemini avec un prompt minimal
+        if rot_item and rot_item.get("full_ranking"):
             ranking = rot_item["full_ranking"]
-            lines = [f"🌱 **Classement NASA POWER 42 ans — A7sen Cultures f {current_crop.capitalize()} :**\n"]
-            for r in ranking[:3]:
-                lines.append(
-                    f"{'🥇' if r['rank']==1 else '🥈' if r['rank']==2 else '🥉'} **#{r['rank']} {r['crop_darija']} ({r['crop_fr']})** "
-                    f"| Sol: {r['soil_health_score']}/100 | {r['yield_q_ha']} q/ha | -{r['water_saved_m3_ha']} m³/ha | +{r['nitrogen_bonus_kg_ha']} kg N/ha"
-                )
-            lines.append(f"\n📚 *Al-Marji3 :* INRA Maroc Meknès & NASA POWER 1984-2025.")
-            agent_reply_text = "\n".join(lines)
-        elif cmp_item:
+            rows_text = "\n".join([
+                f"#{r['rank']} {r['crop_fr']} ({r['crop_darija']}) — "
+                f"{r['yield_q_ha']} q/ha | Soil: {r['soil_health_score']}/100 | "
+                f"-{r['water_saved_m3_ha']} m³ | +{r['nitrogen_bonus_kg_ha']} kg N/ha"
+                for r in ranking[:3]
+            ])
+            minimal_prompt = (
+                f"The user asked (in their language): \"{message}\"\n\n"
+                f"NASA POWER 42-year crop ranking for Meknès/Saïss:\n{rows_text}\n\n"
+                f"Reply in the SAME language as the user's question. "
+                f"Present the top 2-3 crops with their key advantages. "
+                f"Do NOT use Latin transliteration of Arabic unless the user wrote that way."
+            )
+            agent_reply_text = call_gemini_brain(minimal_prompt, is_json=False, timeout=8)
+
+        if not agent_reply_text and cmp_item:
             rows = [r for r in cmp_item["comparison_table"] if r["crop_key"] != "blé"][:3]
-            lines = [f"⚖️ **Comparaison {cmp_item['total_crops_compared']} Cultures :**\n"]
-            for i, r in enumerate(rows):
-                lines.append(
-                    f"{'🥇' if i==0 else '🥈' if i==1 else '🥉'} **{r['crop_darija']} ({r['crop_fr']})** "
-                    f"| Sol: {r['soil_health_score']}/100 | {r['base_yield_q_ha']} q/ha | -{r['water_saved_vs_wheat_m3_ha']} m³ | +{r['nitrogen_fixation_kg_ha']} kg N/ha"
-                )
-            lines.append(f"\n🏆 **Gagnant :** {cmp_item['best_overall_darija']} ({cmp_item['best_overall']})")
-            agent_reply_text = "\n".join(lines)
-        else:
+            rows_text = "\n".join([
+                f"#{i+1} {r['crop_fr']} ({r['crop_darija']}) — "
+                f"{r['base_yield_q_ha']} q/ha | Soil: {r['soil_health_score']}/100 | "
+                f"-{r['water_saved_vs_wheat_m3_ha']} m³ | +{r['nitrogen_fixation_kg_ha']} kg N/ha"
+                for i, r in enumerate(rows)
+            ])
+            minimal_prompt = (
+                f"The user asked (in their language): \"{message}\"\n\n"
+                f"Multi-crop comparison:\n{rows_text}\n\n"
+                f"Reply in the SAME language as the user's question. "
+                f"Do NOT use Latin transliteration of Arabic unless the user wrote that way."
+            )
+            agent_reply_text = call_gemini_brain(minimal_prompt, is_json=False, timeout=8)
+
+        # Dernier recours : RAG déterministe
+        if not agent_reply_text:
             rag_advice = generate_grounded_agronomic_advice(message, context=context, lang="ar")
             agent_reply_text = rag_advice["response"]
 
