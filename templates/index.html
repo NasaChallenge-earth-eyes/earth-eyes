@@ -1224,6 +1224,11 @@
                         📍 Center on Meknès (Saïss Plain Pilot)
                     </button>
 
+                    <button type="button" class="btn secondary" id="btnGPS" onclick="useMyGPSLocation()" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                        🛰️ <span data-i18n="gpsBtn">Use My Exact GPS Location</span>
+                    </button>
+                    <div id="gpsStatus" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; display: none;"></div>
+
                     <div class="button-row">
                         <button type="button" class="btn secondary" onclick="goToStep(2)" data-i18n="prevBtn">← Previous</button>
                         <button type="button" class="btn primary" onclick="goToStep(4)" data-i18n="nextBtn" style="flex: 1;">Next: Sowing →</button>
@@ -1519,6 +1524,11 @@
                 latitude: "Latitude",
                 longitude: "Longitude",
                 loadCoords: "📍 Center on Meknès (Saïss Plain Pilot)",
+                gpsBtn: "Use My Exact GPS Location",
+                gpsLocating: "📡 Requesting GPS signal...",
+                gpsSuccess: "✅ GPS location acquired",
+                gpsError: "⚠️ GPS unavailable",
+                gpsUnsupported: "⚠️ Geolocation not supported by your browser.",
                 cropType: "Current Crop Type",
                 cropWheat: "Bread Wheat",
                 cropBarley: "Barley",
@@ -1613,6 +1623,11 @@
                 latitude: "Latitude",
                 longitude: "Longitude",
                 loadCoords: "📍 Centrer sur Meknès (Bassin du Saïss)",
+                gpsBtn: "Utiliser ma position GPS exacte",
+                gpsLocating: "📡 Acquisition du signal GPS...",
+                gpsSuccess: "✅ Position GPS obtenue",
+                gpsError: "⚠️ GPS indisponible",
+                gpsUnsupported: "⚠️ La géolocalisation n'est pas prise en charge par votre navigateur.",
                 cropType: "Type de culture",
                 cropWheat: "Blé tendre",
                 cropBarley: "Orge",
@@ -1707,6 +1722,11 @@
                 latitude: "خط العرض",
                 longitude: "خط الطول",
                 loadCoords: "📍 تحديد موقع مكناس (حوض سايس)",
+                gpsBtn: "استخدام موقعي الجغرافي الحالي",
+                gpsLocating: "📡 جارٍ استقبال إشارة GPS...",
+                gpsSuccess: "✅ تم الحصول على الموقع",
+                gpsError: "⚠️ تعذّر الحصول على الموقع",
+                gpsUnsupported: "⚠️ المتصفح لا يدعم تحديد الموقع الجغرافي.",
                 cropType: "نوع المحصول",
                 cropWheat: "القمح",
                 cropBarley: "الشعير",
@@ -1925,6 +1945,65 @@
                 marker.setLatLng([33.89, -5.55]);
                 updateCoordsInputs(33.89, -5.55);
             }
+        }
+
+        function useMyGPSLocation() {
+            const btn = document.getElementById('btnGPS');
+            const statusEl = document.getElementById('gpsStatus');
+            const lang = currentLang || 'fr';
+            const t = translations[lang] || translations['fr'];
+
+            if (!navigator.geolocation) {
+                statusEl.style.display = 'block';
+                statusEl.style.color = 'var(--error, #f87171)';
+                statusEl.textContent = t.gpsUnsupported || '⚠️ Geolocation not supported.';
+                return;
+            }
+
+            // --- UI: loading state ---
+            btn.disabled = true;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '⏳ <span>' + (t.gpsLocating || '📡 Locating...') + '</span>';
+            statusEl.style.display = 'block';
+            statusEl.style.color = 'var(--text-muted)';
+            statusEl.textContent = t.gpsLocating || '📡 Requesting GPS signal...';
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude.toFixed(6);
+                    const lon = position.coords.longitude.toFixed(6);
+                    const accuracy = Math.round(position.coords.accuracy);
+
+                    // Update inputs and map
+                    updateCoordsInputs(parseFloat(lat), parseFloat(lon));
+                    if (map && marker) {
+                        const latlng = L.latLng(parseFloat(lat), parseFloat(lon));
+                        marker.setLatLng(latlng);
+                        map.setView(latlng, 15);
+                    }
+
+                    // Update chat context if parcel data exists
+                    if (typeof currentParcelContext !== 'undefined' && currentParcelContext) {
+                        currentParcelContext.lat = parseFloat(lat);
+                        currentParcelContext.lon = parseFloat(lon);
+                    }
+
+                    // Show success
+                    statusEl.style.color = '#34d399';
+                    statusEl.textContent = (t.gpsSuccess || '✅ GPS acquired') + ' — ' + lat + ', ' + lon + ' (±' + accuracy + 'm)';
+
+                    // Restore button
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
+                },
+                function(err) {
+                    statusEl.style.color = 'var(--error, #f87171)';
+                    statusEl.textContent = (t.gpsError || '⚠️ GPS error') + ': ' + err.message;
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
+                },
+                { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+            );
         }
 
         function previewFile() {
