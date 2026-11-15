@@ -177,13 +177,226 @@
 
         /* Containers & Cards */
         .container {
-            max-width: 1240px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            max-width: 680px;
+            margin: 1.5rem auto 2.5rem;
+            padding: 0 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
             width: 100%;
+        }
+        @media (max-width: 720px) {
+            .container {
+                padding: 0 0.85rem;
+                margin: 1rem auto 2rem;
+            }
+        }
+        .accroche-header {
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+        body.rtl .accroche-header {
+            text-align: right;
+        }
+        .accroche-title {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 1.85rem;
+            font-weight: 600;
+            color: var(--ink);
+            line-height: 1.25;
+            margin: 0 0 0.4rem 0;
+            letter-spacing: -0.01em;
+        }
+        .accroche-sub {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin: 0;
+            line-height: 1.45;
+        }
+        .controls-card {
+            background: var(--surface);
+            border: 1px solid rgba(38, 54, 45, 0.08);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        .primary-controls-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1.15rem;
+        }
+        .control-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+        .control-row label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--ink);
+        }
+        .clean-select, .clean-input {
+            width: 100%;
+            padding: 0.75rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid rgba(38, 54, 45, 0.18);
+            background: var(--bg);
+            color: var(--ink);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 150ms ease;
+            box-sizing: border-box;
+            min-height: 44px;
+        }
+        .clean-select:focus, .clean-input:focus {
+            outline: 2px solid var(--green);
+            background: #fff;
+        }
+        .surface-input-group {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .surface-input-group input {
+            padding-right: 2.8rem;
+        }
+        body.rtl .surface-input-group input {
+            padding-right: 0.9rem;
+            padding-left: 2.8rem;
+        }
+        .surface-unit {
+            position: absolute;
+            right: 1rem;
+            font-weight: 600;
+            color: var(--muted);
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+        body.rtl .surface-unit {
+            right: auto;
+            left: 1rem;
+        }
+        .segmented-water {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid rgba(38, 54, 45, 0.12);
+        }
+        .segmented-water .regime-btn {
+            flex: 1;
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 150ms ease;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+        .segmented-water .regime-btn.active {
+            background: var(--surface);
+            color: var(--ink);
+            box-shadow: 0 1px 4px rgba(38, 54, 45, 0.08);
+            border: 1px solid rgba(38, 54, 45, 0.1);
+        }
+        .discreet-location-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0.85rem;
+            background: var(--green-soft);
+            border-radius: 10px;
+            font-size: 0.84rem;
+            color: var(--ink);
+            margin-top: 0.25rem;
+        }
+        .discreet-location-bar .loc-text {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-weight: 500;
+        }
+        .discreet-location-bar .loc-tag {
+            font-size: 0.76rem;
+            color: var(--green);
+            font-weight: 600;
+            background: rgba(79, 122, 90, 0.12);
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+        .main-action-btn {
+            width: 100%;
+            padding: 0.95rem 1.25rem;
+            border-radius: 12px;
+            background: var(--green);
+            color: #ffffff;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 1.05rem;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(79, 122, 90, 0.25);
+            transition: all 180ms ease;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .main-action-btn:hover {
+            background: #3f6549;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 122, 90, 0.3);
+        }
+        .main-action-btn:active {
+            transform: translateY(0);
+        }
+        .options-accordion {
+            margin-top: 1.25rem;
+            border-top: 1px solid rgba(38, 54, 45, 0.08);
+            padding-top: 0.85rem;
+        }
+        .options-accordion summary {
+            font-size: 0.86rem;
+            color: var(--muted);
+            cursor: pointer;
+            font-weight: 500;
+            user-select: none;
+            padding: 0.4rem 0;
+            transition: color 150ms ease;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .options-accordion summary::-webkit-details-marker {
+            display: none;
+        }
+        .options-accordion summary:hover {
+            color: var(--ink);
+        }
+        .options-accordion summary::after {
+            content: '▾';
+            font-size: 0.85rem;
+            transition: transform 180ms ease;
+        }
+        .options-accordion[open] summary::after {
+            transform: rotate(180deg);
+        }
+        .options-content {
+            padding: 0.75rem 0 0 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
         @media (max-width: 992px) {
@@ -784,165 +997,127 @@
     <!-- Main Application Split-View Container -->
     <div class="container">
         
-        <!-- Left Column: Guided Parcel Configuration & Diagnostic Form -->
-        <div class="card">
-
-
-            <h2 data-i18n="parcelData">Parcel Data & Configuration</h2>
-
-            <!-- Progressive Step Indicator (Reduces cognitive overload) -->
-            <div class="step-indicator">
-                <div class="step-pill active" id="step-pill-1" onclick="goToStep(1)" data-i18n="stepPill1">1. Crop</div>
-                <div class="step-pill" id="step-pill-2" onclick="goToStep(2)" data-i18n="stepPill2">2. Leaf Photo</div>
-                <div class="step-pill" id="step-pill-3" onclick="goToStep(3)" data-i18n="stepPill3">3. Field Location</div>
-                <div class="step-pill" id="step-pill-4" onclick="goToStep(4)" data-i18n="stepPill4">4. Sowing Date</div>
-                <div class="step-pill" id="step-pill-5" onclick="goToStep(5)" data-i18n="stepPill5">5. AI Prediction</div>
+        <!-- État A: Parcelle (Saisie simplifiée en 3 contrôles + accordéon) -->
+        <div class="card controls-card" id="parcelleCard">
+            <div class="accroche-header">
+                <h1 class="accroche-title" id="accrocheText" data-i18n="accrocheTitle">Que planter après votre blé ?</h1>
+                <p class="accroche-sub" data-i18n="accrocheSub">Simulation agro-climatique pour le bassin du Saïss basée sur 41 ans de données NASA POWER.</p>
             </div>
 
             <form id="predictForm" enctype="multipart/form-data">
-                <!-- Step 1: Crop Selection -->
-                <div class="wizard-step active" id="wizard-step-1">
-                    <div class="step-title" data-i18n="step1Title">Select Your Current Crop</div>
-                    <div class="step-subtitle" data-i18n="step1Subtitle">Grounds biophysical WOFOST and CNN pathology models in the correct species.</div>
-                    
-                    <div class="field-group">
-                        <label for="crop_type" data-i18n="cropType">Crop Type</label>
-                        <select id="crop_type" name="crop_type" required>
-                            <option value="wheat" data-i18n="cropWheat">Bread Wheat (Blé)</option>
-                            <option value="barley" data-i18n="cropBarley">Barley (Orge)</option>
-                            <option value="olive" data-i18n="cropOlive">Olive Tree (Olivier)</option>
-                            <option value="potato" data-i18n="cropPotato">Potato (Pomme de terre)</option>
-                            <option value="tomato" data-i18n="cropTomato">Tomato (Tomate)</option>
+                <div class="primary-controls-stack">
+                    <!-- 1. Culture actuelle -->
+                    <div class="control-row">
+                        <label for="crop_type" data-i18n="cropType">Culture actuelle</label>
+                        <select id="crop_type" name="crop_type" class="clean-select" required onchange="updateAccrocheTitle()">
+                            <option value="wheat" selected data-i18n="cropWheat">Blé tendre (Bread Wheat)</option>
+                            <option value="barley" data-i18n="cropBarley">Orge (Barley)</option>
+                            <option value="olive" data-i18n="cropOlive">Olivier (Olive Tree)</option>
+                            <option value="potato" data-i18n="cropPotato">Pomme de terre (Potato)</option>
+                            <option value="tomato" data-i18n="cropTomato">Tomate (Tomato)</option>
                         </select>
                     </div>
 
-                    <div class="wizard-hint" data-i18n="cropHint">
-                        Selecting the crop configures the correct CNN disease weights, transpiration constants, and growth cycle.
+                    <!-- 2. Surface en hectares -->
+                    <div class="control-row">
+                        <label for="customHaInput" data-i18n="surfaceLabel">Surface</label>
+                        <div class="surface-input-group">
+                            <input type="number" id="customHaInput" value="5" min="0.5" max="500" step="0.5" class="clean-input" onchange="selectSurfaceHa(parseFloat(this.value), null)">
+                            <span class="surface-unit">ha</span>
+                        </div>
                     </div>
 
-                    <div class="button-row">
-                        <button type="button" class="btn primary" onclick="goToStep(2)" data-i18n="nextBtn" style="width: 100%;">
-                            Next: Leaf Photo →
+                    <!-- 3. Régime hydrique -->
+                    <div class="control-row">
+                        <label data-i18n="regimeLabel">Régime hydrique</label>
+                        <div class="segmented-water" role="group" aria-label="Régime hydrique">
+                            <button type="button" id="regimeBourBtn" class="regime-btn active" onclick="setWaterRegime('bour')" data-i18n="regimeBour">🌧️ Bour (Pluvial)</button>
+                            <button type="button" id="regimeSaqwiBtn" class="regime-btn" onclick="setWaterRegime('saqwi')" data-i18n="regimeSaqwi">💧 Saqwi (Irrigué)</button>
+                        </div>
+                    </div>
+
+                    <!-- Localisation discrète Meknès -->
+                    <div class="discreet-location-bar">
+                        <span class="loc-text">
+                            <span>📍</span>
+                            <span data-i18n="locSaiss">Bassin du Saïss (Meknès)</span>
+                            <span style="opacity: 0.6; font-size: 0.78rem;">(33.89°N, 5.55°W)</span>
+                        </span>
+                        <span class="loc-tag">NASA POWER 41 ans</span>
+                    </div>
+
+                    <!-- UN SEUL BOUTON PRINCIPAL -->
+                    <button type="button" class="main-action-btn" id="btnRotationHeader" onclick="fetchRotationRecommendations()" data-i18n="rotationBtnMain">
+                        🌱 Voir la rotation recommandée
+                    </button>
+                </div>
+
+                <!-- Accordéon Plus d'options -->
+                <details class="options-accordion" id="moreOptionsDetails">
+                    <summary data-i18n="moreOptionsTitle">Plus d'options (Photo foliaire, Carte, Semis, Historique)</summary>
+                    <div class="options-content">
+                        <!-- Photo Upload -->
+                        <div class="control-row">
+                            <label data-i18n="photoLabel">Photo de feuille malade (Diagnostic CNN)</label>
+                            <div class="file-upload">
+                                <p style="color: var(--muted); font-size: 0.88rem;" data-i18n="uploadPrompt">
+                                    📸 Cliquez ou déposez une photo de feuille ici (JPEG / PNG)
+                                </p>
+                                <input type="file" id="photo" name="photo" accept="image/*" onchange="previewFile()">
+                                <img id="filePreview" class="upload-preview" src="" alt="Leaf Preview">
+                            </div>
+                        </div>
+
+                        <!-- Map & Coords -->
+                        <div class="control-row">
+                            <label data-i18n="locationSearch">Rechercher une commune :</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" id="search-input" data-i18n-placeholder="locationSearchPlaceholder" placeholder="Ex: Meknès, Beni Mellal, Fès..." class="clean-input" style="flex: 1;">
+                                <button type="button" class="btn secondary" onclick="geocodeAddress()"><span data-i18n="searchBtn">🔍 Chercher</span></button>
+                            </div>
+                            <div id="map" style="height: 180px; border-radius: var(--radius); border: 1px solid rgba(38,54,45,0.12); margin-top: 0.5rem;"></div>
+                            <div class="grid-2" style="margin-top: 0.5rem;">
+                                <div>
+                                    <label for="lat" data-i18n="latitude">Latitude</label>
+                                    <input type="number" id="lat" name="lat" step="any" value="33.89" class="clean-input" required>
+                                </div>
+                                <div>
+                                    <label for="lon" data-i18n="longitude">Longitude</label>
+                                    <input type="number" id="lon" name="lon" step="any" value="-5.55" class="clean-input" required>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                                <button type="button" class="btn secondary" onclick="setMoroccoFarm()" data-i18n="loadCoords">📍 Centrer Meknès</button>
+                                <button type="button" class="btn secondary" id="btnGPS" onclick="useMyGPSLocation()">🛰️ <span data-i18n="gpsBtn">Mon GPS</span></button>
+                            </div>
+                            <div id="gpsStatus" style="font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; display: none;"></div>
+                        </div>
+
+                        <!-- Sowing Date -->
+                        <div class="control-row">
+                            <label for="sowing_date" data-i18n="sowingDate">Date de semis</label>
+                            <input type="date" id="sowing_date" name="sowing_date" class="clean-input">
+                        </div>
+
+                        <!-- Historical Yields -->
+                        <div class="control-row">
+                            <label data-i18n="historicalYieldsTitle">Rendements historiques (optionnel)</label>
+                            <div class="grid-2">
+                                <input type="number" id="hist_year" data-i18n-placeholder="yearPlaceholder" placeholder="Année (ex: 2024)" min="2000" max="2030" class="clean-input">
+                                <input type="number" id="hist_yield" data-i18n-placeholder="yieldPlaceholder" placeholder="Rendement (kg/ha)" min="0" class="clean-input">
+                            </div>
+                            <button type="button" class="btn secondary" onclick="addHistoricalRecord()" style="margin-top: 0.5rem;" data-i18n="addHistBtn">+ Ajouter saison</button>
+                            <div id="histRecordsList" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.35rem;"></div>
+                            <input type="hidden" id="historical_yields" name="historical_yields">
+                        </div>
+
+                        <div class="wizard-progress" id="progressPreview" style="margin-top: 0.5rem;"></div>
+
+                        <button type="submit" class="btn secondary" id="submitBtn" data-i18n="analyzeBtn" style="width: 100%; margin-top: 0.5rem;">
+                            🔬 Lancer l'analyse physique complète (CNN + WOFOST + Random Forest)
                         </button>
                     </div>
-                </div>
-
-                <!-- Step 2: Leaf Pathology Photo Upload -->
-                <div class="wizard-step" id="wizard-step-2">
-                    <div class="step-title" data-i18n="step2Title">Upload a Leaf Photo</div>
-                    <div class="step-subtitle" data-i18n="step2Subtitle">One close-up photo is all our CNN pathology model needs to evaluate tissue health.</div>
-                    
-                    <div class="wizard-hint" data-i18n="photoHint">
-                        High-resolution macro images enable precise HSV color-space necrotic lesion segmentation.
-                    </div>
-
-                    <div class="file-upload">
-                        <p style="color: var(--text-muted); font-size: 0.92rem;" data-i18n="uploadPrompt">
-                            📸 Click or drop a leaf image here (JPEG / PNG)
-                        </p>
-                        <input type="file" id="photo" name="photo" accept="image/*" required onchange="previewFile()">
-                        <img id="filePreview" class="upload-preview" src="" alt="Leaf Preview">
-                    </div>
-
-                    <div class="button-row">
-                        <button type="button" class="btn secondary" onclick="goToStep(1)" data-i18n="prevBtn">← Previous</button>
-                        <button type="button" class="btn primary" onclick="goToStep(3)" data-i18n="nextBtn" style="flex: 1;">Next: Location →</button>
-                    </div>
-                </div>
-
-                <!-- Step 3: Satellite Geolocation & Map -->
-                <div class="wizard-step" id="wizard-step-3">
-                    <div class="step-title" data-i18n="step3Title">Set Field Geolocation</div>
-                    <div class="step-subtitle" data-i18n="step3Subtitle">Fetches NASA POWER 41y climate data, SMAP soil moisture, and ISRIC SoilGrids.</div>
-
-                    <div class="field-group">
-                        <label data-i18n="locationSearch">Search Location (City, Commune):</label>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <input type="text" id="search-input" data-i18n-placeholder="locationSearchPlaceholder" placeholder="Ex: Meknès, Beni Mellal, Fès..." style="flex: 1;">
-                            <button type="button" class="btn secondary" onclick="geocodeAddress()"><span data-i18n="searchBtn">🔍 Search</span></button>
-                        </div>
-                    </div>
-
-                    <div class="field-group">
-                        <label data-i18n="mapSelect">Pinpoint Parcel on Satellite Map:</label>
-                        <div id="map"></div>
-                    </div>
-
-                    <div class="grid-2">
-                        <div class="field-group">
-                            <label for="lat" data-i18n="latitude">Latitude</label>
-                            <input type="number" id="lat" name="lat" step="any" value="33.89" required>
-                        </div>
-                        <div class="field-group">
-                            <label for="lon" data-i18n="longitude">Longitude</label>
-                            <input type="number" id="lon" name="lon" step="any" value="-5.55" required>
-                        </div>
-                    </div>
-
-                    <button type="button" class="btn secondary" onclick="setMoroccoFarm()" data-i18n="loadCoords">
-                        📍 Center on Meknès (Saïss Plain Pilot)
-                    </button>
-
-                    <button type="button" class="btn secondary" id="btnGPS" onclick="useMyGPSLocation()" style="margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                        🛰️ <span data-i18n="gpsBtn">Use My Exact GPS Location</span>
-                    </button>
-                    <div id="gpsStatus" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; display: none;"></div>
-
-                    <div class="button-row">
-                        <button type="button" class="btn secondary" onclick="goToStep(2)" data-i18n="prevBtn">← Previous</button>
-                        <button type="button" class="btn primary" onclick="goToStep(4)" data-i18n="nextBtn" style="flex: 1;">Next: Sowing →</button>
-                    </div>
-                </div>
-
-                <!-- Step 4: Sowing Date & Phenology -->
-                <div class="wizard-step" id="wizard-step-4">
-                    <div class="step-title" data-i18n="step4Title">Enter Sowing Date</div>
-                    <div class="step-subtitle" data-i18n="step4Subtitle">Synchronizes growing degree days (GDD) with NASA POWER historical thermal sums.</div>
-
-                    <div class="field-group">
-                        <label for="sowing_date" data-i18n="sowingDate">Sowing Date</label>
-                        <input type="date" id="sowing_date" name="sowing_date" required>
-                    </div>
-
-                    <div class="wizard-hint" data-i18n="sowingHint">
-                        If unsure, pick the closest estimated day of autumn seeding. This calibrates vegetative duration.
-                    </div>
-
-                    <div class="button-row">
-                        <button type="button" class="btn secondary" onclick="goToStep(3)" data-i18n="prevBtn">← Previous</button>
-                        <button type="button" class="btn primary" onclick="goToStep(5)" data-i18n="nextBtn" style="flex: 1;">Next: Predict →</button>
-                    </div>
-                </div>
-
-                <!-- Step 5: AI Fusion & Multi-Model Execution -->
-                <div class="wizard-step" id="wizard-step-5">
-                    <div class="step-title" data-i18n="step5Title">Execute AI Multi-Sensor Fusion</div>
-                    <div class="step-subtitle" data-i18n="step5Subtitle">Fuses CNN diagnosis, Sentinel-2 NDVI, NASA POWER climate, and Random Forest.</div>
-
-                    <div class="field-group">
-                        <label data-i18n="historicalYieldsTitle" style="font-weight: 700;">Historical Yield Records (Optional Baseline)</label>
-                        <div class="grid-2">
-                            <input type="number" id="hist_year" data-i18n-placeholder="yearPlaceholder" placeholder="Year (e.g. 2024)" min="2000" max="2030">
-                            <input type="number" id="hist_yield" data-i18n-placeholder="yieldPlaceholder" placeholder="Yield (kg/ha)" min="0">
-                        </div>
-                        <button type="button" class="btn secondary" onclick="addHistoricalRecord()" style="margin-top: 0.5rem;" data-i18n="addHistBtn">+ Add Historic Season</button>
-                        <div id="histRecordsList" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.35rem;"></div>
-                        <input type="hidden" id="historical_yields" name="historical_yields">
-                    </div>
-
-                    <div class="wizard-progress" id="progressPreview" style="margin-top: 0.5rem;"></div>
-
-                    <div class="button-row">
-                        <button type="button" class="btn secondary" onclick="goToStep(4)" data-i18n="prevBtn">← Previous</button>
-                        <button type="submit" class="btn primary big-button" id="submitBtn" data-i18n="analyzeBtn">
-                            🚀 Run EarthEyes AI Analysis
-                        </button>
-                    </div>
-                </div>
-
-                <div style="margin-top: 1rem;">
-                    <div class="wizard-hint" id="stepHelp">Follow the steps above to run a complete physical & AI diagnostic of your field.</div>
-                </div>
+                </details>
             </form>
         </div>
 
@@ -1173,6 +1348,11 @@
         // Exhaustive Trilingual Dictionary
         const translations = {
             en: {
+                accrocheTitle: "What to plant after your wheat?",
+                accrocheSub: "Agro-climatic simulation for the Saïss Basin powered by 41 years of NASA POWER data.",
+                rotationBtnMain: "🌱 Calculate Resilient Rotation",
+                moreOptionsTitle: "More options (Leaf photo, Map, Sowing date, History)",
+                locSaiss: "Saïss Basin (Meknès)",
                 badgeLive: "NASA Space Apps 2026",
                 logoSub: "Autonomous Agro-Climate Intelligence & Resilient Rotation",
                 parcelData: "Parcel Configuration & Field Data",
@@ -1273,6 +1453,11 @@
                 deckBtn: "7-Slide Pitch"
             },
             fr: {
+                accrocheTitle: "Que planter après votre blé ?",
+                accrocheSub: "Simulation agro-climatique pour le bassin du Saïss basée sur 41 ans de données NASA POWER.",
+                rotationBtnMain: "🌱 Voir la rotation recommandée",
+                moreOptionsTitle: "Plus d'options (Photo foliaire, Carte, Semis, Historique)",
+                locSaiss: "Bassin du Saïss (Meknès)",
                 badgeLive: "NASA Space Apps 2026",
                 logoSub: "Intelligence Agro-Climatique Autonome & Rotation Résiliente",
                 parcelData: "Données de la Parcelle & Configuration",
@@ -1373,6 +1558,11 @@
                 deckBtn: "Slides Pitch (7)"
             },
             ar: {
+                accrocheTitle: "شنو نزرع بعد القمح ؟",
+                accrocheSub: "محاكاة مناخية وفلاحية لحوض سايس معتمدة على 41 سنة من بيانات أقمار ناسا.",
+                rotationBtnMain: "🌱 عرض الدورة الزراعية المقترحة",
+                moreOptionsTitle: "خيارات إضافية (صورة الورقة، الخريطة، تاريخ البذر، السجل)",
+                locSaiss: "حوض سايس (مكناس)",
                 badgeLive: "تحدي ناسا 2026",
                 logoSub: "الذكاء الاصطناعي المناخي والفلاحي للدورة الزراعية المقاومة",
                 parcelData: "بيانات الحقل والمزرعة",
@@ -1476,6 +1666,15 @@
 
         // Initialize Application
         document.addEventListener('DOMContentLoaded', function () {
+            const moreOpts = document.getElementById('moreOptionsDetails');
+            if (moreOpts) {
+                moreOpts.addEventListener('toggle', function() {
+                    if (this.open && map) {
+                        setTimeout(() => { map.invalidateSize(); }, 150);
+                    }
+                });
+            }
+
             // Initialize Leaflet Map centered on Meknès
             map = L.map('map').setView([33.89, -5.55], 11);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1513,7 +1712,32 @@
         });
 
         // Set Language with smooth LTR/RTL and text update
-        function setLanguage(lang) {
+        
+        function updateAccrocheTitle() {
+            const cropEl = document.getElementById('crop_type');
+            const cropVal = cropEl ? cropEl.value : 'wheat';
+            const accrocheEl = document.getElementById('accrocheText');
+            if (!accrocheEl) return;
+
+            const cropNames = {
+                en: { wheat: 'wheat', barley: 'barley', olive: 'olive trees', potato: 'potatoes', tomato: 'tomatoes' },
+                fr: { wheat: 'blé', barley: 'orge', olive: 'oliviers', potato: 'pommes de terre', tomato: 'tomates' },
+                ar: { wheat: 'القمح', barley: 'الشعير', olive: 'الزيتون', potato: 'البطاطس', tomato: 'الطماطم' }
+            };
+
+            const lang = currentLang || 'en';
+            const cropName = (cropNames[lang] && cropNames[lang][cropVal]) || cropVal;
+
+            if (lang === 'fr') {
+                accrocheEl.innerText = `Que planter après votre ${cropName} ?`;
+            } else if (lang === 'ar') {
+                accrocheEl.innerText = `شنو نزرع بعد ${cropName} ؟`;
+            } else {
+                accrocheEl.innerText = `What to plant after your ${cropName}?`;
+            }
+        }
+
+function setLanguage(lang) {
             currentLang = lang;
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
             const activeBtn = document.getElementById('btn-' + lang);
