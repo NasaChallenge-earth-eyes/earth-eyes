@@ -2,7 +2,7 @@
 ### *NASA International Space Apps Challenge 2026 — Meknès Local & Global*
 **Challenge Track:** [Adapting Farms with NASA Data](https://www.spaceappschallenge.org/2026/challenges/adapting-farms-with-nasa-data/)  
 **Territory Focus:** Saïss Agricultural Basin (Meknès, Fès, El Hajeb), Morocco  
-**Team EarthEyes:** Fatima Zahra Azzi & Samya · *Mentored by Anas Bennalla*
+**Team EarthEyes:** Fatima Zahra Azzi & Samya Loukili
 
 [![Status](https://img.shields.io/badge/System_Status-Live_%26_Operational-10b981?style=for-the-badge)](http://127.0.0.1:8000)
 [![NASA POWER](https://img.shields.io/badge/NASA_POWER-41_Years_Daily_Climate-0284c7?style=for-the-badge&logo=NASA&logoColor=white)](https://power.larc.nasa.gov/)
@@ -262,7 +262,6 @@ In strict compliance with **NASA International Space Apps Challenge 2026** compe
 
 Developed with passion in **Meknès, Morocco** for the **NASA International Space Apps Challenge 2026**:
 - **Fatima Zahra Azzi** (FastAPI Architecture, NASA SMAP Integration, Biophilic Trilingual UI/UX, Competition Presentation)
-- **Samya** (NASA POWER & SRTM Climate Modeling, Autonomous Agent Tool Planning, WOFOST Biophysics, INRA/FAO RAG)
-- **Mentor:** Anas Bennalla
+- **Samya Loukili** (NASA POWER & SRTM Climate Modeling, Autonomous Agent Tool Planning, WOFOST Biophysics, INRA/FAO RAG)
 
 > *"The data of humanity's most sophisticated orbital satellites should not remain locked in laboratories. It belongs in the hands of the smallholder farmer, in their own language, helping them save groundwater, regenerate their soil, and secure their livelihood in a changing climate."*
