@@ -1657,12 +1657,13 @@
                     <!-- 1. Culture actuelle -->
                     <div class="control-row">
                         <label for="crop_type" data-i18n="cropType">Culture actuelle</label>
-                        <select id="crop_type" name="crop_type" class="clean-select" required onchange="updateAccrocheTitle()">
-                            <option value="wheat" selected data-i18n="cropWheat">Blé tendre (Bread Wheat)</option>
-                            <option value="barley" data-i18n="cropBarley">Orge (Barley)</option>
-                            <option value="olive" data-i18n="cropOlive">Olivier (Olive Tree)</option>
-                            <option value="potato" data-i18n="cropPotato">Pomme de terre (Potato)</option>
-                            <option value="tomato" data-i18n="cropTomato">Tomate (Tomato)</option>
+                        <select id="crop_type" name="crop_type" class="clean-select" required onchange="onCropChange()">
+                            <option value="wheat" selected data-i18n="cropWheat">Blé tendre</option>
+                            <option value="barley" data-i18n="cropBarley">Orge</option>
+                            <option value="pois_chiche" data-i18n="cropChickpea">Pois chiche</option>
+                            <option value="feverole" data-i18n="cropFaba">Féverole</option>
+                            <option value="olive" data-i18n="cropOlive">Olivier</option>
+                            <option value="potato" data-i18n="cropPotato">Pomme de terre</option>
                         </select>
                     </div>
 
@@ -1670,7 +1671,7 @@
                     <div class="control-row">
                         <label for="customHaInput" data-i18n="surfaceLabel">Surface</label>
                         <div class="surface-input-group">
-                            <input type="number" id="customHaInput" value="5" min="0.5" max="500" step="0.5" class="clean-input" onchange="selectSurfaceHa(parseFloat(this.value), null)">
+                            <input type="number" id="customHaInput" value="5" min="0.5" max="500" step="0.5" class="clean-input" oninput="onSurfaceChange(parseFloat(this.value))" onchange="onSurfaceChange(parseFloat(this.value))">
                             <span class="surface-unit" id="surfaceUnitTag" data-i18n="surfaceUnit">ha</span>
                         </div>
                     </div>
@@ -2022,6 +2023,8 @@
         // Exhaustive Trilingual Dictionary
         const translations = {
             en: {
+cropChickpea: "Chickpea",
+                cropFaba: "Faba Bean",
                 badgeLive: "NASA Space Apps 2026",
                 logoSub: "Autonomous Agro-Climate Intelligence & Resilient Rotation",
                 accrocheTitle: "What to plant after your crop?",
@@ -2096,6 +2099,8 @@
                 deckBtn: "7-Slide Pitch"
             },
             fr: {
+cropChickpea: "Pois chiche",
+                cropFaba: "Féverole",
                 badgeLive: "NASA Space Apps 2026",
                 logoSub: "Intelligence Agro-Climatique & Rotation Résiliente",
                 accrocheTitle: "Que planter après votre culture ?",
@@ -2170,6 +2175,8 @@
                 deckBtn: "7-Slide Pitch"
             },
             ar: {
+cropChickpea: "الحمص",
+                cropFaba: "الفول",
                 badgeLive: "تحدي ناسا 2026",
                 logoSub: "الذكاء الاصطناعي المناخي والفلاحي للدورة الزراعية المقاومة",
                 accrocheTitle: "ماذا تزرع بعد محصولك الحالي ؟",
@@ -2302,9 +2309,9 @@
             if (!accrocheEl) return;
 
             const cropNames = {
-                en: { wheat: 'wheat', barley: 'barley', olive: 'olive trees', potato: 'potatoes', tomato: 'tomatoes' },
-                fr: { wheat: 'blé', barley: 'orge', olive: 'oliviers', potato: 'pommes de terre', tomato: 'tomates' },
-                ar: { wheat: 'القمح', barley: 'الشعير', olive: 'الزيتون', potato: 'البطاطس', tomato: 'الطماطم' }
+                en: { wheat: 'wheat', barley: 'barley', pois_chiche: 'chickpea', feverole: 'faba bean', olive: 'olive trees', potato: 'potatoes', tomato: 'tomatoes' },
+                fr: { wheat: 'blé', barley: 'orge', pois_chiche: 'pois chiche', feverole: 'féverole', olive: 'oliviers', potato: 'pommes de terre', tomato: 'tomates' },
+                ar: { wheat: 'القمح', barley: 'الشعير', pois_chiche: 'الحمص', feverole: 'الفول', olive: 'الزيتون', potato: 'البطاطس', tomato: 'الطماطم' }
             };
 
             const lang = currentLang || 'en';
@@ -2699,13 +2706,45 @@ function updateAccrocheTitle() {
         }
 
         // Fetch Rotation Recommendations (Backend Endpoint: /recommend-rotation)
+        function onCropChange() {
+            updateAccrocheTitle();
+            fetchRotationRecommendations();
+        }
+
+        function onSurfaceChange(val) {
+            if (isNaN(val) || val <= 0) return;
+            currentSurfaceHa = parseFloat(val);
+            if (lastRotationData) {
+                renderRotationResults(lastRotationData);
+            }
+        }
+
         async function fetchRotationRecommendations() {
             const btn = document.getElementById('btnRotationHeader');
-            if (btn) btn.style.opacity = '0.7';
+            const origHtml = btn ? btn.innerHTML : '';
+            const t = translations[currentLang] || translations.en;
+
+            if (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.8';
+                btn.innerHTML = `<span style="display:inline-block; animation: spin 1s infinite linear;">🌱</span> ${currentLang === 'ar' ? 'جاري الحساب عبر بيانات ناسا...' : (currentLang === 'en' ? 'Calculating with NASA Data...' : 'Calcul en cours avec données NASA...')}`;
+            }
 
             const latVal = parseFloat(document.getElementById('lat')?.value) || 33.89;
             const lonVal = parseFloat(document.getElementById('lon')?.value) || -5.55;
-            const currentCrop = document.getElementById('crop_type')?.value || 'wheat';
+            const rawCrop = document.getElementById('crop_type')?.value || 'wheat';
+
+            // Exact backend mapping for agronomic database
+            const backendCropMap = {
+                'wheat': 'blé',
+                'barley': 'orge',
+                'pois_chiche': 'pois_chiche',
+                'feverole': 'feverole',
+                'olive': 'olivier',
+                'potato': 'pomme de terre',
+                'tomato': 'tomate'
+            };
+            const previousCropBackend = backendCropMap[rawCrop] || rawCrop;
 
             try {
                 const response = await fetch('/recommend-rotation', {
@@ -2715,8 +2754,9 @@ function updateAccrocheTitle() {
                         lat: latVal,
                         lon: lonVal,
                         city: 'Meknès',
-                        previous_crop: currentCrop,
-                        risk_profile: 'équilibré'
+                        previous_crop: previousCropBackend,
+                        risk_profile: 'équilibré',
+                        water_source: currentWaterRegime || 'bour'
                     })
                 });
 
@@ -2729,12 +2769,18 @@ function updateAccrocheTitle() {
                 const dashboard = document.getElementById('rotationDashboard');
                 if (dashboard) {
                     dashboard.style.display = 'block';
+                    // Smoothly scroll down so the user sees the direct response
+                    dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
 
             } catch (err) {
                 console.error('Rotation recommendation error:', err);
             } finally {
-                if (btn) btn.style.opacity = '1';
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.innerHTML = t.rotationBtnMain || origHtml;
+                }
             }
         }
 
@@ -2751,28 +2797,35 @@ function updateAccrocheTitle() {
             'sunflower': 'دوار الشمس',
             'lentille': 'العدس',
             'Lentilles': 'العدس',
-            'lentils': 'العدس'
+            'lentils': 'العدس',
+            'blé': 'القمح الصلب / اللين',
+            'orge': 'الشعير'
         };
 
         const ENGLISH_CROP_NAMES = {
             'pois_chiche': 'Chickpea',
             'Pois chiche': 'Chickpea',
+            'chickpea': 'Chickpea',
             'feverole': 'Faba Bean',
             'Féverole': 'Faba Bean',
+            'faba bean': 'Faba Bean',
             'tournesol': 'Sunflower',
+            'Tournesol': 'Sunflower',
             'Tournesol de printemps': 'Spring Sunflower',
+            'sunflower': 'Sunflower',
             'lentille': 'Lentils',
-            'Lentilles': 'Lentils'
+            'Lentilles': 'Lentils',
+            'lentils': 'Lentils'
         };
 
         function getCropName(crop, lang) {
-            const key = crop.crop_id || crop.name_fr || '';
+            const key = crop.crop_id || crop.crop_name_fr || crop.name_fr || '';
             if (lang === 'ar') {
-                return ARABIC_CROP_NAMES[key] || ARABIC_CROP_NAMES[crop.name_fr] || crop.name_fr;
+                return ARABIC_CROP_NAMES[key] || ARABIC_CROP_NAMES[crop.name_fr] || crop.name_darija || crop.crop_name_darija || crop.name_fr || key;
             } else if (lang === 'en') {
-                return ENGLISH_CROP_NAMES[key] || ENGLISH_CROP_NAMES[crop.name_fr] || crop.name_fr;
+                return ENGLISH_CROP_NAMES[key] || ENGLISH_CROP_NAMES[crop.name_fr] || crop.name_fr || key;
             }
-            return crop.name_fr;
+            return crop.name_fr || crop.crop_name_fr || key;
         }
 
         function getFamilyName(family, lang) {
@@ -2789,7 +2842,7 @@ function updateAccrocheTitle() {
         }
 
         function getJustification(crop, lang) {
-            const key = (crop.crop_id || crop.name_fr || '').toLowerCase();
+            const key = (crop.crop_id || crop.crop_name_fr || crop.name_fr || '').toLowerCase();
             if (lang === 'ar') {
                 if (key.includes('chiche') || key.includes('pois')) {
                     return 'تثبيت الآزوت الجوي طبيعياً في التربة وكسر الدورة البيولوجية لأمراض وآفات الحبوب.';
@@ -2885,6 +2938,18 @@ function updateAccrocheTitle() {
             let html = '';
 
             recs.forEach((crop, idx) => {
+                // Calcul proportionnel à la surface de la parcelle
+                const ha = currentSurfaceHa || 5.0;
+                const totalYieldQ = crop.estimated_yield_kg_ha ? Math.round((crop.estimated_yield_kg_ha / 100) * ha) : '-';
+                const totalWaterSaved = (crop.water_saved_m3_ha || 620) * ha;
+                const totalNBonus = (crop.nitrogen_bonus_kg_ha || 35) * ha;
+
+                const parcelSummaryText = (lang === 'ar')
+                    ? `🚜 على مساحة <strong>${ha} هكتار</strong> لحقلك : حوالي <strong>${totalYieldQ} قنطار</strong> متوقع · توفير <strong>${totalWaterSaved.toLocaleString()} م³</strong> من المياه · <strong>+${totalNBonus} كجم</strong> آزوت طبيعي مجاني`
+                    : (lang === 'en'
+                        ? `🚜 Scaled to your <strong>${ha} ha</strong> farm: ~<strong>${totalYieldQ} cwt</strong> expected · <strong>${totalWaterSaved.toLocaleString()} m³</strong> water saved · <strong>+${totalNBonus} kg</strong> free nitrogen`
+                        : `🚜 Sur votre parcelle de <strong>${ha} ha</strong> : ~<strong>${totalYieldQ} quintaux</strong> attendus · <strong>${totalWaterSaved.toLocaleString()} m³</strong> d'eau préservée · <strong>+${totalNBonus} kg</strong> d'azote naturel`);
+
                 const isHero = crop.rank === 1 || idx === 0;
                 const cropName = getCropName(crop, lang);
                 const familyName = getFamilyName(crop.family, lang);
@@ -2907,6 +2972,9 @@ function updateAccrocheTitle() {
                             </div>
 
                             <p class="hero-justification">${justification}</p>
+                            <div style="background: #F0F4ED; border: 1px solid rgba(79, 122, 90, 0.2); border-radius: 10px; padding: 0.65rem 0.9rem; font-size: 0.88rem; color: var(--ink); line-height: 1.45;">
+                                ${parcelSummaryText}
+                            </div>
 
                             <!-- Exactement 3 Chiffres Clés -->
                             <div class="hero-metrics-triplet">
@@ -3035,6 +3103,7 @@ function updateAccrocheTitle() {
                 if (bBtn) bBtn.classList.add('active');
                 if (sBtn) sBtn.classList.remove('active');
             }
+            fetchRotationRecommendations();
         }
 
         // Voice Dictation
@@ -3359,6 +3428,19 @@ function updateAccrocheTitle() {
 
         // Full Predict Pipeline Form Submission (/predict)
         document.getElementById('predictForm').onsubmit = async function (e) {
+            e.preventDefault();
+            const photoInput = document.getElementById('photo');
+            if (!photoInput || !photoInput.files || photoInput.files.length === 0) {
+                // Photo is optional for general rotation; trigger rotation directly and notify user
+                fetchRotationRecommendations();
+                const msg = (currentLang === 'ar')
+                    ? 'تم تحديث الدورة الزراعية لحقلك. (لتشخيص أمراض النبات، يرجى اختيار صورة لورقة مصابة).'
+                    : (currentLang === 'en'
+                        ? 'Crop rotation updated for your parcel. (To run leaf disease diagnosis, please select a photo).'
+                        : 'Rotation culturale mise à jour pour votre parcelle. (Pour le diagnostic de maladie foliaire, veuillez sélectionner une photo).');
+                alert(msg);
+                return;
+            }
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             const origText = btn.innerText;
