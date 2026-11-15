@@ -2841,6 +2841,45 @@ function updateAccrocheTitle() {
             return family || '';
         }
 
+        function getFarmerQuote(crop, lang) {
+            const key = (crop.crop_id || crop.crop_name_fr || crop.name_fr || '').toLowerCase();
+            if (lang === 'ar') {
+                if (key.includes('chiche') || key.includes('pois')) {
+                    return 'الحمص يحيي التربة: يغذيها بالآزوت الطبيعي ويطهرها من أمراض الحبوب.';
+                } else if (key.includes('foul') || key.includes('feverole') || key.includes('féverole')) {
+                    return 'الفول يفكك الأراضي الطينية الثقيلة بجذوره القوية ويترك فيها مخزوناً قيماً من الآزوت الطبيعي.';
+                } else if (key.includes('tournesol') || key.includes('sunflower')) {
+                    return 'دوار الشمس الربيعي يستفيد من الرطوبة الجوفية العميقة بجذوره الوتدية ويثبت التربة ضد الانجراف.';
+                } else if (key.includes('orge') || key.includes('barley')) {
+                    return 'الشعير المبكر ينضج قبل رياح الشرقي الحارة، وتبنه الوفير يحفظ رطوبة التربة من الجفاف.';
+                }
+                return 'الدورة الزراعية المتوازنة تعيد خصوبة الأرض وتوفر مياه السقي مع حماية المحصول من الأمراض.';
+            } else if (lang === 'en') {
+                if (key.includes('chiche') || key.includes('pois')) {
+                    return 'Chickpea revitalizes the soil: it recharges it with natural nitrogen and clears out cereal diseases.';
+                } else if (key.includes('foul') || key.includes('feverole') || key.includes('féverole')) {
+                    return 'Faba bean aerates heavy clay soils with its deep roots and leaves a rich biological nitrogen reserve.';
+                } else if (key.includes('tournesol') || key.includes('sunflower')) {
+                    return 'Spring sunflower taps deep subsoil moisture with its strong taproot and anchors the soil against erosion.';
+                } else if (key.includes('orge') || key.includes('barley')) {
+                    return 'Early barley matures before dry hot winds, and its abundant straw mulches and shields soil moisture.';
+                }
+                return 'A resilient rotation restores natural soil fertility, saves groundwater, and breaks cereal pathogen cycles.';
+            } else {
+                // French
+                if (key.includes('chiche') || key.includes('pois')) {
+                    return 'Le pois chiche régénère le sol : il le recharge en azote naturel et assainit le terrain des maladies du blé.';
+                } else if (key.includes('foul') || key.includes('feverole') || key.includes('féverole')) {
+                    return 'La féverole aère les terres argileuses lourdes grâce à ses racines denses et laisse une réserve précieuse d\'azote biologique.';
+                } else if (key.includes('tournesol') || key.includes('sunflower')) {
+                    return 'Le tournesol puise l\'humidité profonde grâce à sa racine pivot et stabilise la terre contre l\'érosion.';
+                } else if (key.includes('orge') || key.includes('barley')) {
+                    return 'L\'orge précoce mûrit avant les vents chauds du Chergui, et sa paille abondante protège l\'humidité de la parcelle.';
+                }
+                return crop.soil_health_fr || crop.soil_health_impact || 'Une rotation résiliente régénère la fertilité naturelle du sol, préserve l\'eau et casse le cycle parasitaire.';
+            }
+        }
+
         function getJustification(crop, lang) {
             const key = (crop.crop_id || crop.crop_name_fr || crop.name_fr || '').toLowerCase();
             if (lang === 'ar') {
@@ -2954,6 +2993,7 @@ function updateAccrocheTitle() {
                 const cropName = getCropName(crop, lang);
                 const familyName = getFamilyName(crop.family, lang);
                 const justification = getJustification(crop, lang);
+                const farmerQuote = getFarmerQuote(crop, lang);
                 const yieldVal = formatYieldValue(crop.yield_display || (crop.estimated_yield_kg_ha ? crop.estimated_yield_kg_ha.toLocaleString() + ' kg/ha' : '-'), lang);
                 const waterVal = formatWaterValue(crop.water_saved || '-', lang);
                 const nitroVal = formatNitrogenValue(crop.nitrogen_bonus || '-', lang);
@@ -2992,9 +3032,9 @@ function updateAccrocheTitle() {
                                 </div>
                             </div>
 
-                            ${crop.darija_advice ? `
+                            ${farmerQuote ? `
                             <blockquote class="farmer-soft-quote">
-                                <span class="quote-text">« ${crop.darija_advice} »</span>
+                                <span class="quote-text">« ${farmerQuote} »</span>
                                 <span class="quote-author">— ${t.adviceDarijaTitle}</span>
                             </blockquote>
                             ` : ''}
@@ -3050,9 +3090,9 @@ function updateAccrocheTitle() {
                                         <span class="c-val">${crop.soil_score_display || (crop.soil_health_score ? crop.soil_health_score + '/100' : '88/100')}</span>
                                     </div>
                                 </div>
-                                ${crop.darija_advice ? `
+                                ${farmerQuote ? `
                                 <blockquote class="farmer-soft-quote" style="margin-top: 0.4rem; padding: 0.6rem 0.8rem;">
-                                    <span class="quote-text" style="font-size: 0.88rem;">« ${crop.darija_advice} »</span>
+                                    <span class="quote-text" style="font-size: 0.88rem;">« ${farmerQuote} »</span>
                                 </blockquote>
                                 ` : ''}
                             </div>
@@ -3334,7 +3374,7 @@ function updateAccrocheTitle() {
             container.innerHTML = `
                 <div class="compare-col bad">
                     <div style="font-weight: 700; color: #ef4444; font-size: 1.1rem; margin-bottom: 0.5rem;">
-                        ❌ Monoculture: ${base.crop_fr || 'Wheat'} (${base.crop_darija || 'Qme7'})
+                        ${currentLang === 'ar' ? '❌ زراعة أحادية متكررة: القمح' : (currentLang === 'en' ? '❌ Continuous Monoculture: Durum Wheat' : '❌ Monoculture continue : Blé dur')}
                     </div>
                     <div class="metric-row"><span class="label">Water Need:</span><span class="val" style="color:#ef4444;">${base.water_need_m3_ha || 4200} m³/ha</span></div>
                     <div class="metric-row"><span class="label">Nitrogen Balance:</span><span class="val" style="color:#ef4444;">${base.nitrogen_balance || '-60 kg N/ha'}</span></div>
@@ -3344,7 +3384,7 @@ function updateAccrocheTitle() {
                 </div>
                 <div class="compare-col good">
                     <div style="font-weight: 700; color: #34d399; font-size: 1.1rem; margin-bottom: 0.5rem;">
-                        ✅ Recommended Rotation: ${cand.crop_fr || 'Chickpea'} (${cand.crop_darija || '7emmez'})
+                        ${currentLang === 'ar' ? '✅ الدورة الزراعية البديلة: الحمص (بقوليات)' : (currentLang === 'en' ? '✅ Recommended Rotation: Chickpea (Legume)' : '✅ Rotation recommandée : Pois chiche (Légumineuse)')}
                     </div>
                     <div class="metric-row"><span class="label">Water Need:</span><span class="val" style="color:#34d399;">${cand.water_need_m3_ha || 2400} m³/ha (Saved: ${cand.water_saved_m3_ha || 1800} m³)</span></div>
                     <div class="metric-row"><span class="label">Nitrogen Fixation:</span><span class="val" style="color:#34d399;">${cand.nitrogen_balance || '+35 kg N/ha'}</span></div>
