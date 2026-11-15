@@ -940,6 +940,143 @@
             border-radius: 8px 0 0 8px;
         }
 
+        /* Farm Controls Bar */
+        .farm-controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 0.6rem 0.85rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .farm-controls-group {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.82rem;
+            color: #cbd5e1;
+        }
+
+        .ha-chip {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            color: #f3f4f6;
+            padding: 0.25rem 0.55rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .ha-chip:hover, .ha-chip.active {
+            background: rgba(16, 185, 129, 0.25);
+            border-color: #10b981;
+            color: #34d399;
+        }
+
+        .regime-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--glass-border);
+            color: #94a3b8;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .regime-btn.active {
+            background: #1e3a8a;
+            border-color: #3b82f6;
+            color: #93c5fd;
+        }
+
+        .btn-voice {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0.6rem 0.75rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-voice.listening {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: #ef4444;
+            color: #ef4444;
+            animation: pulseRecord 1s infinite alternate;
+        }
+
+        @keyframes pulseRecord {
+            from { transform: scale(1); box-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
+            to { transform: scale(1.1); box-shadow: 0 0 15px rgba(239, 68, 68, 0.9); }
+        }
+
+        .btn-whatsapp-share {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #25d366;
+            color: #ffffff;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 0.5rem;
+            border: none;
+        }
+
+        .btn-whatsapp-share:hover {
+            background: #1ebd5a;
+            transform: translateY(-1px);
+        }
+
+        /* Comparison Card */
+        .comparison-table-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .compare-col {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            border: 1px solid var(--glass-border);
+        }
+
+        .compare-col.bad {
+            border-color: rgba(239, 68, 68, 0.35);
+        }
+
+        .compare-col.good {
+            border-color: rgba(16, 185, 129, 0.5);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .farm-totals-box {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(59, 130, 246, 0.08) 100%);
+            border: 1.5px solid rgba(16, 185, 129, 0.4);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-top: 1rem;
+        }
+
     </style>
 </head>
 <body class="rtl">
@@ -1145,12 +1282,35 @@
                     </span>
                 </div>
 
+                <!-- Contrôles d'Exploitation (Surface & Régime Hydrique) -->
+                <div class="farm-controls-bar">
+                    <div class="farm-controls-group">
+                        <span>🚜 <strong>المساحة (Surface) :</strong></span>
+                        <button type="button" class="ha-chip" onclick="selectSurfaceHa(2, this)">2 Ha</button>
+                        <button type="button" class="ha-chip active" onclick="selectSurfaceHa(5, this)">5 Ha</button>
+                        <button type="button" class="ha-chip" onclick="selectSurfaceHa(10, this)">10 Ha</button>
+                        <input type="number" id="customHaInput" value="5" min="0.5" max="500" step="0.5" onchange="selectSurfaceHa(parseFloat(this.value), null)" style="width: 58px; padding: 2px 6px; font-size: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 4px; color: #fff;">
+                        <span>ha</span>
+                    </div>
+                    <div class="farm-controls-group">
+                        <span>💧 <strong>السقي (Régime) :</strong></span>
+                        <button type="button" id="regimeBourBtn" class="regime-btn active" onclick="setWaterRegime('bour')">🌧️ بور (Bour)</button>
+                        <button type="button" id="regimeSaqwiBtn" class="regime-btn" onclick="setWaterRegime('saqwi')">💧 سقوي (Puits)</button>
+                    </div>
+                </div>
+
                 <!-- Boutons d'Action Logiques pour l'Agent -->
                 <div class="agent-action-bar">
                     <div class="agent-bar-label">⚡ Actions directes pour l'Agent (cliquez pour exécuter) :</div>
                     <div class="agent-chips-scroll">
                         <button type="button" class="chip-action" onclick="sendPredefinedMessage('شنو نزرع العام جاي مور القمح باش نحافظ على الماء ونعاون الأرض فالآزوت ؟')">
                             🌱 شنو نزرع دابا ؟ (Rotation NASA)
+                        </button>
+                        <button type="button" class="chip-action" onclick="sendPredefinedMessage('شحال غانربح ونوفر فالماء والآزوت على المساحة ديالي ؟')">
+                            🚜 حساب الإنتاج والماء
+                        </button>
+                        <button type="button" class="chip-action" onclick="sendPredefinedMessage('مقارنة بين القمح والحمص شكون حسن فالمداخيل والماء ومقاومة الجفاف ؟')">
+                            ⚖️ مقارنة القمح مع الحمص
                         </button>
                         <button type="button" class="chip-action" onclick="sendPredefinedMessage('واش الأرض واجدة للزرع دابا ؟ فحص رطوبة التربة NASA SMAP')">
                             💧 رطوبة التربة (NASA SMAP)
@@ -1173,8 +1333,55 @@
                 <div class="chat-input-container" style="margin-top: 0.75rem;">
                     <label for="chatPhotoInput" class="btn-chat-photo" title="Prendre ou envoyer une photo de feuille à l'Agent">📷</label>
                     <input type="file" id="chatPhotoInput" accept="image/*" style="display: none;" onchange="if(this.files[0]) uploadPhotoToAgent(this.files[0])">
-                    <input type="text" class="chat-input" id="chatInput" placeholder="Posez une question ou envoyez une photo..." onkeydown="if(event.key === 'Enter') sendChatMessage()">
+                    <button type="button" id="btnVoiceInput" class="btn-voice" onclick="toggleVoiceDictation()" title="Parler en Darija ou Français (Dictée vocale)">🎙️</button>
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Posez une question ou dictez à l'Agent..." onkeydown="if(event.key === 'Enter') sendChatMessage()">
                     <button class="send-btn" onclick="sendChatMessage()" data-i18n="chatSendBtn">Envoyer</button>
+                </div>
+            </div>
+
+            <!-- Face-à-Face Comparateur Blé vs Légumineuse Conseillée -->
+            <div class="card" id="comparisonDashboard" style="display: none; border-color: rgba(59, 130, 246, 0.4); box-shadow: 0 0 25px rgba(59, 130, 246, 0.15);">
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.85rem; margin-bottom: 1rem;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.6rem;">
+                            <span class="badge-nasa" style="background: linear-gradient(135deg, #ef4444 0%, #10b981 100%);">Face-à-Face Décisionnel</span>
+                            <h2 style="margin: 0; font-size: 1.25rem;">مقارنة مباشرة : القمح المستمر ❌ ضد الحمص/الفول ✅</h2>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 0.25rem;">
+                            Comparatif agronomique direct : rupture parasitaire, bilan azoté et économie d'eau souterraine.
+                        </p>
+                    </div>
+                    <button type="button" onclick="document.getElementById('comparisonDashboard').style.display='none'" style="background:none; border:none; color:#94a3b8; font-size:1.2rem; cursor:pointer;">✕</button>
+                </div>
+                
+                <div class="comparison-table-grid" id="comparisonGridContent">
+                    <!-- Populated dynamically via JS -->
+                </div>
+                
+                <div id="comparisonVerdictBox" style="margin-top: 1rem; padding: 0.85rem 1rem; background: rgba(16, 185, 129, 0.1); border-left: 3px solid #10b981; border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #e2e8f0;">
+                </div>
+            </div>
+
+            <!-- Widget Récapitulatif Exploitation Multi-Hectares -->
+            <div class="card" id="farmTotalsCard" style="display: none; border-color: rgba(16, 185, 129, 0.4);">
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="badge-nasa">Calcul Exploitation Réelle</span>
+                            <h2 style="margin: 0; font-size: 1.25rem;" id="farmTotalsTitle">حصيلة الإنتاج والتوفير على مستوى المزرعة</h2>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem;">
+                            Chiffrage opérationnel en Quintaux, mètres cubes et Dirhams d'engrais épargnés.
+                        </p>
+                    </div>
+                    <button type="button" class="btn-whatsapp-share" id="btnShareTotalsWhatsApp" onclick="shareTotalsOnWhatsApp()">
+                        📲 مشاركة في واتساب
+                    </button>
+                </div>
+                <div class="metrics-grid" id="farmTotalsMetricsGrid">
+                    <!-- Populated via JS -->
+                </div>
+                <div id="farmTotalsSummaryText" style="margin-top: 1rem; font-size: 0.92rem; color: #f3f4f6; line-height: 1.5; background: rgba(0,0,0,0.25); padding: 0.85rem; border-radius: 8px;">
                 </div>
             </div>
 
@@ -1353,6 +1560,9 @@
                             </div>
                             "${crop.darija_advice}"
                         </div>
+                        <a class="btn-whatsapp-share" href="https://wa.me/?text=${encodeURIComponent('🌱 *Conseil EarthEyes NASA Space Apps Meknès* :\nMor l-qme7, a7sen rotation hiya ' + crop.name_darija + ' (' + crop.name_fr + ').\n• Ghella : ' + (crop.yield_display || (crop.estimated_yield_kg_ha ? crop.estimated_yield_kg_ha + ' kg/ha' : '')) + '\n• Se77at trab : ' + (crop.soil_health_score || 92) + '/100\n• Tawfir l-ma : ' + (crop.water_saved || '') + '\n📚 Marji3 : INRA Maroc & NASA POWER.')}" target="_blank" title="Partager ce conseil sur WhatsApp">
+                            📲 مشاركة في واتساب
+                        </a>
                     </div>
                 `;
             }).join('');
@@ -1361,6 +1571,11 @@
     </script>
     <script>
         let currentParcelContext = null;
+        let currentSurfaceHa = 5.0;
+        let currentWaterRegime = 'bour';
+        let recognitionInstance = null;
+        let isRecordingVoice = false;
+        let latestFarmTotalsData = null;
         let map, marker;
         let currentLang = 'ar';
         let historicalRecords = [];
@@ -2020,6 +2235,186 @@
             }
         }
 
+        function selectSurfaceHa(ha, btnEl) {
+            if (isNaN(ha) || ha <= 0) return;
+            currentSurfaceHa = parseFloat(ha);
+            document.querySelectorAll('.ha-chip').forEach(b => b.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+            const customInp = document.getElementById('customHaInput');
+            if (customInp) customInp.value = currentSurfaceHa;
+            
+            // Auto-calcul immédiat par l'Agent
+            sendPredefinedMessage(`شحال غانربح ونوفر فالماء والآزوت على ${currentSurfaceHa} هكتار ديالي ؟`);
+        }
+
+        function setWaterRegime(regime) {
+            currentWaterRegime = regime;
+            const bBtn = document.getElementById('regimeBourBtn');
+            const sBtn = document.getElementById('regimeSaqwiBtn');
+            if (regime === 'saqwi') {
+                if (sBtn) sBtn.classList.add('active');
+                if (bBtn) bBtn.classList.remove('active');
+            } else {
+                if (bBtn) bBtn.classList.add('active');
+                if (sBtn) sBtn.classList.remove('active');
+            }
+        }
+
+        function toggleVoiceDictation() {
+            const btn = document.getElementById('btnVoiceInput');
+            const input = document.getElementById('chatInput');
+            
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert(currentLang === 'ar' ? 'خاصية التسجيل الصوتي غير مدعومة في هذا المتصفح. استخدم Chrome أو Edge.' : 'La reconnaissance vocale n\'est pas supportée sur ce navigateur. Utilisez Chrome ou Edge.');
+                return;
+            }
+
+            if (isRecordingVoice && recognitionInstance) {
+                recognitionInstance.stop();
+                isRecordingVoice = false;
+                if (btn) btn.classList.remove('listening');
+                return;
+            }
+
+            recognitionInstance = new SpeechRecognition();
+            recognitionInstance.lang = currentLang === 'ar' ? 'ar-MA' : 'fr-FR';
+            recognitionInstance.continuous = false;
+            recognitionInstance.interimResults = false;
+
+            recognitionInstance.onstart = function() {
+                isRecordingVoice = true;
+                if (btn) btn.classList.add('listening');
+                if (input) input.placeholder = currentLang === 'ar' ? 'كنسمع ليك دابا... هضر بالدارجة ولا الفرنساوية' : 'Écoute en cours... parlez à l\'Agent';
+            };
+
+            recognitionInstance.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                if (input) input.value = transcript;
+                isRecordingVoice = false;
+                if (btn) btn.classList.remove('listening');
+                sendChatMessage();
+            };
+
+            recognitionInstance.onerror = function(err) {
+                console.error("Voice error:", err);
+                isRecordingVoice = false;
+                if (btn) btn.classList.remove('listening');
+                if (input) input.placeholder = translations[currentLang]?.chatInputPlaceholder || 'Posez une question...';
+            };
+
+            recognitionInstance.onend = function() {
+                isRecordingVoice = false;
+                if (btn) btn.classList.remove('listening');
+                if (input) input.placeholder = translations[currentLang]?.chatInputPlaceholder || 'Posez une question...';
+            };
+
+            recognitionInstance.start();
+        }
+
+        function renderComparisonResults(data) {
+            if (!data) return;
+            const card = document.getElementById('comparisonDashboard');
+            const container = document.getElementById('comparisonGridContent');
+            const verdict = document.getElementById('comparisonVerdictBox');
+            if (!card || !container) return;
+
+            const base = data.baseline || {};
+            const cand = data.candidate || {};
+
+            container.innerHTML = `
+                <div class="compare-col bad">
+                    <div style="font-weight: 700; color: #ef4444; font-size: 1.1rem; margin-bottom: 0.5rem;">
+                        ❌ Monoculture : ${base.crop_fr || 'Blé'} (${base.crop_darija || 'Qme7'})
+                    </div>
+                    <div class="metric-row"><span class="label">Besoin en eau :</span><span class="val" style="color:#ef4444;">${base.water_need_m3_ha || 4200} m³/ha</span></div>
+                    <div class="metric-row"><span class="label">Bilan Azote :</span><span class="val" style="color:#ef4444;">${base.nitrogen_balance || '-60 kg N/ha'}</span></div>
+                    <div class="metric-row"><span class="label">Pression Maladie :</span><span class="val" style="color:#f87171; font-size:0.75rem;">${base.disease_impact || 'Risque élevé'}</span></div>
+                    <div class="metric-row"><span class="label">Sensibilité Sécheresse :</span><span class="val" style="color:#f87171;">${base.drought_vulnerability || 'Très vulnérable'}</span></div>
+                    <div class="metric-row"><span class="label">Santé Sol :</span><span class="val" style="color:#ef4444;">${base.soil_health_score || 35}/100</span></div>
+                </div>
+                <div class="compare-col good">
+                    <div style="font-weight: 700; color: #34d399; font-size: 1.1rem; margin-bottom: 0.5rem;">
+                        ✅ Rotation Conseillée : ${cand.crop_fr || 'Pois chiche'} (${cand.crop_darija || '7emmez'})
+                    </div>
+                    <div class="metric-row"><span class="label">Besoin en eau :</span><span class="val" style="color:#34d399;">${cand.water_need_m3_ha || 2400} m³/ha (Économie : ${cand.water_saved_m3_ha || 1800} m³)</span></div>
+                    <div class="metric-row"><span class="label">Bilan Azote :</span><span class="val" style="color:#34d399;">${cand.nitrogen_balance || '+35 kg N/ha'}</span></div>
+                    <div class="metric-row"><span class="label">Rupture Maladie :</span><span class="val" style="color:#4ade80; font-size:0.75rem;">${cand.disease_impact || 'Rupture complète'}</span></div>
+                    <div class="metric-row"><span class="label">Tolérance Sécheresse :</span><span class="val" style="color:#4ade80;">${cand.drought_vulnerability || 'Résistance élevée'}</span></div>
+                    <div class="metric-row"><span class="label">Santé Sol :</span><span class="val" style="color:#34d399;">${cand.soil_health_score || 92}/100</span></div>
+                </div>
+            `;
+
+            if (verdict) {
+                verdict.innerHTML = `<strong>💡 الخلاصة العلمية (INRA / FAO) :</strong> ${currentLang === 'ar' ? (data.verdict_darija || data.verdict_fr) : (data.verdict_fr || data.verdict_darija)}`;
+            }
+
+            card.style.display = 'block';
+            card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function renderFarmTotals(data) {
+            if (!data) return;
+            latestFarmTotalsData = data;
+            const card = document.getElementById('farmTotalsCard');
+            const grid = document.getElementById('farmTotalsMetricsGrid');
+            const summary = document.getElementById('farmTotalsSummaryText');
+            const title = document.getElementById('farmTotalsTitle');
+            if (!card || !grid) return;
+
+            if (title) {
+                title.innerText = currentLang === 'ar'
+                    ? `حصيلة مزرعتك : ${data.surface_hectares} هكتار (${data.crop_name_darija})`
+                    : `Bilan Exploitation : ${data.surface_hectares} Hectares (${data.crop_name_fr})`;
+            }
+
+            grid.innerHTML = `
+                <div class="metric-card">
+                    <div class="metric-label">🌾 الإنتاج الإجمالي (Récolte)</div>
+                    <div class="metric-value" style="color: #34d399;">${data.total_yield_q} Qtx</div>
+                    <div style="font-size: 0.75rem; color: #94a3b8;">${data.total_yield_tonnes} Tonnes (${data.yield_q_ha} Q/Ha)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">💧 الماء الموفر (Eau Épargnée)</div>
+                    <div class="metric-value" style="color: #38bdf8;">${data.total_water_saved_m3.toLocaleString('fr-FR')} m³</div>
+                    <div style="font-size: 0.75rem; color: #94a3b8;">حفاظ على الفرشة المائية للسايس</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">⚡ الآزوت الطبيعي (Azote Fixé)</div>
+                    <div class="metric-value" style="color: #facc15;">+${data.total_nitrogen_fixed_kg} kg N</div>
+                    <div style="font-size: 0.75rem; color: #4ade80;">~ ${data.bags_ammonitrate_saved} خناشي أمونيترات مجاناً</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">💰 الربح المالي (Gain Engrais)</div>
+                    <div class="metric-value" style="color: #4ade80;">+${data.total_financial_gain_mad.toLocaleString('fr-FR')} DH</div>
+                    <div style="font-size: 0.75rem; color: #94a3b8;">توفير في ثمن الأسمدة والمضخات</div>
+                </div>
+            `;
+
+            if (summary) {
+                summary.innerHTML = `
+                    <div>🌱 <strong>الزريعة المطلوبة :</strong> تحتاج تقريباً <b>${data.total_seeds_needed_q} قنطار</b> من بذور ${data.crop_name_darija}.</div>
+                    <div style="margin-top:0.4rem;">💡 ${data.summary_darija.replace(/\n/g, '<br>')}</div>
+                `;
+            }
+
+            card.style.display = 'block';
+            card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function shareTotalsOnWhatsApp() {
+            if (!latestFarmTotalsData) return;
+            const d = latestFarmTotalsData;
+            const msg = `🌱 *تقرير EarthEyes NASA Space Apps Meknès* :\n` +
+                `المزرعة : ${d.surface_hectares} هكتار (${d.crop_name_darija} / ${d.crop_name_fr})\n` +
+                `• المحصول المتوقع : *${d.total_yield_q} قنطار* (${d.total_yield_tonnes} طن)\n` +
+                `• الماء الموفر للفرشة : *${d.total_water_saved_m3.toLocaleString('fr-FR')} m³*\n` +
+                `• الآزوت الطبيعي فبور : *+${d.total_nitrogen_fixed_kg} kg N* (توفير ${d.total_financial_gain_mad} درهم في السماد)\n` +
+                `• الزريعة المطلوبة : ${d.total_seeds_needed_q} قنطار\n` +
+                `📚 مرجع : INRA Maroc Meknès & NASA POWER (1984-2025).`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
         async function sendChatMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
@@ -2035,8 +2430,18 @@
                 crop_type: document.getElementById('crop_type').value,
                 sowing_date: document.getElementById('sowing_date').value,
                 location: `${document.getElementById('lat').value}, ${document.getElementById('lon').value}`,
+                surface_hectares: currentSurfaceHa,
+                water_regime: currentWaterRegime,
                 historical_yields: document.getElementById('historical_yields').value,
                 photo_uploaded: document.getElementById('photo').files.length > 0
+            };
+
+            const agentContext = {
+                ...(currentParcelContext || {}),
+                surface_hectares: currentSurfaceHa,
+                water_regime: currentWaterRegime,
+                lat: parseFloat(document.getElementById('lat')?.value) || 33.89,
+                lon: parseFloat(document.getElementById('lon')?.value) || -5.55
             };
 
             // Message bot "En cours..."
@@ -2052,7 +2457,7 @@
                         question: message,
                         history: chatHistory,
                         current_form: currentForm,
-                        context: currentParcelContext
+                        context: agentContext
                     })
                 });
 
@@ -2074,6 +2479,13 @@
                         dashboard.style.display = 'block';
                         dashboard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                     }
+                } else if (result.ui_action === 'SHOW_COMPARISON' && result.ui_payload) {
+                    renderComparisonResults(result.ui_payload);
+                } else if (result.ui_action === 'SHOW_FARM_TOTALS' && result.ui_payload) {
+                    renderFarmTotals(result.ui_payload);
+                } else if ((result.ui_action === 'SHOW_SOIL' || result.ui_action === 'SHOW_TERRAIN' || result.ui_action === 'SHOW_NDVI') && result.ui_payload) {
+                    const telCard = document.getElementById('telemetryCard');
+                    if (telCard) telCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
 
                 // 3. Traiter les données extraites

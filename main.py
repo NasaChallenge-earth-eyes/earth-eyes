@@ -387,7 +387,7 @@ async def chat(req: ChatRequest):
     )
     
     # Formater les données de rotation si cet outil a été exécuté pour l'interface
-    if agent_result.get("ui_action") == "SHOW_ROTATION" and agent_result.get("ui_payload"):
+    if agent_result.get("ui_payload") and isinstance(agent_result["ui_payload"], dict) and "recommendations" in agent_result["ui_payload"]:
         rot_data = agent_result["ui_payload"]
         trend = rot_data.get("climate_trend_nasa", {})
         rot_data["city"] = rot_data.get("location", {}).get("city", "Meknès")
