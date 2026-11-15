@@ -381,7 +381,9 @@ async def chat(req: ChatRequest):
     Orchestre les outils scientifiques (NASA POWER, SMAP, SRTM, RAG INRA)
     et met à jour dynamiquement l'interface utilisateur.
     """
-    ctx = req.context or req.current_form or {}
+    form_ctx = req.current_form or {}
+    custom_ctx = req.context or {}
+    ctx = {**form_ctx, **custom_ctx}
     agent_result = run_agronomic_agent(
         message=req.question,
         history=req.history or [],

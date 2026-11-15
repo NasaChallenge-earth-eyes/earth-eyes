@@ -935,6 +935,32 @@
             animation: pulseRecord 1s infinite alternate;
         }
 
+        .btn-map-chat {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 0.75rem 0.95rem;
+            cursor: pointer;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: #ffffff;
+        }
+
+        .btn-map-chat:hover {
+            background: rgba(59, 130, 246, 0.25);
+            border-color: #60a5fa;
+            transform: scale(1.05);
+        }
+
+        .btn-map-chat.locating {
+            background: rgba(59, 130, 246, 0.35);
+            border-color: #3b82f6;
+            animation: pulseRecord 1s infinite alternate;
+        }
+
         @keyframes pulseRecord {
             from { transform: scale(1); box-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
             to { transform: scale(1.1); box-shadow: 0 0 15px rgba(239, 68, 68, 0.9); }
@@ -1399,6 +1425,7 @@
                     <label for="chatPhotoInput" class="btn-chat-photo" title="Upload a leaf photo for instant pathology diagnosis">📷</label>
                     <input type="file" id="chatPhotoInput" accept="image/*" style="display: none;" onchange="if(this.files[0]) uploadPhotoToAgent(this.files[0])">
                     <button type="button" id="btnVoiceInput" class="btn-voice" onclick="toggleVoiceDictation()" title="Voice dictation (English, French, or Darija)">🎙️</button>
+                    <button type="button" id="btnMapChat" class="btn-map-chat" onclick="sendGPSLocationToAgent()" title="Send my exact field location to Agent">📍</button>
                     <input type="text" class="chat-input" id="chatInput" placeholder="Ask a question or dictate to the Agent..." onkeydown="if(event.key === 'Enter') sendChatMessage()">
                     <button class="send-btn" onclick="sendChatMessage()" data-i18n="chatSendBtn">Send</button>
                 </div>
@@ -1554,6 +1581,7 @@
                 chatTitle: "EarthEyes Agronomic Agent",
                 chatInputPlaceholder: "Ask a question or dictate to the Agent...",
                 chatSendBtn: "Send",
+                chatMapBtnTitle: "Send my exact field location to Agent",
                 chatWelcome: "Hello! I am your Autonomous Agronomic Agent. Ask me anything about crop rotations, irrigation, and pathology, or click an action chip above to query NASA satellites in real-time!",
                 stepPill1: "1. Crop",
                 stepPill2: "2. Leaf Photo",
@@ -1653,6 +1681,7 @@
                 chatTitle: "Conseiller Agentique EarthEyes",
                 chatInputPlaceholder: "Posez une question ou dictez à l'Agent...",
                 chatSendBtn: "Envoyer",
+                chatMapBtnTitle: "Envoyer ma localisation exacte à l'Agent",
                 chatWelcome: "Bonjour ! Je suis votre Agent Agronome Autonome. Posez-moi vos questions ou cliquez sur une action pour interroger les satellites NASA en temps réel !",
                 stepPill1: "1. Culture",
                 stepPill2: "2. Photo",
@@ -1752,6 +1781,7 @@
                 chatTitle: "المستشار الفلاحي الذكي EarthEyes",
                 chatInputPlaceholder: "اطرح سؤالك أو استخدم الصوت...",
                 chatSendBtn: "إرسال",
+                chatMapBtnTitle: "إرسال موقع حقلي الدقيق إلى المستشار",
                 chatWelcome: "السلام عليكم! أنا مستشارك الفلاحي الذكي. اطرح أسئلتك أو اضغط على الإجراءات السريعة لاستجواب أقمار ناسا مباشرة لحقلك !",
                 stepPill1: "1. المحصول",
                 stepPill2: "2. الصورة",
@@ -1887,6 +1917,9 @@
             const searchInput = document.getElementById('search-input');
             if (searchInput && t.locationSearchPlaceholder) searchInput.placeholder = t.locationSearchPlaceholder;
 
+            const mapChatBtn = document.getElementById('btnMapChat');
+            if (mapChatBtn && t.chatMapBtnTitle) mapChatBtn.title = t.chatMapBtnTitle;
+
             updateWizardProgress();
         }
 
@@ -2003,6 +2036,85 @@
                     btn.innerHTML = originalHTML;
                 },
                 { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+            );
+        }
+
+        function sendGPSLocationToAgent() {
+            const btn = document.getElementById('btnMapChat');
+            const lang = currentLang || 'fr';
+            const t = translations[lang] || translations.en || {};
+
+            if (btn) {
+                btn.classList.add('locating');
+                btn.innerHTML = '⏳';
+                btn.disabled = true;
+            }
+
+            function dispatchCoordinates(lat, lon, isExactGPS, accuracy) {
+                if (btn) {
+                    btn.classList.remove('locating');
+                    btn.innerHTML = '📍';
+                    btn.disabled = false;
+                }
+
+                // Update inputs on the form & Leaflet map
+                updateCoordsInputs(lat, lon);
+                if (map && marker) {
+                    const latlng = L.latLng(lat, lon);
+                    marker.setLatLng(latlng);
+                    map.setView(latlng, 15);
+                }
+
+                // Update parcel context
+                if (typeof currentParcelContext !== 'undefined' && currentParcelContext) {
+                    currentParcelContext.lat = lat;
+                    currentParcelContext.lon = lon;
+                }
+
+                const accText = accuracy ? ` (±${accuracy}m)` : '';
+                let prompt = '';
+                if (lang === 'ar') {
+                    prompt = isExactGPS 
+                        ? `📍 موقعي الدقيق عبر GPS: خط العرض ${lat}، خط الطول ${lon}${accText}. حلل حقلي ببيانات أقمار ناسا (رطوبة التربة SMAP، التضاريس SRTM والمناخ).`
+                        : `📍 إحداثيات حقلي على الخريطة: خط العرض ${lat}، خط الطول ${lon}. حلل التربة والتضاريس والمناخ عبر أقمار ناسا.`;
+                } else if (lang === 'en') {
+                    prompt = isExactGPS
+                        ? `📍 My exact GPS location: Latitude ${lat}, Longitude ${lon}${accText}. Please analyze my field with NASA satellite data (SMAP soil moisture, SRTM elevation, climate).`
+                        : `📍 Map coordinates of my parcel: Latitude ${lat}, Longitude ${lon}. Please analyze soil and climate using NASA satellites.`;
+                } else {
+                    prompt = isExactGPS
+                        ? `📍 Mes coordonnées GPS exactes : Latitude ${lat}, Longitude ${lon}${accText}. Analyse ma parcelle avec les données satellites NASA (humidité SMAP, relief SRTM, climat).`
+                        : `📍 Coordonnées de ma parcelle sur la carte : Latitude ${lat}, Longitude ${lon}. Analyse le sol, le relief et le climat avec les satellites NASA.`;
+                }
+
+                const chatInput = document.getElementById('chatInput');
+                if (chatInput) {
+                    chatInput.value = prompt;
+                    sendChatMessage();
+                }
+            }
+
+            if (!navigator.geolocation) {
+                const currentLat = parseFloat(document.getElementById('lat')?.value) || 33.89;
+                const currentLon = parseFloat(document.getElementById('lon')?.value) || -5.55;
+                dispatchCoordinates(currentLat, currentLon, false, null);
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                function (pos) {
+                    const lat = parseFloat(pos.coords.latitude.toFixed(6));
+                    const lon = parseFloat(pos.coords.longitude.toFixed(6));
+                    const acc = Math.round(pos.coords.accuracy);
+                    dispatchCoordinates(lat, lon, true, acc);
+                },
+                function (err) {
+                    // Fallback gracefully to current map position
+                    const currentLat = parseFloat(document.getElementById('lat')?.value) || 33.89;
+                    const currentLon = parseFloat(document.getElementById('lon')?.value) || -5.55;
+                    dispatchCoordinates(currentLat, currentLon, false, null);
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         }
 
