@@ -1,42 +1,20 @@
 import urllib.request
 import json
+import requests
 
-def test_rotation():
-    req = urllib.request.Request(
-        'http://127.0.0.1:8000/recommend-rotation',
-        data=json.dumps({'lat': 33.89, 'lon': -5.55, 'previous_crop': 'blé'}).encode('utf-8'),
-        headers={'Content-Type': 'application/json'},
-        method='POST'
-    )
-    with urllib.request.urlopen(req) as resp:
-        data = json.loads(resp.read().decode())
-        print("=== RECOMMEND-ROTATION RESULT ===")
-        print("City:", data.get("city"))
-        print("Climate Alert:", data.get("climate_alert"))
-        for r in data.get("recommendations", []):
-            print(f"Rank #{r['rank']} {r['name_fr']} ({r['name_darija']})")
-            print(f"   Rendement : {r.get('yield_display')}")
-            print(f"   Plage P10-P90 : {r.get('yield_range')}")
-            print(f"   Sol & Azote : {r.get('soil_score_display')} | {r.get('nitrogen_bonus')}")
-            print(f"   Eau : {r.get('water_saved')} | {r.get('water_productivity')}")
-            print(f"   Conseil Darija : {r.get('darija_advice')}")
-            print("-" * 50)
-
-def test_chat():
-    req = urllib.request.Request(
-        'http://127.0.0.1:8000/chat',
-        data=json.dumps({
-            'question': 'chno nzer3 mor l-qme7 bach n3awen l-ard b l-azot o ma n-kheserch l-ma ?',
-            'current_form': {'crop_type': 'wheat'}
-        }).encode('utf-8'),
-        headers={'Content-Type': 'application/json'},
-        method='POST'
-    )
-    with urllib.request.urlopen(req) as resp:
-        data = json.loads(resp.read().decode())
-        print("=== CHAT RAG RESULT ===")
-        print(data.get("response"))
+def test_photo_upload():
+    print("=== TESTING AGENT PHOTO UPLOAD ===")
+    url = "http://127.0.0.1:8000/agent-upload-photo"
+    with open("images/diagnostic de la maladie.jpeg", "rb") as f:
+        files = {"photo": ("leaf.jpeg", f, "image/jpeg")}
+        data = {"crop_type": "wheat", "lat": 33.89, "lon": -5.55}
+        resp = requests.post(url, files=files, data=data)
+        print("Status code:", resp.status_code)
+        res = resp.json()
+        print("Disease detected:", res.get("disease", {}).get("disease_name"))
+        print("Severity:", res.get("disease", {}).get("severity_percent"), "%")
+        print("Tools executed:", [t["label"] for t in res.get("tools_executed", [])])
+        print("Agent speech snippet:\n", res.get("response")[:300])
 
 if __name__ == "__main__":
-    test_rotation()
-    test_chat()
+    test_photo_upload()

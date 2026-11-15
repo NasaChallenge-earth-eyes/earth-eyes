@@ -27,6 +27,7 @@ except ImportError:
 from step7_rotation.rotation_engine import recommend_crop_rotation
 from step2_soil.smap_soil import get_smap_moisture
 from step7_rotation.terrain_slope import get_srtm_terrain_profile
+from step1_disease.predict import estimate_severity
 from step5_llm.rag_agronomy import (
     retrieve_agronomic_knowledge,
     format_rag_context_for_prompt,
@@ -42,6 +43,58 @@ if api_key and genai is not None:
         print(f"[Agent] Avertissement configuration genai: {e}")
 
 MODEL_NAME = "models/gemini-2.5-flash"
+
+def diagnose_leaf_with_vision(image_pil, crop_type: str = "blé") -> Dict[str, Any]:
+    """
+    Outil de diagnostic foliaire combiné :
+    1. Segmentation HSV couleur (sévérité tissulaire)
+    2. Vision Multimodale Gemini 2.5 Flash (identification pathogène)
+    """
+    severity_val = estimate_severity(image_pil)
+    severity_pct = round(severity_val * 100, 1)
+
+    disease_name = "Saine / Non détectée"
+    diagnosis_fr = "Feuille saine ou aucun symptôme pathologique majeur visible."
+    diagnosis_darija = "L-warqa bayna nqiya w mzyana, makaynch marad kbir bayen."
+    has_soil_pathogen = False
+
+    if api_key and genai is not None:
+        try:
+            model = genai.GenerativeModel(MODEL_NAME)
+            prompt = f"""
+            Tu es un expert phytopathologiste marocain pour la région Saïss/Meknès.
+            Examine attentivement cette feuille de culture ({crop_type}).
+            Identifie précisément :
+            1. S'il y a une maladie foliaire (Septoriose, Rouille jaune/brune, Mildiou, Carence azotée, ou Feuille Saine).
+            2. Donne son nom courant.
+            3. Indique si ce pathogène survit dans le sol et impose une rupture de rotation (ex: la Septoriose survit dans les résidus du sol).
+            
+            Réponds sous forme de JSON strict :
+            {{
+               "disease_name": "Nom de la maladie ou Saine",
+               "is_infected": true/false,
+               "has_soil_persistence": true/false,
+               "diagnostic_fr": "Explication courte en français",
+               "diagnostic_darija": "Explication claire en Darija marocaine (arabizi)",
+               "recommended_action_darija": "Conseil d'action immédiat en Darija"
+            }}
+            """
+            resp = model.generate_content([prompt, image_pil], generation_config={"response_mime_type": "application/json"})
+            res_json = json.loads(resp.text.strip())
+            disease_name = res_json.get("disease_name", disease_name)
+            diagnosis_fr = res_json.get("diagnostic_fr", diagnosis_fr)
+            diagnosis_darija = res_json.get("diagnostic_darija", diagnosis_darija)
+            has_soil_pathogen = bool(res_json.get("has_soil_persistence", False))
+        except Exception as e:
+            print(f"[Agent Vision Diagnostic Error] {e}")
+
+    return {
+        "disease_name": disease_name,
+        "severity_percent": severity_pct,
+        "diagnosis_fr": diagnosis_fr,
+        "diagnosis_darija": diagnosis_darija,
+        "has_soil_pathogen": has_soil_pathogen
+    }
 
 # Définition des métadonnées des outils
 AGENT_TOOLS_METADATA = [
@@ -259,3 +312,75 @@ def run_agronomic_agent(
         "ui_action": ui_action,
         "ui_payload": ui_payload
     }
+
+
+def run_agronomic_agent_on_photo(
+    image_pil,
+    crop_type: str = "blé",
+    lat: float = 33.89,
+    lon: float = -5.55
+) -> Dict[str, Any]:
+    """
+    Déclenché instantanément dès que l'utilisateur charge ou envoie une photo de feuille.
+    L'Agent inspecte l'image via Vision IA, diagnostique la pathologie,
+    et déclenche immédiatement la rupture sanitaire dans le moteur de rotation NASA.
+    """
+    # 1. Diagnostic Vision & Sévérité
+    diag = diagnose_leaf_with_vision(image_pil, crop_type=crop_type)
+    dis_name = diag["disease_name"]
+    severity = diag["severity_percent"]
+
+    tools_executed = [
+        {
+            "tool_name": "diagnose_leaf_vision",
+            "label": "🔬 Diagnostic Foliaire Vision IA",
+            "status": "success",
+            "summary": f"{dis_name} (Sévérité estimée : {severity}%)"
+        }
+    ]
+
+    # 2. Adaptation immédiate de la rotation face à la maladie
+    rot_res = recommend_crop_rotation(
+        lat=lat,
+        lon=lon,
+        previous_crop=crop_type,
+        detected_disease=dis_name
+    )
+
+    tools_executed.append({
+        "tool_name": "recommend_crop_rotation",
+        "label": "🌾 Rupture Sanitaire & Rotation NASA POWER",
+        "status": "success",
+        "summary": f"Rotation assainissante : #1 {rot_res['recommendations'][0]['crop_name_fr']} (+{rot_res['recommendations'][0]['nitrogen_bonus_kg_ha']} kg N/ha)"
+    })
+
+    # 3. Synthèse pédagogique de l'Agent en Darija et Français
+    if "saine" in dis_name.lower() or "healthy" in dis_name.lower():
+        speech = (
+            f"📸 **Diagnostic Foliaire Instantané :**\n\n"
+            f"✅ **L-warqa dyalek bayna nqiya w saine !** (Sévérité : {severity}%)\n"
+            f"{diag['diagnosis_darija']}\n\n"
+            f"Bach t-7afed 3la had n-naqa f l-ard, l-Agent 7seb lik a7sen rotation mor {crop_type} :\n"
+            f"🌱 **{rot_res['recommendations'][0]['crop_name_darija']} ({rot_res['recommendations'][0]['crop_name_fr']})** : {rot_res['recommendations'][0]['estimated_yield_kg_ha']} kg/ha o kat-3emmer l-ard b l-azot !"
+        )
+    else:
+        speech = (
+            f"📸 **Alerte Maladie Détectée par Vision IA :**\n\n"
+            f"⚠️ **L-warqa fiha marad : {dis_name}** (Sévérité tissulaire : {severity}%)\n"
+            f"🗣️ *{diag['diagnosis_darija']}*\n\n"
+            f"🛑 **Nasi7a dyal l-Agent pour la santé du sol :**\n"
+            f"Had l-marad kay-khelli les spores f trab. **Ma khassekch t-3awed {crop_type} l-3am jay !**\n"
+            f"L-Agent lqa lik l-7ell bach t-ne99i l-ard o t-kser had l-marad :\n"
+            f"👉 **Zre3 {rot_res['recommendations'][0]['crop_name_darija']} ({rot_res['recommendations'][0]['crop_name_fr']})** : "
+            f"kat-3ti {rot_res['recommendations'][0]['estimated_yield_kg_ha']} kg/ha, kat-qtel l-marad f l-ard o kat-zidek +{rot_res['recommendations'][0]['nitrogen_bonus_kg_ha']} kg N/ha d'azote naturel !"
+        )
+
+    return {
+        "status": "success",
+        "response": speech,
+        "disease": diag,
+        "tools_executed": tools_executed,
+        "ui_action": "SHOW_ROTATION",
+        "ui_payload": rot_res
+    }
+

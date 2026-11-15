@@ -670,6 +670,25 @@
             font-weight: 600;
         }
 
+        .btn-chat-photo {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 0 0.85rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-chat-photo:hover {
+            background: rgba(16, 185, 129, 0.25);
+            border-color: #34d399;
+            transform: scale(1.05);
+        }
+
         /* Demo badge helper */
         .helper-btn {
             background: rgba(255, 255, 255, 0.05);
@@ -1153,7 +1172,9 @@
                 </div>
 
                 <div class="chat-input-container" style="margin-top: 0.75rem;">
-                    <input type="text" class="chat-input" id="chatInput" placeholder="Posez une question à l'agent..." onkeydown="if(event.key === 'Enter') sendChatMessage()">
+                    <label for="chatPhotoInput" class="btn-chat-photo" title="Prendre ou envoyer une photo de feuille à l'Agent">📷</label>
+                    <input type="file" id="chatPhotoInput" accept="image/*" style="display: none;" onchange="if(this.files[0]) uploadPhotoToAgent(this.files[0])">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Posez une question ou envoyez une photo..." onkeydown="if(event.key === 'Enter') sendChatMessage()">
                     <button class="send-btn" onclick="sendChatMessage()" data-i18n="chatSendBtn">Envoyer</button>
                 </div>
             </div>
@@ -1762,6 +1783,69 @@
 
             if (file) {
                 reader.readAsDataURL(file);
+                // Prise en compte instantanée par l'Agent !
+                uploadPhotoToAgent(file);
+            }
+        }
+
+        async function uploadPhotoToAgent(file) {
+            if (!file) return;
+
+            // 1. Message visuel dans le chat avec miniature
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const userHtml = `
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <img src="${e.target.result}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3);">
+                        <span>📸 ${currentLang === 'ar' ? 'تم إرسال صورة الورقة للوكيل...' : 'Photo de feuille envoyée à l\'Agent...'}</span>
+                    </div>
+                `;
+                appendMessage(userHtml, 'user');
+            };
+            reader.readAsDataURL(file);
+
+            // 2. Notification de réflexion de l'Agent
+            const loadingText = currentLang === 'ar' ? "الوكيل يفحص الورقة بواسطة Vision IA ويحلل الدورة الزراعية..." : "L'Agent examine la feuille avec Vision IA et adapte la rotation...";
+            const loadingMsg = appendMessage(loadingText, 'bot');
+
+            try {
+                const cropVal = document.getElementById('crop_type')?.value || 'wheat';
+                const latVal = parseFloat(document.getElementById('lat')?.value) || 33.89;
+                const lonVal = parseFloat(document.getElementById('lon')?.value) || -5.55;
+
+                const formData = new FormData();
+                formData.append('photo', file);
+                formData.append('crop_type', cropVal);
+                formData.append('lat', latVal);
+                formData.append('lon', lonVal);
+
+                const response = await fetch('/agent-upload-photo', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error("Erreur HTTP " + response.status);
+
+                const result = await response.json();
+                loadingMsg.remove();
+
+                // 3. Afficher la réponse de l'Agent et les outils exécutés
+                appendMessage(result.response, 'bot', result.tools_executed || []);
+                chatHistory.push({ role: 'model', parts: [result.response] });
+
+                // 4. Mettre à jour immédiatement les cartes de rotation si présent
+                if (result.ui_payload) {
+                    renderRotationResults(result.ui_payload);
+                    const dashboard = document.getElementById('rotationDashboard');
+                    if (dashboard) {
+                        dashboard.style.display = 'block';
+                        dashboard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }
+            } catch (err) {
+                loadingMsg.remove();
+                appendMessage(currentLang === 'ar' ? "حدث خطأ أثناء فحص الصورة." : "Désolé, une erreur s'est produite lors de l'analyse de la feuille.", 'bot');
+                console.error("Photo agent analysis error:", err);
             }
         }
 

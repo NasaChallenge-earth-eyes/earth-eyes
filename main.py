@@ -325,7 +325,7 @@ async def predict(
 
     return result
 
-from step5_llm.agronomic_agent import run_agronomic_agent
+from step5_llm.agronomic_agent import run_agronomic_agent, run_agronomic_agent_on_photo
 from step5_llm.llm_service import ask_agronomist_interactive
 
 class ChatRequest(BaseModel):
@@ -333,6 +333,44 @@ class ChatRequest(BaseModel):
     history: Optional[list] = []
     current_form: Optional[dict] = {}
     context: Optional[dict] = None
+
+@app.post("/agent-upload-photo")
+async def agent_upload_photo(
+    photo: UploadFile = File(...),
+    crop_type: Optional[str] = Form("blé"),
+    lat: Optional[float] = Form(33.89),
+    lon: Optional[float] = Form(-5.55)
+):
+    """
+    Déclenché instantanément dès que l'utilisateur dépose ou sélectionne une photo.
+    L'Agent inspecte l'image, diagnostique la maladie et met à jour la rotation anti-pathogène.
+    """
+    try:
+        contents = await photo.read()
+        img = Image.open(io.BytesIO(contents)).convert('RGB')
+        result = run_agronomic_agent_on_photo(img, crop_type=crop_type, lat=lat, lon=lon)
+        if result.get("ui_payload"):
+            rot_data = result["ui_payload"]
+            rot_data["city"] = rot_data.get("location", {}).get("city", "Meknès")
+            dis_name = result.get("disease", {}).get("disease_name", "Maladie")
+            rot_data["climate_alert"] = f"Rupture Sanitaire Sol : Rotation adaptée pour éliminer les résidus de {dis_name}"
+            for r in rot_data.get("recommendations", []):
+                r["name_fr"] = r.get("crop_name_fr", r.get("name_fr"))
+                r["name_darija"] = r.get("crop_name_darija", r.get("name_darija"))
+                y_kg = r.get("estimated_yield_kg_ha", 1500)
+                y_q = r.get("estimated_yield_q_ha", round(y_kg / 100.0, 1))
+                r["yield_display"] = f"{y_kg:,} kg/ha ({y_q} q/ha)".replace(",", " ")
+                r["yield_range"] = f"P10 {r.get('yield_p10_kg_ha', y_kg)} - P90 {r.get('yield_p90_kg_ha', y_kg)} kg/ha"
+                wp = r.get('water_productivity_kg_m3') or 0.65
+                r["water_productivity"] = f"{wp} kg/m³ (FAO-33)"
+                r["win_rate"] = f"Résilience hydrique ({r.get('win_rate_vs_wheat_percent', 70)}% des saisons)"
+                r["water_saved"] = f"{r.get('water_saved_m3_ha', 1500):,} m³/ha économisés".replace(",", " ")
+                r["nitrogen_bonus"] = f"+{r.get('nitrogen_bonus_kg_ha', 0)} kg N/ha régénéré"
+                r["soil_score_display"] = f"Score Sol : {r.get('soil_health_score', 85)}/100"
+                r["darija_advice"] = r.get("darija_summary", r.get("darija_advice", ""))
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur diagnostic foliaire agent: {e}")
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
