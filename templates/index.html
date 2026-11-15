@@ -1618,6 +1618,226 @@
         .agent-drawer .send-btn:hover {
             background: #3f6549;
         }
+
+        /* ===== AGENT HERO CARD (inline chat, top of page) ===== */
+        .agent-hero-card {
+            background: linear-gradient(135deg, #fff 0%, #f0f4ed 100%);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem 1.75rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: var(--shadow);
+        }
+        .agent-hero-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .agent-hero-avatar {
+            width: 42px;
+            height: 42px;
+            background: var(--green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        .agent-hero-identity h2 {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--ink);
+            line-height: 1.2;
+        }
+        .agent-hero-identity .agent-sub {
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+        .agent-telem-strip {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            background: rgba(79,122,90,0.08);
+            border-radius: 10px;
+            padding: 0.45rem 0.85rem;
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+        .agent-telem-strip strong {
+            color: var(--green);
+            font-weight: 600;
+        }
+        .agent-telem-dot { opacity: 0.4; }
+        .agent-opening-bubble {
+            background: var(--green-soft);
+            border-left: 3px solid var(--green);
+            border-radius: 0 12px 12px 12px;
+            padding: 0.9rem 1.1rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--ink);
+        }
+        .agent-opening-bubble strong {
+            color: var(--green);
+        }
+        .agent-quick-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .agent-quick-chips button {
+            background: #fff;
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 0.45rem 0.9rem;
+            font-size: 0.84rem;
+            font-family: inherit;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 150ms ease;
+            font-weight: 500;
+        }
+        .agent-quick-chips button:hover {
+            background: var(--green-soft);
+            border-color: var(--green);
+            color: var(--green);
+        }
+        .agent-inline-chat {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            max-height: 320px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            padding: 0.25rem 0;
+        }
+        .agent-inline-chat:empty { display: none; }
+        .inline-msg-user {
+            align-self: flex-end;
+            background: var(--green);
+            color: #fff;
+            border-radius: 16px 16px 4px 16px;
+            padding: 0.55rem 0.9rem;
+            font-size: 0.9rem;
+            max-width: 85%;
+            word-break: break-word;
+        }
+        .inline-msg-bot {
+            align-self: flex-start;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 4px 16px 16px 16px;
+            padding: 0.65rem 1rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            max-width: 95%;
+            word-break: break-word;
+            white-space: pre-line;
+        }
+        .inline-msg-typing {
+            align-self: flex-start;
+            color: var(--muted);
+            font-size: 0.85rem;
+            font-style: italic;
+            padding: 0.3rem 0;
+        }
+        .agent-inline-input {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 0.35rem 0.5rem 0.35rem 0.75rem;
+            background: #fff;
+            transition: border-color 150ms;
+        }
+        .agent-inline-input:focus-within {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(79,122,90,0.1);
+        }
+        .agent-inline-input input[type="text"] {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 0.93rem;
+            color: var(--ink);
+            background: transparent;
+            min-height: 36px;
+        }
+        .agent-inline-input input[type="text"]::placeholder {
+            color: var(--muted);
+        }
+        .agent-inline-input .btn-voice,
+        .agent-inline-input .btn-chat-photo {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0.2rem 0.3rem;
+            border-radius: 8px;
+            transition: background 100ms;
+            line-height: 1;
+        }
+        .agent-inline-input .btn-voice:hover,
+        .agent-inline-input .btn-chat-photo:hover {
+            background: var(--green-soft);
+        }
+        .agent-inline-input .send-btn {
+            background: var(--green);
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            padding: 0.5rem 0.9rem;
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 150ms;
+            white-space: nowrap;
+        }
+        .agent-inline-input .send-btn:hover { background: #3f6549; }
+
+        /* ===== FORM SECONDARY PANEL ===== */
+        .form-secondary-panel {
+            margin-top: 0 !important;
+        }
+        .form-secondary-panel > summary {
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--muted);
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius);
+            transition: color 150ms, background 150ms;
+        }
+        .form-secondary-panel > summary::-webkit-details-marker { display: none; }
+        .form-secondary-panel > summary::before {
+            content: '⚙️';
+            font-size: 0.95rem;
+        }
+        .form-secondary-panel > summary:hover {
+            color: var(--green);
+            background: var(--green-soft);
+        }
+        .form-secondary-panel[open] > summary {
+            color: var(--green);
+            border-bottom: 1px solid var(--border-subtle);
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+        .form-secondary-panel .form-inner-wrap {
+            padding: 1.25rem 1.5rem 1.5rem;
+        }
+
 </style>
 </head>
 <body>
@@ -1645,8 +1865,60 @@
     <!-- Main Application Split-View Container -->
     <div class="container">
         
-        <!-- État A: Parcelle (Saisie simplifiée en 3 contrôles + accordéon) -->
-        <div class="card controls-card" id="parcelleCard">
+        <!-- ===== AGENT HERO CARD — inline chat, always visible ===== -->
+        <div class="card agent-hero-card" id="agentHeroCard">
+
+            <!-- Identity row -->
+            <div class="agent-hero-header">
+                <div class="agent-hero-avatar">🌱</div>
+                <div class="agent-hero-identity">
+                    <h2 data-i18n="agentHeroTitle">EarthEyes Agronomic Agent</h2>
+                    <span class="agent-sub">Gemini 2.5 · RAG INRA / FAO · NASA POWER 41 ans</span>
+                </div>
+            </div>
+
+            <!-- NASA telemetry strip -->
+            <div class="agent-telem-strip">
+                🛰️ SMAP <strong id="agentTelSmap">14.2%</strong>
+                <span class="agent-telem-dot">·</span>
+                NDVI <strong id="agentTelNdvi">0.45</strong>
+                <span class="agent-telem-dot">·</span>
+                pH <strong id="agentTelPh">7.3</strong>
+                <span class="agent-telem-dot">·</span>
+                <span data-i18n="agentTelLabel">NASA POWER 41 ans · Saïss</span>
+            </div>
+
+            <!-- Agent opening question (dynamic, language-aware) -->
+            <div class="agent-opening-bubble" id="agentOpeningMsg">
+                <!-- Set by setAgentOpeningQuestion() on load -->
+            </div>
+
+            <!-- Quick-reply chips -->
+            <div class="agent-quick-chips" id="agentQuickChips">
+                <button onclick="sendQuickChip('wheat5ha')">🌾 <span data-i18n="chip1">5 Ha · Blé · Bour</span></button>
+                <button onclick="sendQuickChip('smap')">🛰️ <span data-i18n="chip2">Vérifier humidité SMAP</span></button>
+                <button onclick="sendQuickChip('compare')">⚖️ <span data-i18n="chip3">Pois chiche vs Blé</span></button>
+                <button onclick="sendQuickChip('rag')">📚 <span data-i18n="chip4">Conseils INRA / FAO</span></button>
+            </div>
+
+            <!-- Inline chat stream -->
+            <div class="agent-inline-chat" id="agentInlineChat"></div>
+
+            <!-- Input bar -->
+            <div class="agent-inline-input">
+                <label for="agentChatPhotoInline" class="btn-chat-photo" title="Upload leaf photo for pathology diagnosis">📷</label>
+                <input type="file" id="agentChatPhotoInline" accept="image/*" style="display:none" onchange="if(this.files[0]) uploadPhotoToAgent(this.files[0])">
+                <button type="button" onclick="toggleVoiceDictation()" class="btn-voice" id="btnVoiceInputInline" title="Voice dictation">🎙️</button>
+                <input type="text" id="agentInlineInput" placeholder="..." data-i18n-placeholder="chatPlaceholder"
+                       onkeydown="if(event.key==='Enter') sendInlineChat()">
+                <button type="button" class="send-btn" onclick="sendInlineChat()" data-i18n="chatSendBtn">Envoyer</button>
+            </div>
+        </div>
+
+        <!-- Form: Secondary fine-tuning panel (collapsed by default) -->
+        <details class="card form-secondary-panel" id="formPanel">
+            <summary data-i18n="formPanelTitle"> Ajuster les paramètres manuellement</summary>
+            <div class="form-inner-wrap">
             <div class="accroche-header">
                 <h1 class="accroche-title" id="accrocheText" data-i18n="accrocheTitle">Que planter après votre blé ?</h1>
                 <p class="accroche-sub" data-i18n="accrocheSub">Simulation agro-climatique pour le bassin du Saïss basée sur 41 ans de données NASA POWER.</p>
@@ -1768,7 +2040,8 @@
                     </div>
                 </details>
             </form>
-        </div>
+            </div>
+        </details>
 
         <!-- Right Column: Interactive Dashboards & AI Agent -->
         <div style="display: flex; flex-direction: column; gap: 2rem; width: 100%;">
@@ -2374,6 +2647,7 @@ function updateAccrocheTitle() {
         }
 
         function setLanguage(lang) {
+            setTimeout(setAgentOpeningQuestion, 50);
             currentLang = lang;
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
             const activeBtn = document.getElementById('btn-' + lang);
@@ -2494,6 +2768,16 @@ function updateAccrocheTitle() {
                 map.setView([33.89, -5.55], 12);
                 marker.setLatLng([33.89, -5.55]);
                 updateCoordsInputs(33.89, -5.55);
+            } else {
+                // Map not open yet — just update inputs
+                const latEl = document.getElementById('lat');
+                const lonEl = document.getElementById('lon');
+                if (latEl) latEl.value = 33.89;
+                if (lonEl) lonEl.value = -5.55;
+            }
+            // Re-trigger rotation recommendation with new location
+            if (typeof fetchRotationRecommendations === 'function') {
+                setTimeout(fetchRotationRecommendations, 200);
             }
         }
 
@@ -2545,6 +2829,11 @@ function updateAccrocheTitle() {
                     // Restore button
                     btn.disabled = false;
                     btn.innerHTML = originalHTML;
+
+                    // Auto-trigger rotation recommendation with new GPS location
+                    if (typeof fetchRotationRecommendations === 'function') {
+                        setTimeout(fetchRotationRecommendations, 300);
+                    }
                 },
                 function(err) {
                     statusEl.style.color = 'var(--error, #f87171)';
@@ -2662,6 +2951,10 @@ function updateAccrocheTitle() {
                     map.setView([lat, lon], 12);
                     marker.setLatLng([lat, lon]);
                     updateCoordsInputs(lat, lon);
+                    // Re-trigger rotation recommendation for new commune
+                    if (typeof fetchRotationRecommendations === 'function') {
+                        setTimeout(fetchRotationRecommendations, 300);
+                    }
                 } else {
                     alert(currentLang === 'ar' ? 'لم يتم العثور على الموقع' : 'Location not found.');
                 }
@@ -3538,12 +3831,194 @@ function updateAccrocheTitle() {
                 btn.disabled = false;
             }
         };
+
+        // ============================================================
+        // AGENT HERO CARD — inline chat system
+        // ============================================================
+
+        // Shared chat history (synced between inline and drawer)
+        // chatHistory already defined in existing code — we reuse it
+
+        /**
+         * Sets the smart NASA-data-aware opening question (language-aware)
+         */
+        function setAgentOpeningQuestion() {
+            const lang = currentLang || 'fr';
+            const smapVal = document.getElementById('telSmap')?.innerText || '14.2%';
+            const ndviVal = document.getElementById('telNdvi')?.innerText || '0.45';
+            const msgs = {
+                en: `NASA satellites detect <strong>${smapVal}</strong> topsoil moisture and NDVI <strong>${ndviVal}</strong> in the Saïss Basin. To protect your farm's water and fertility:<br><br><strong>What crop did you just harvest, and how many hectares is your parcel?</strong>`,
+                fr: `Les satellites NASA relèvent <strong>${smapVal}</strong> d'humidité dans le sol du Saïss et un NDVI de <strong>${ndviVal}</strong>. Pour sécuriser votre sol et vos réserves d'eau :<br><br><strong>Quelle culture venez-vous de récolter, et quelle est votre surface en hectares ?</strong>`,
+                ar: `ترصد أقمار ناسا رطوبة <strong>${smapVal}</strong> في تربة حوض سايس ومؤشر NDVI بقيمة <strong>${ndviVal}</strong>. لحماية خصوبة أرضك ومخزون المياه :<br><br><strong>ما هو المحصول الذي حصدته مؤخراً، وكم تبلغ مساحة حقلك بالهكتار ؟</strong>`
+            };
+            const el = document.getElementById('agentOpeningMsg');
+            if (el) el.innerHTML = '🌱 ' + (msgs[lang] || msgs.fr);
+            // Sync telemetry strip
+            const ts = document.getElementById('agentTelSmap');
+            const tn = document.getElementById('agentTelNdvi');
+            const tp = document.getElementById('agentTelPh');
+            if (ts) ts.innerText = smapVal;
+            if (tn) tn.innerText = ndviVal;
+            if (tp) tp.innerText = document.getElementById('telSoil')?.innerText?.split(' ')[1] || '7.3';
+        }
+
+        /**
+         * Quick-chip handler — sends a predefined contextual message
+         */
+        function sendQuickChip(type) {
+            const lang = currentLang || 'fr';
+            const ha = document.getElementById('customHaInput')?.value || '5';
+            const chips = {
+                wheat5ha: {
+                    en: `I have ${ha} hectares after soft wheat, rainfed Bour regime. What crop rotation do you recommend and what quantities will I need?`,
+                    fr: `J'ai ${ha} hectares après blé tendre en régime Bour (pluvial). Quelle rotation recommandez-vous et quelles quantités d'intrants faut-il prévoir ?`,
+                    ar: `لدي ${ha} هكتار بعد القمح اللين في نظام بور (بعلي). ما هي الدورة الزراعية الأنسب وما الكميات المطلوبة ؟`
+                },
+                smap: {
+                    en: `Check NASA SMAP soil moisture for my parcel and tell me if conditions are suitable for sowing right now.`,
+                    fr: `Vérifiez l'humidité du sol NASA SMAP pour ma parcelle et dites-moi si les conditions sont bonnes pour le semis en ce moment.`,
+                    ar: `تحقق من رطوبة التربة عبر قمر ناسا SMAP لحقلي وأخبرني إن كانت ظروف البذر مناسبة الآن.`
+                },
+                compare: {
+                    en: `Compare chickpea rotation versus continuous wheat in terms of yield per hectare, water savings, and drought resilience.`,
+                    fr: `Comparez la rotation pois chiche versus blé continu en rendement par hectare, eau économisée et résilience à la sécheresse.`,
+                    ar: `قارن بين دورة الحمص والقمح المتواصل من حيث الإنتاجية لكل هكتار، توفير المياه، ومقاومة الجفاف.`
+                },
+                rag: {
+                    en: `What are INRA Morocco and FAO agronomic guidelines for legume crop rotations in the Saïss basin?`,
+                    fr: `Quelles sont les recommandations agronomiques INRA Maroc et FAO pour les rotations de légumineuses dans le bassin du Saïss ?`,
+                    ar: `ما هي توصيات المعهد الوطني للبحث الزراعي بالمغرب ومنظمة الأغذية والزراعة بشأن دوران البقوليات في حوض سايس ؟`
+                }
+            };
+            const msg = chips[type]?.[lang] || chips[type]?.fr;
+            if (msg) sendInlineChat(msg);
+        }
+
+        /**
+         * Send a message via the inline chat
+         * @param {string|null} overrideMsg — if provided, use instead of input field
+         */
+        async function sendInlineChat(overrideMsg) {
+            const inputEl = document.getElementById('agentInlineInput');
+            const chatEl  = document.getElementById('agentInlineChat');
+            const msg = overrideMsg || (inputEl ? inputEl.value.trim() : '');
+            if (!msg) return;
+            if (inputEl && !overrideMsg) inputEl.value = '';
+
+            // Hide opening bubble once user starts chatting
+            const opening = document.getElementById('agentOpeningMsg');
+            if (opening && chatEl.children.length === 0) {
+                opening.style.display = 'none';
+            }
+            const chips = document.getElementById('agentQuickChips');
+            if (chips) chips.style.display = 'none';
+
+            // Append user message
+            const userBubble = document.createElement('div');
+            userBubble.className = 'inline-msg-user';
+            userBubble.textContent = msg;
+            chatEl.appendChild(userBubble);
+
+            // Typing indicator
+            const typing = document.createElement('div');
+            typing.className = 'inline-msg-typing';
+            typing.id = 'inlineTyping';
+            typing.textContent = '🌱 ...';
+            chatEl.appendChild(typing);
+            chatEl.scrollTop = chatEl.scrollHeight;
+
+            // Build chat history (reuse shared chatHistory array)
+            if (!window.chatHistory) window.chatHistory = [];
+            chatHistory.push({ role: 'user', content: msg });
+
+            try {
+                const resp = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: msg,
+                        history: chatHistory.slice(-10),
+                        lang: currentLang || 'fr',
+                        crop: document.getElementById('crop_type')?.value || 'wheat',
+                        ha: parseFloat(document.getElementById('customHaInput')?.value || 5),
+                        water_regime: window.selectedWaterRegime || 'bour',
+                        lat: parseFloat(document.getElementById('lat')?.value || 33.89),
+                        lon: parseFloat(document.getElementById('lon')?.value || -5.55)
+                    })
+                });
+                const data = await resp.json();
+                const reply = data.response || data.message || 'Une erreur est survenue.';
+
+                // Remove typing
+                const t = document.getElementById('inlineTyping');
+                if (t) t.remove();
+
+                // Append bot reply
+                const botBubble = document.createElement('div');
+                botBubble.className = 'inline-msg-bot';
+                botBubble.innerHTML = reply.replace(/\n/g, '<br>');
+                chatEl.appendChild(botBubble);
+                chatEl.scrollTop = chatEl.scrollHeight;
+
+                // Sync to shared history
+                chatHistory.push({ role: 'assistant', content: reply });
+
+                // Also sync to old drawer chat box for full history view
+                const oldBox = document.getElementById('chatBox');
+                if (oldBox) {
+                    const ub2 = document.createElement('div');
+                    ub2.className = 'chat-message message-user';
+                    ub2.textContent = msg;
+                    oldBox.appendChild(ub2);
+                    const bb2 = document.createElement('div');
+                    bb2.className = 'chat-message message-bot';
+                    bb2.innerHTML = reply.replace(/\n/g, '<br>');
+                    oldBox.appendChild(bb2);
+                }
+
+                // Handle UI actions from agent
+                if (data.ui_action === 'SHOW_ROTATION' || data.show_rotation) {
+                    const dash = document.getElementById('rotationDashboard');
+                    if (dash) {
+                        dash.style.display = 'block';
+                        dash.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                    if (typeof fetchRotationRecommendations === 'function') {
+                        fetchRotationRecommendations();
+                    }
+                }
+
+            } catch (err) {
+                const t2 = document.getElementById('inlineTyping');
+                if (t2) t2.remove();
+                const errBubble = document.createElement('div');
+                errBubble.className = 'inline-msg-bot';
+                errBubble.textContent = '⚠️ Connexion impossible. Vérifiez le serveur.';
+                chatEl.appendChild(errBubble);
+                chatEl.scrollTop = chatEl.scrollHeight;
+            }
+        }
+
+        // Also redirect sendChatMessage to sendInlineChat so drawer chips still work inline
+        const _origSendChatMessage = window.sendChatMessage;
+        window.sendChatMessage = function() {
+            // Check if drawer is open — if yes, use original; otherwise use inline
+            const drawer = document.getElementById('agentDrawer');
+            if (drawer && drawer.classList.contains('open')) {
+                if (_origSendChatMessage) _origSendChatMessage();
+            } else {
+                sendInlineChat();
+            }
+        };
+
+        // sendPredefinedMessage — redirect to inline
+        window.sendPredefinedMessage = function(msg) {
+            sendInlineChat(msg);
+        };
+
     </script>
 
-    <!-- Floating Button: Demander à l'agent -->
-    <button type="button" class="floating-agent-btn" id="openAgentBtn" onclick="toggleAgentDrawer(true)" aria-label="Demander à l'agent">
-        💬 <span data-i18n="agentFloatingBtn">Demander à l'agent</span>
-    </button>
+    <!-- Floating agent button removed: chat is now inline -->
 
     <!-- Agent Backdrop & Drawer Panel -->
     <div class="agent-backdrop" id="agentBackdrop" onclick="toggleAgentDrawer(false)"></div>
