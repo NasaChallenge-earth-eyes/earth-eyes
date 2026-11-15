@@ -2,6 +2,8 @@ import io
 import os
 from datetime import date
 from typing import Optional
+from dotenv import load_dotenv
+load_dotenv()
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
