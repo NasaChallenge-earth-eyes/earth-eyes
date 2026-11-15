@@ -88,23 +88,50 @@ def tool_recommend_crop_rotation(
 ) -> Dict[str, Any]:
     """
     Simule 42 saisons climatiques réelles (NASA POWER 1984-2025) à Meknès/Saïss.
-    Recommande les meilleures cultures de rotation en rendement physique (kg/ha et q/ha),
-    santé durable du sol (/100), fixation d'azote (+kg N/ha) et économie d'eau (m³/ha).
+    Retourne le CLASSEMENT COMPLET de toutes les cultures candidates (pas seulement la #1),
+    avec rendement physique (kg/ha et q/ha), santé durable du sol (/100),
+    fixation d'azote (+kg N/ha), économie d'eau (m³/ha) et score agro-écologique global.
+    Le LLM Cerveau reçoit l'intégralité du tableau pour choisir intelligemment.
     """
     res = run_nasa_rotation(lat=lat, lon=lon, previous_crop=previous_crop, risk_profile=risk_profile)
-    best = res["recommendations"][0]
+    all_recs = res["recommendations"]  # Liste complète triée par score
+    best = all_recs[0]
+
+    # Tableau résumé compact pour le LLM (toutes les cultures avec leurs scores clés)
+    ranking_table = []
+    for r in all_recs:
+        ranking_table.append({
+            "rank": r["rank"],
+            "crop_fr": r["crop_name_fr"],
+            "crop_darija": r["crop_name_darija"],
+            "family": r.get("family", ""),
+            "yield_q_ha": r["estimated_yield_q_ha"],
+            "yield_kg_ha": r["estimated_yield_kg_ha"],
+            "soil_health_score": r["soil_health_score"],
+            "agro_ecological_score": r.get("agro_ecological_score", 0),
+            "nitrogen_bonus_kg_ha": r["nitrogen_bonus_kg_ha"],
+            "water_saved_m3_ha": r["water_saved_m3_ha"],
+            "win_rate_vs_wheat_pct": r["win_rate_vs_wheat_percent"],
+            "water_productivity_kg_m3": r["water_productivity_kg_m3"],
+            "disease_break": r.get("soil_health_impact", "")[:120]
+        })
+
     return {
         "status": "success",
         "city": res.get("location", {}).get("city", "Meknès"),
-        "best_crop_fr": best["crop_name_fr"],
-        "best_crop_darija": best["crop_name_darija"],
-        "estimated_yield_kg_ha": best["estimated_yield_kg_ha"],
-        "estimated_yield_q_ha": best["estimated_yield_q_ha"],
-        "soil_health_score": best["soil_health_score"],
-        "nitrogen_bonus_kg_ha": best["nitrogen_bonus_kg_ha"],
-        "water_saved_m3_ha": best["water_saved_m3_ha"],
-        "win_rate_vs_wheat": best["win_rate_vs_wheat_percent"],
-        "water_productivity": best["water_productivity_kg_m3"],
+        "previous_crop": previous_crop,
+        "risk_profile": risk_profile,
+        "total_candidates_evaluated": len(all_recs),
+        "winner": {
+            "crop_fr": best["crop_name_fr"],
+            "crop_darija": best["crop_name_darija"],
+            "yield_q_ha": best["estimated_yield_q_ha"],
+            "soil_health_score": best["soil_health_score"],
+            "agro_ecological_score": best.get("agro_ecological_score", 0),
+            "nitrogen_bonus_kg_ha": best["nitrogen_bonus_kg_ha"],
+            "water_saved_m3_ha": best["water_saved_m3_ha"],
+        },
+        "full_ranking": ranking_table,  # CLASSEMENT COMPLET pour le LLM Cerveau
         "full_data": res
     }
 
@@ -251,42 +278,98 @@ def tool_calculate_farm_custom_quantities(
     }
 
 
-def tool_compare_wheat_vs_rotation(candidate_crop: str = "pois_chiche") -> Dict[str, Any]:
+def tool_compare_all_crops(
+    previous_crop: str = "blé",
+    lat: float = 33.89,
+    lon: float = -5.55,
+    focus_crops: Optional[List[str]] = None
+) -> Dict[str, Any]:
     """
-    Compare directement la monoculture de blé face à une culture de rotation résiliente
-    (Pois chiche, Féverole ou Orge) sur 5 critères agronomiques décisifs.
-    """
-    c_key = candidate_crop.lower().strip()
-    if c_key not in CROP_CATALOG:
-        c_key = "pois_chiche"
+    Comparateur MULTI-CULTURES intelligent : compare TOUTES les cultures disponibles
+    (ou une sélection demandée par l'utilisateur) sur 6 critères agronomiques clés.
+    Le LLM Cerveau reçoit le tableau complet et choisit lui-même la meilleure option
+    selon le contexte exact de la question (eau, rendement, sol, maladie, budget...).
     
-    cand = CROP_CATALOG[c_key]
-    wheat = CROP_CATALOG["blé"]
+    Critères comparés :
+    1. Rendement physique estimé (q/ha, pire/moyen/meilleur scénario climatique)
+    2. Score de santé du sol durable (/100)
+    3. Score agro-écologique global (/100)
+    4. Eau économisée vs blé (m³/ha)
+    5. Azote biologique gratuit fixé (kg N/ha)
+    6. Résistance à la sécheresse (Win Rate vs blé sur 42 ans)
+    """
+    wheat = CROP_CATALOG.get("blé", {})
+    wheat_water = wheat.get("water_need_m3_ha", 4200.0)
+    wheat_soil = wheat.get("soil_health_score", 35)
 
-    comparison = {
-        "baseline": {
-            "crop_fr": wheat["name_fr"],
-            "crop_darija": wheat["name_darija"],
-            "water_need_m3_ha": wheat["water_need_m3_ha"],
-            "nitrogen_balance": "-60 kg N/ha (sol appauvri)",
-            "disease_impact": "Risque très élevé : conserve les spores de Septoriose et Piétin dans les pailles",
-            "drought_vulnerability": "Très vulnérable (perte de 45% de rendement en année sèche)",
-            "soil_health_score": wheat["soil_health_score"]
-        },
-        "candidate": {
-            "crop_fr": cand["name_fr"],
-            "crop_darija": cand["name_darija"],
-            "water_need_m3_ha": cand["water_need_m3_ha"],
-            "water_saved_m3_ha": wheat["water_need_m3_ha"] - cand["water_need_m3_ha"],
-            "nitrogen_balance": f"+{cand['nitrogen_fixation_kg_ha']} kg N/ha (apport symbiotique)",
-            "disease_impact": cand["disease_break_capacity"],
-            "drought_vulnerability": "Très résistant (racines profondes et cycle adapté)",
-            "soil_health_score": cand["soil_health_score"]
-        },
-        "verdict_fr": f"Remplacer le blé par {cand['name_fr']} préserve {wheat['water_need_m3_ha'] - cand['water_need_m3_ha']:.0f} m³/ha d'eau, enrichit le sol en azote (+{cand['nitrogen_fixation_kg_ha']} kg/ha) et brise net le cycle de la septoriose.",
-        "verdict_darija": f"Ila derti {cand['name_darija']} f blast l-gezza, ghadi twaffer {int(wheat['water_need_m3_ha'] - cand['water_need_m3_ha']):,} m³ dyal l-ma f l-hektar, t-3ti l-ard l-azot fabor (+{cand['nitrogen_fixation_kg_ha']} kg N) o t-tebba3 l-mrad dyal l-qme7."
+    # Sélection des cultures à comparer
+    all_crop_keys = list(CROP_CATALOG.keys())
+    if focus_crops:
+        # Si l'utilisateur demande une comparaison spécifique
+        crops_to_compare = [k for k in focus_crops if k in CROP_CATALOG]
+        if not crops_to_compare:
+            crops_to_compare = all_crop_keys
+    else:
+        crops_to_compare = all_crop_keys
+
+    comparison_rows = []
+    for crop_key in crops_to_compare:
+        crop = CROP_CATALOG[crop_key]
+        water_saved = round(wheat_water - crop.get("water_need_m3_ha", wheat_water), 0)
+        
+        comparison_rows.append({
+            "crop_key": crop_key,
+            "crop_fr": crop["name_fr"],
+            "crop_darija": crop["name_darija"],
+            "family": crop.get("family", ""),
+            "cycle_days": crop.get("cycle_days", 0),
+            # Rendement (estimations biophysiques)
+            "base_yield_q_ha": round(crop.get("base_yield_kg_ha", 0) / 100.0, 1),
+            "water_need_m3_ha": crop.get("water_need_m3_ha", 0),
+            "water_saved_vs_wheat_m3_ha": int(water_saved),
+            # Santé du sol
+            "soil_health_score": crop.get("soil_health_score", 0),
+            "delta_soil_vs_wheat": crop.get("soil_health_score", 0) - wheat_soil,
+            # Azote
+            "nitrogen_fixation_kg_ha": crop.get("nitrogen_fixation_kg_ha", 0.0),
+            "nitrogen_savings_mad_ha": round(crop.get("nitrogen_fixation_kg_ha", 0) * 12.0, 0),
+            # Résilience
+            "drought_sensitivity": crop.get("drought_sensitivity", 1.0),
+            # Capacité de rupture sanitaire
+            "disease_break": crop.get("disease_break_capacity", ""),
+            "soil_health_impact_fr": crop.get("soil_health_fr", ""),
+            "soil_health_impact_darija": crop.get("soil_health_darija", "")
+        })
+
+    # Tri par score de santé du sol (critère long-terme le plus important)
+    comparison_rows.sort(key=lambda x: x["soil_health_score"], reverse=True)
+    for idx, row in enumerate(comparison_rows):
+        row["rank_soil"] = idx + 1
+
+    # Tri par eau économisée
+    sorted_water = sorted(comparison_rows, key=lambda x: x["water_saved_vs_wheat_m3_ha"], reverse=True)
+    for idx, row in enumerate(sorted_water):
+        row["rank_water"] = idx + 1
+
+    # Meilleur candidat global (hors blé si présent)
+    non_wheat = [r for r in comparison_rows if r["crop_key"] != "blé"]
+    best = non_wheat[0] if non_wheat else comparison_rows[0]
+
+    return {
+        "status": "success",
+        "total_crops_compared": len(comparison_rows),
+        "crops_compared": [r["crop_fr"] for r in comparison_rows],
+        "best_overall": best["crop_fr"],
+        "best_overall_darija": best["crop_darija"],
+        "comparison_table": comparison_rows,  # Tableau COMPLET pour le LLM
+        "wheat_reference": {
+            "crop_fr": wheat.get("name_fr", "Blé tendre"),
+            "water_need_m3_ha": wheat_water,
+            "soil_health_score": wheat_soil,
+            "nitrogen_fixation_kg_ha": 0,
+            "disease_break_capacity": wheat.get("disease_break_capacity", "Nulle")
+        }
     }
-    return comparison
 
 
 def tool_consult_rag_knowledge(query: str = "rotation blé Saïss", crop: str = "blé") -> Dict[str, Any]:
@@ -317,7 +400,7 @@ ALL_TOOLS_CALLABLE = {
     "get_soil_physicochemistry": tool_get_soil_physicochemistry,
     "check_satellite_ndvi": tool_check_satellite_ndvi,
     "calculate_farm_custom_quantities": tool_calculate_farm_custom_quantities,
-    "compare_wheat_vs_rotation": tool_compare_wheat_vs_rotation,
+    "compare_all_crops": tool_compare_all_crops,
     "consult_rag_knowledge": tool_consult_rag_knowledge
 }
 
@@ -464,7 +547,7 @@ def run_agronomic_agent(
     # -----------------------------------------------------------------
     planner_prompt = f"""
 Tu es le CERVEAU AGRONOME AUTONOME d'EarthEyes (NASA Space Apps Meknès 2026).
-Tu disposes d'une autonomie totale pour décider quelles briques scientifiques appeler pour répondre de la manière la plus complète et logique au fellah.
+Tu disposes d'une autonomie totale pour décider quelles briques scientifiques appeler.
 
 === INPUTS DISPONIBLES DE LA PARCELLE ===
 - Localisation : Meknès, Bassin du Saïss ({lat}, {lon})
@@ -473,22 +556,28 @@ Tu disposes d'une autonomie totale pour décider quelles briques scientifiques a
 - Culture actuelle/précédente : {current_crop}
 
 === BRIQUES SCIENTIFIQUES ACCESSIBLES ===
-1. recommend_crop_rotation : simulation NASA POWER 42 ans pour trouver la meilleure culture de rotation
-2. check_smap_moisture : mesure l'humidité superficielle (0-5cm) via NASA SMAP pour valider si le sol est prêt au semis
-3. analyze_terrain_srtm : altitude et pente (%) via NASA SRTM 30m pour l'érosion et le labour en courbes de niveau
-4. get_soil_physicochemistry : texture (argile/limon/sable) et pH via SoilGrids ISRIC (Terss ou Hamri)
-5. check_satellite_ndvi : indice foliaire de végétation Sentinel-2 / MODIS
-6. calculate_farm_custom_quantities : calcule pour la surface en hectares du fellah la récolte en Quintaux, l'eau totale épargnée (m³) et les dirhams économisés en engrais
-7. compare_wheat_vs_rotation : comparateur face-à-face entre le blé continu et la légumineuse conseillée
-8. consult_rag_knowledge : bulletins scientifiques officiels INRA Maroc et FAO
+1. recommend_crop_rotation : simulation NASA POWER 42 ans → retourne le CLASSEMENT COMPLET de TOUTES les cultures avec leurs scores (rendement, eau, azote, santé sol). Utilise cette brique quand le fellah veut savoir quelle culture choisir ou quelle est la meilleure option.
+2. compare_all_crops : tableau comparatif COMPLET de toutes les cultures disponibles (ou une sélection) sur 6 critères. Utilise cette brique si l'utilisateur veut COMPARER des cultures entre elles (sans forcément connaître laquelle est meilleure à l'avance). Args optionnels: focus_crops (liste de crop_key comme ["blé","pois_chiche","feverole"]).
+3. check_smap_moisture : mesure l'humidité superficielle (0-5cm) via NASA SMAP pour valider si le sol est prêt au semis.
+4. analyze_terrain_srtm : altitude et pente (%) via NASA SRTM 30m pour l'érosion et le labour en courbes de niveau.
+5. get_soil_physicochemistry : texture (argile/limon/sable) et pH via SoilGrids ISRIC (Terss ou Hamri).
+6. check_satellite_ndvi : indice foliaire de végétation Sentinel-2 / MODIS.
+7. calculate_farm_custom_quantities : calcule pour la surface en hectares du fellah la récolte en Quintaux, l'eau totale épargnée (m³) et les dirhams économisés en engrais.
+8. consult_rag_knowledge : bulletins scientifiques officiels INRA Maroc et FAO.
+
+=== RÈGLES DE DÉCISION INTELLIGENTE ===
+- Si la question porte sur "quelle culture choisir / quelle est la meilleure" → appelle recommend_crop_rotation (classement complet) + calculate_farm_custom_quantities.
+- Si la question porte sur "comparer X vs Y" ou "lequel est mieux entre..." → appelle compare_all_crops avec les focus_crops appropriés + consult_rag_knowledge.
+- Si la question porte sur l'humidité / prêt à semer → check_smap_moisture + get_soil_physicochemistry.
+- Si la question porte sur la pente / érosion / labour → analyze_terrain_srtm.
+- Si la question est ouverte / générale → recommend_crop_rotation + calculate_farm_custom_quantities + consult_rag_knowledge.
+- Tu peux combiner 1 à 4 briques si la question le justifie.
 
 Requête de l'agriculteur : "{message}"
 
-Consigne : Décide toi-même quelles briques appeler suivant ce qui te semble le plus logique.
-Tu peux appeler de 1 à 4 briques complémentaires si la question le justifie.
 Réponds UNIQUEMENT en JSON strict :
 {{
-  "reasoning": "explication agronomique claire de pourquoi tu appelles ces briques",
+  "reasoning": "explication agronomique claire et courte de pourquoi tu appelles ces briques précises",
   "tools_to_call": [
     {{"tool_name": "nom_de_la_brique", "args": {{}}}}
   ]
@@ -516,8 +605,8 @@ Réponds UNIQUEMENT en JSON strict :
         clean_m = message.lower()
         if any(k in clean_m for k in ["ha", "hektar", "ربح", "وفر", "qentar", "quintaux"]):
             tools_to_run.append(("calculate_farm_custom_quantities", {"surface_hectares": surface_ha, "crop_choice": target_crop, "water_regime": water_regime}))
-        if any(k in clean_m for k in ["مقارنة", "compare", "vs"]):
-            tools_to_run.append(("compare_wheat_vs_rotation", {"candidate_crop": target_crop}))
+        if any(k in clean_m for k in ["مقارنة", "compare", "vs", "أحسن", "lequel", "أفضل", "khir", "a7san"]):
+            tools_to_run.append(("compare_all_crops", {"previous_crop": current_crop, "lat": lat, "lon": lon}))
         if any(k in clean_m for k in ["smap", "humidité", "واجدة", "semis"]):
             tools_to_run.append(("check_smap_moisture", {"lat": lat, "lon": lon}))
         if any(k in clean_m for k in ["srtm", "pente", "érosion", "تضاريس"]):
@@ -535,13 +624,13 @@ Réponds UNIQUEMENT en JSON strict :
     ui_payload: Optional[Dict[str, Any]] = None
 
     TOOL_LABELS = {
-        "recommend_crop_rotation": "🌾 NASA POWER 42 ans & Rotation",
+        "recommend_crop_rotation": "🌾 NASA POWER 42 ans & Classement Cultures",
         "check_smap_moisture": "🛰️ NASA SMAP Humidité Semis (0-5cm)",
         "analyze_terrain_srtm": "⛰️ NASA SRTM 30m Topographie",
         "get_soil_physicochemistry": "🧪 SoilGrids ISRIC Texture du Sol",
         "check_satellite_ndvi": "🌿 Sentinel-2 NDVI Végétation",
         "calculate_farm_custom_quantities": f"🚜 Calcul Exploitation ({surface_ha} Ha)",
-        "compare_wheat_vs_rotation": "⚖️ Comparateur Blé vs Légumineuse",
+        "compare_all_crops": "⚖️ Comparateur Multi-Cultures (Toutes options)",
         "consult_rag_knowledge": "📚 RAG INRA Maroc / FAO-33"
     }
 
@@ -554,18 +643,30 @@ Réponds UNIQUEMENT en JSON strict :
             # Injection des arguments contextuels
             if t_name == "recommend_crop_rotation":
                 res = func(previous_crop=current_crop, lat=lat, lon=lon)
-                best = res["full_data"]["recommendations"][0]
-                summary = f"Top 1: {best['crop_name_fr']} ({best['estimated_yield_kg_ha']} kg/ha, Sol {best['soil_health_score']}/100, Eau -{best['water_saved_m3_ha']} m³)"
+                # Résumé enrichi avec le classement COMPLET pour le LLM
+                ranking_summary = " | ".join([
+                    f"#{r['rank']} {r['crop_fr']} (Sol:{r['soil_health_score']}/100, {r['yield_q_ha']}q/ha, -{r['water_saved_m3_ha']}m³)"
+                    for r in res["full_ranking"]
+                ])
+                summary = f"Classement complet ({res['total_candidates_evaluated']} cultures) : {ranking_summary}"
                 action = "SHOW_ROTATION"
                 payload = res["full_data"]
+                # Mise à jour du target_crop avec le vrai gagnant
+                target_crop = res["full_ranking"][0]["crop_fr"].lower().replace(" ", "_") if res["full_ranking"] else target_crop
             elif t_name == "calculate_farm_custom_quantities":
                 res = func(surface_hectares=surface_ha, crop_choice=target_crop, water_regime=water_regime)
                 summary = f"{res['total_yield_q']} Qtx attendus | -{res['total_water_saved_m3']:,} m³ d'eau | +{res['total_nitrogen_fixed_kg']} kg N ({res['fertilizer_savings_mad']} MAD économisés)"
                 action = "SHOW_FARM_TOTALS"
                 payload = res
-            elif t_name == "compare_wheat_vs_rotation":
-                res = func(candidate_crop=target_crop)
-                summary = f"Blé ({res['baseline']['water_need_m3_ha']} m³) vs {res['candidate']['crop_fr']} ({res['candidate']['water_need_m3_ha']} m³, {res['candidate']['nitrogen_balance']})"
+            elif t_name == "compare_all_crops":
+                focus = t_args.get("focus_crops", None)
+                res = func(previous_crop=current_crop, lat=lat, lon=lon, focus_crops=focus)
+                # Résumé du tableau complet
+                top3 = res["comparison_table"][:3]
+                summary = (
+                    f"Meilleur: {res['best_overall']} | "
+                    + " > ".join([f"{r['crop_fr']} (Sol:{r['soil_health_score']}/100, {r['base_yield_q_ha']}q/ha)" for r in top3])
+                )
                 action = "SHOW_COMPARISON"
                 payload = res
             elif t_name == "check_smap_moisture":
@@ -631,10 +732,14 @@ Tu as toi-même choisi et exécuté ces briques scientifiques pour le fellah :
 Question de l'agriculteur : "{message}"
 
 CONSIGNES DE SYNTHÈSE :
-1. Réponds chaleureusement en Darija marocaine claire (avec les termes techniques en français).
-2. Appuie-toi directement sur les chiffres calculés (quintaux totaux, eau sauvée en m³, dirhams d'engrais économisés, humidité SMAP).
-3. Cite les sources scientifiques officielles (NASA POWER, SMAP, INRA Maroc).
-4. Structure avec des puces pour une lecture facile sur téléphone.
+1. Réponds chaleureusement en Darija marocaine claire (avec les termes techniques en français entre parenthèses).
+2. Si tu as un classement COMPLET de cultures (recommend_crop_rotation ou compare_all_crops) :
+   - Présente les 2-3 meilleures options avec leurs avantages distincts.
+   - Annonce clairement le GAGNANT avec son score et pourquoi.
+   - Ne te limite JAMAIS à une seule culture si tu as un classement complet.
+3. Appuie-toi directement sur les chiffres calculés (quintaux totaux, eau sauvée en m³, dirhams d'engrais économisés).
+4. Cite les sources scientifiques officielles (NASA POWER 42 ans, SMAP, INRA Maroc).
+5. Structure avec des puces emoji pour une lecture facile sur téléphone.
 """
 
     agent_reply_text = call_gemini_brain(synth_prompt, is_json=False, timeout=10)
