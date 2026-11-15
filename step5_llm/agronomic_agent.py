@@ -717,19 +717,42 @@ def run_agronomic_agent_on_photo(
 # 3. EXTRACTION DU CONTEXTE (SURFACE, CULTURE, RÉGIME HYDRIQUE)
 # =====================================================================
 
-def extract_parameters_from_text(text: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+def extract_parameters_from_text(
+    text: str,
+    context: Optional[Dict[str, Any]] = None,
+    history: Optional[List[Dict[str, Any]]] = None
+) -> Dict[str, Any]:
     """
-    Extrait surface, régime hydrique et culture cible depuis le texte libre et le contexte JSON.
-    Le contexte JSON (UI) prime sur la détection textuelle.
-    target_crop = None si non détecté → le LLM choisit lui-même la culture via recommend_crop_rotation.
+    Extrait surface, régime hydrique et culture cible depuis l'historique de conversation,
+    le message actuel et le contexte JSON.
+    Le contexte cumulatif dialogue permet de conserver les infos données plus tôt par le fellah.
     """
     context = context or {}
-    text_clean = text.lower()
+    
+    # Rassembler tout l'historique pour ne perdre aucune information mentionnée plus tôt
+    hist_texts = []
+    if history:
+        for h in history:
+            content_str = h.get("content") or ""
+            if not content_str and "parts" in h:
+                parts = h.get("parts")
+                if isinstance(parts, list) and parts:
+                    content_str = " ".join([str(p) for p in parts if p])
+                else:
+                    content_str = str(parts)
+            hist_texts.append(content_str)
+    
+    combined_all = " ".join(hist_texts) + " " + text
+    text_clean = combined_all.lower()
+    latest_clean = text.lower()
 
-    # Surface : contexte UI prime, sinon regex dans le texte, sinon défaut 5 ha
+    # Surface : contexte UI prime, sinon détection dans le dernier message, sinon dans l'historique
     ctx_surface = context.get("surface_hectares") or context.get("surface")
     surface = float(ctx_surface) if ctx_surface else 5.0
-    match_ha = re.search(r'(\d+[\.,]?\d*)\s*(?:ha|hektar|hectare|hct|h\b)', text_clean)
+    # Cherche d'abord dans le message actuel
+    match_ha_latest = re.search(r'(\d+[\.,]?\d*)\s*(?:ha|hektar|hectare|hct|h\b)', latest_clean)
+    match_ha_all = re.search(r'(\d+[\.,]?\d*)\s*(?:ha|hektar|hectare|hct|h\b)', text_clean)
+    match_ha = match_ha_latest or match_ha_all
     if match_ha and not ctx_surface:
         try:
             surface = float(match_ha.group(1).replace(",", "."))
@@ -765,8 +788,17 @@ def extract_parameters_from_text(text: str, context: Optional[Dict[str, Any]] = 
         if token in text_clean:
             target_crop = crop_key
             break
+            
+    # Si la culture est précédée de "après", "apres", "after", "ba3d", "بعد", "mor", "mour"
+    # elle désigne la culture PRÉCÉDENTE (ex: "après mon blé"), donc la culture cible reste à choisir
+    is_preceding_crop = any(prep in latest_clean for prep in ["après", "apres", "after", "ba3d", "بعد", "mor", "mour"])
+    detected_prev = None
+    if is_preceding_crop and target_crop:
+        detected_prev = target_crop
+        target_crop = None
+
     # Fallback depuis contexte UI
-    if not target_crop:
+    if not target_crop and not is_preceding_crop:
         ctx_crop = str(context.get("crop_type") or "").lower().strip()
         for token, crop_key in CROP_NAME_MAP.items():
             if token in ctx_crop or ctx_crop == crop_key:
@@ -776,7 +808,8 @@ def extract_parameters_from_text(text: str, context: Optional[Dict[str, Any]] = 
     return {
         "surface_hectares": surface,
         "water_regime": water_regime,
-        "target_crop": target_crop  # None si non détecté → LLM choisit
+        "target_crop": target_crop,  # None si non détecté → LLM choisit via rotation
+        "previous_crop": detected_prev
     }
 
 
@@ -802,7 +835,7 @@ def run_agronomic_agent(
     lon = float(context.get("lon") or -5.55)
     current_crop = context.get("crop_type") or "blé"
 
-    params = extract_parameters_from_text(message, context)
+    params = extract_parameters_from_text(message, context, history=history)
     surface_ha = params["surface_hectares"]
     water_regime = params["water_regime"]
     target_crop = params["target_crop"]
@@ -810,14 +843,22 @@ def run_agronomic_agent(
     # -----------------------------------------------------------------
     # Étape 1 : Le LLM Cerveau analyse les inputs et décide des briques
     # -----------------------------------------------------------------
-    # Résumé des 3 derniers tours de conversation pour contexte
+    # Historique conversationnel complet (jusqu'à 10 tours) pour prise en compte globale
     history_summary = ""
     if history:
-        recent = history[-3:]
-        history_summary = "\n".join([
-            f"  [{h.get('role','?').upper()}]: {str(h.get('content', h.get('parts', '')))[:120]}"
-            for h in recent
-        ])
+        recent = history[-10:]
+        history_lines = []
+        for h in recent:
+            role = h.get('role', '?').upper()
+            txt = h.get('content') or ""
+            if not txt and "parts" in h:
+                parts = h.get("parts")
+                if isinstance(parts, list) and parts:
+                    txt = " ".join([str(p) for p in parts if p])
+                else:
+                    txt = str(parts)
+            history_lines.append(f"  [{role}]: {txt}")
+        history_summary = "\n".join(history_lines)
 
     # Catalogue des cultures connues (clés exactes acceptées par les briques)
     crop_catalog_summary = "\n".join([
@@ -900,16 +941,14 @@ Tu disposes d'une autonomie totale pour décider quelles briques scientifiques a
     - Entrées : {{"query": str, "crop": str}}
     - Sorties : retrieved_count, citations (titres, sources officielles, extraits), top_chunk_full.
 
-=== PRINCIPES D'ORCHESTRATION DU CERVEAU AGRONOME ===
-- Tu es le CERVEAU CENTRAL INTELLIGENT : analyse avec rigueur la question, le contexte pédo-climatique et les objectifs du fellah.
-- Choisis LIBREMENT de 1 à 4 briques scientifiques complémentaires adaptées à la situation.
-- Configure leurs arguments avec une précision maximale (n'oublie pas de spécifier les arguments clés).
-- Adapte dynamiquement la combinaison :
-  * Pour un choix de culture ou rentabilité : combine rotation/comparaison avec le calcul d'exploitation (quintaux, eau, MAD).
-  * Pour le climat, la canicule ou le manque de pluie : consulte la tendance NASA POWER 42 ans.
-  * Pour le sol, l'humidité et le semis : combine SMAP, SRTM et pédologie SoilGrids.
-  * Pour les maladies foliaires ou du sol : consulte le diagnostic pathologique et le RAG INRA.
-  * Pour un rendement précis multi-capteurs : utilise la prédiction IA Random Forest.
+=== PRINCIPES D'ORCHESTRATION ET CHAÎNAGE INTELLIGENT DE BRIQUES (TOOL CHAINING) ===
+- Tu es le CERVEAU CENTRAL INTELLIGENT : analyse l'ENSEMBLE de la conversation (pas seulement le dernier message).
+- Tu as le pouvoir de lancer PLUSIEURS briques en séquence où les briques suivantes tirent parti des résultats des précédentes :
+  * CHAÎNAGE ROTATION & IMPACT : recommend_crop_rotation (trouve la culture gagnante) -> calculate_farm_custom_quantities (calcule automatiquement pour cette culture les quintaux totaux, eau et MAD sur la surface de la ferme) -> consult_rag_knowledge (référence officielle INRA).
+  * CHAÎNAGE TERRAIN & SOL : check_smap_moisture (humidité superficielle) -> get_soil_physicochemistry (type Terss/Hamri et argile) -> analyze_terrain_srtm (pente et érosion).
+  * CHAÎNAGE CLIMAT & RENDEMENT : analyze_nasa_climate_trend (NASA POWER 42 ans) -> predict_crop_yield_ai (rendement IA sous sécheresse) -> calculate_farm_custom_quantities.
+  * CHAÎNAGE PATHOLOGIE & SANTÉ DU SOL : diagnose_crop_pathology (identifie les champignons dans le sol) -> compare_all_crops (trouve les cultures non-hôtes pour rupture sanitaire).
+- Choisis de 1 à 4 briques coordonnées dans l'ordre d'exécution le plus pertinent.
 
 Requête actuelle de l'agriculteur : "{message}"
 
@@ -1233,8 +1272,14 @@ Tu as toi-même choisi et exécuté ces briques scientifiques pour le fellah :
 
 Question de l'agriculteur : "{message}"
 
-CONSIGNES DE SYNTHÈSE :
-1. LANGUE : Détecte la langue de la question de l'agriculteur et réponds EXACTEMENT dans la même langue :
+CONSIGNES DE SYNTHÈSE ET INITIATIVE AGRONOMIQUE :
+1. ANALYSE GLOBALE CUMULATIVE : Prends en considération TOUTES les informations fournies depuis le début du dialogue par le fermier (surface, régime hydrique, culture, antécédents). Ne te limite pas au dernier message.
+2. INITIATIVE PROACTIVE (POSER LES BONNES QUESTIONS) :
+   - Si des paramètres agronomiques déterminants sont encore inconnus pour affiner ton conseil (ex: présence observée de mauvaises herbes comme l'orobanche ou de pourriture racinaire, date précise envisagée pour semer, type de sol ressenti sur la parcelle, ou disponibilité d'une citerne/puits de secours) :
+     -> Donne d'abord une réponse scientifique complète et chiffrée avec les données satellites NASA et les briques exécutées.
+     -> Puis termine toujours par 1 ou 2 questions agronomiques intelligentes, concrètes et bien ciblées pour guider le fellah vers l'étape suivante.
+   - Si le fermier a déjà tout clarifié dans l'historique, ne lui repose pas les mêmes questions !
+3. LANGUE : Détecte la langue de la question de l'agriculteur et réponds EXACTEMENT dans la même langue :
    - Question en arabe (أحرف عربية) → réponds en arabe standard (فصحى) avec terminologie agricole claire. N'utilise PAS le Darija écrit en lettres latines ("salam", "khoya"...).
    - Question en darija (أحرف عربية بالدارجة) → réponds en darija marocaine avec les lettres arabes uniquement.
    - Question en français → réponds en français.
@@ -1253,50 +1298,74 @@ CONSIGNES DE SYNTHÈSE :
 
     agent_reply_text = call_gemini_brain(synth_prompt, is_json=False, timeout=10)
 
-    # Fallback déterministe — données réelles, multilingue selon la question
+    # Fallback déterministe hautement structuré — données réelles NASA & briques chaînées
     if not agent_reply_text:
+        # Détection de la langue de l'utilisateur
+        has_ar_chars = bool(re.search(r'[\u0600-\u06FF]', message))
+        m_lower = message.lower()
+        if has_ar_chars:
+            user_lang = "ar"
+        elif any(w in m_lower for w in ["what", "how", "which", "plant", "crop", "wheat", "soil", "harvest", "yield", "field", "farm", "after"]):
+            user_lang = "en"
+        else:
+            user_lang = "fr"
+
         farm_item = next((t["data"] for t in executed_tools_results if t["tool_name"] == "calculate_farm_custom_quantities"), None)
         rot_item  = next((t["data"] for t in executed_tools_results if t["tool_name"] == "recommend_crop_rotation"), None)
         cmp_item  = next((t["data"] for t in executed_tools_results if t["tool_name"] == "compare_all_crops"), None)
+        smap_item = next((t["data"] for t in executed_tools_results if t["tool_name"] == "check_smap_moisture"), None)
+        clim_item = next((t["data"] for t in executed_tools_results if t["tool_name"] == "analyze_nasa_climate_trend"), None)
 
-        # Le fallback construit un tableau structuré universel que le LLM peut afficher
-        # dans n'importe quelle langue — on reessaie Gemini avec un prompt minimal
-        if rot_item and rot_item.get("full_ranking"):
-            ranking = rot_item["full_ranking"]
-            rows_text = "\n".join([
-                f"#{r['rank']} {r['crop_fr']} ({r['crop_darija']}) — "
-                f"{r['yield_q_ha']} q/ha | Soil: {r['soil_health_score']}/100 | "
-                f"-{r['water_saved_m3_ha']} m³ | +{r['nitrogen_bonus_kg_ha']} kg N/ha"
-                for r in ranking[:3]
-            ])
-            minimal_prompt = (
-                f"The user asked (in their language): \"{message}\"\n\n"
-                f"NASA POWER 42-year crop ranking for Meknès/Saïss:\n{rows_text}\n\n"
-                f"Reply in the SAME language as the user's question. "
-                f"Present the top 2-3 crops with their key advantages. "
-                f"Do NOT use Latin transliteration of Arabic unless the user wrote that way."
-            )
-            agent_reply_text = call_gemini_brain(minimal_prompt, is_json=False, timeout=8)
+        # Construction de la synthèse autonome multi-outils
+        sections = []
+        if user_lang == "ar":
+            if rot_item and rot_item.get("full_ranking"):
+                best = rot_item["full_ranking"][0]
+                ha_str = f"على مساحة **{surface_ha} هكتار**" if surface_ha else ""
+                sections.append(f"🌾 **التوصية العلمية الرئيسية (بيانات ناسا POWER) :**\nالمحصول الأنسب للزراعة بعد {current_crop} هو **{best['crop_darija']}** ({best['crop_fr']}) بدرجة صمود وخصوبة **{best['soil_health_score']}/100**.")
+                if farm_item:
+                    sections.append(f"🚜 **حصيلة الاستغلالية {ha_str} :**\n- الإنتاج المتوقع : حوالي **{farm_item['total_yield_q']} قنطار**\n- توفير المياه : **{farm_item['total_water_saved_m3']:,} م³** مقارنة بالقمح\n- آزوت حيوي مجاني : **+{farm_item['total_nitrogen_fixed_kg']} كجم آزوت** (توفير {farm_item['fertilizer_savings_mad']} درهم في السماد)")
+            if smap_item:
+                sections.append(f"🛰️ **رطوبة التربة عبر قمر NASA SMAP :** {smap_item['surface_soil_moisture_pct']}% ({smap_item['condition_status']}).")
+            if clim_item:
+                sections.append(f"📈 **المناخ (1984-2025) :** ارتفاع الحرارة ({clim_item['temperature_warming']}) وتراجع أمطار الربيع ({clim_item['spring_rainfall_shift']}).")
+            # Question proactive de suivi
+            sections.append("❓ **سؤال للمتابعة الدقيقة :**\nهل سبق أن لاحظت في حقلك نبات الهالوك (الجعفيل) أو تعفنات الجذور في مواسم سابقة ؟ وهل يتوفر لديك بئر لسقي تكميلي في الربيع ؟")
 
-        if not agent_reply_text and cmp_item:
-            rows = [r for r in cmp_item["comparison_table"] if r["crop_key"] != "blé"][:3]
-            rows_text = "\n".join([
-                f"#{i+1} {r['crop_fr']} ({r['crop_darija']}) — "
-                f"{r['base_yield_q_ha']} q/ha | Soil: {r['soil_health_score']}/100 | "
-                f"-{r['water_saved_vs_wheat_m3_ha']} m³ | +{r['nitrogen_fixation_kg_ha']} kg N/ha"
-                for i, r in enumerate(rows)
-            ])
-            minimal_prompt = (
-                f"The user asked (in their language): \"{message}\"\n\n"
-                f"Multi-crop comparison:\n{rows_text}\n\n"
-                f"Reply in the SAME language as the user's question. "
-                f"Do NOT use Latin transliteration of Arabic unless the user wrote that way."
-            )
-            agent_reply_text = call_gemini_brain(minimal_prompt, is_json=False, timeout=8)
+        elif user_lang == "en":
+            if rot_item and rot_item.get("full_ranking"):
+                best = rot_item["full_ranking"][0]
+                c_name_en = "Chickpea" if "chiche" in best['crop_fr'].lower() else ("Faba Bean" if "feve" in best['crop_fr'].lower() or "foul" in best['crop_fr'].lower() else ("Spring Sunflower" if "tournesol" in best['crop_fr'].lower() else ("Early Barley" if "orge" in best['crop_fr'].lower() else best['crop_fr'])))
+                prev_en = "Wheat" if any(w in str(current_crop).lower() for w in ["blé", "ble", "wheat", "gezza", "qme7"]) else current_crop
+                ha_str = f"for your **{surface_ha} ha** parcel" if surface_ha else ""
+                sections.append(f"🌾 **Primary Recommendation (NASA POWER & INRA Model):**\nThe optimal resilient crop following your {prev_en} is **{c_name_en}** with a soil resilience score of **{best['soil_health_score']}/100**.")
+                if farm_item:
+                    sections.append(f"🚜 **Farm Production Impact {ha_str}:**\n- Expected Harvest: ~**{farm_item['total_yield_q']} cwt** ({farm_item['total_yield_tonnes']} tonnes)\n- Water Conserved: **{farm_item['total_water_saved_m3']:,} m³** vs. continuous cereal\n- Biological Nitrogen Bonus: **+{farm_item['total_nitrogen_fixed_kg']} kg N** (~{farm_item['fertilizer_savings_mad']} MAD in fertilizer savings)")
+            if smap_item:
+                sections.append(f"🛰️ **Soil Moisture (NASA SMAP L3/L4):** {smap_item['surface_soil_moisture_pct']}% root-zone moisture ({smap_item['condition_status']}).")
+            if clim_item:
+                sections.append(f"📈 **Climate Trend (42y NASA Archive):** {clim_item['temperature_warming']} warming with {clim_item['spring_rainfall_shift']} spring precipitation shift.")
+            # Question proactive de suivi
+            sections.append("❓ **Follow-up Diagnostic Question:**\nHave you observed any broomrape (Orobanche) weeds or root rot history on this specific parcel? And what is your target sowing window this season?")
 
-        # Dernier recours : RAG déterministe
-        if not agent_reply_text:
-            rag_advice = generate_grounded_agronomic_advice(message, context=context, lang="ar")
+        else: # French
+            if rot_item and rot_item.get("full_ranking"):
+                best = rot_item["full_ranking"][0]
+                ha_str = f"sur votre parcelle de **{surface_ha} ha**" if surface_ha else ""
+                sections.append(f"🌾 **Recommandation Principale (NASA POWER & INRA) :**\nLa culture la plus résiliente à implanter après votre {current_crop} est **{best['crop_fr']}** ({best['crop_darija']}), avec un score agronomique de **{best['soil_health_score']}/100**.")
+                if farm_item:
+                    sections.append(f"🚜 **Bilan d'exploitation {ha_str} :**\n- Récolte estimée : ~**{farm_item['total_yield_q']} quintaux** ({farm_item['total_yield_tonnes']} tonnes)\n- Eau préservée : **{farm_item['total_water_saved_m3']:,} m³** par rapport au blé en continu\n- Azote biologique fixé : **+{farm_item['total_nitrogen_fixed_kg']} kg N** (gain d'engrais estimé à {farm_item['fertilizer_savings_mad']} MAD)")
+            if smap_item:
+                sections.append(f"🛰️ **Humidité du sol (NASA SMAP) :** {smap_item['surface_soil_moisture_pct']}% en surface ({smap_item['condition_status']}).")
+            if clim_item:
+                sections.append(f"📈 **Tendance climatique NASA 42 ans :** Réchauffement de {clim_item['temperature_warming']} et baisse de {clim_item['spring_rainfall_shift']} des pluies au printemps.")
+            # Question proactive de suivi
+            sections.append("❓ **Questions d'approfondissement agronomique :**\nAvez-vous déjà constaté des adventices parasites (type Orobanche) ou du piétin-verse sur cette terre ? Et disposez-vous d'une source d'eau d'appoint en cas de Chergui printanier ?")
+
+        if sections:
+            agent_reply_text = "\n\n".join(sections)
+        else:
+            rag_advice = generate_grounded_agronomic_advice(message, context=context, lang=user_lang)
             agent_reply_text = rag_advice["response"]
 
     return {
